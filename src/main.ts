@@ -387,7 +387,7 @@ function main(): void {
         renderer?.render(state, 0, runtime.save.settings.surgeonId);
         finish();
       } else if (state.phase === "level_complete" || state.phase === "campaign_complete") {
-        celebration = { elapsed: 0, duration: 1.2 };
+        celebration = { elapsed: 0, duration: 2.2 };
         celebrationRendered = false;
         screen({ kind: "celebration" }, arena);
       }

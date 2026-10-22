@@ -57,7 +57,7 @@ folds are deliberately different; scaling and rotation use the same circular col
 | `scene-endothelium.svg` | Flattened lining cells and elongated wall cells |
 | `scene-fatty-streak.svg` | Subendothelial lipid-laden cells within uneven thickened wall |
 | `scene-fibrous-cap.svg` | Bowed pale fibrous cap and aligned spindle cells |
-| `scene-stented-lumen.svg` | Cool diamond struts resting along the luminal wall |
+| `scene-stented-lumen.svg` | Rounded silver crown rings following the luminal wall |
 | `scene-platelet-adhesion.svg` | Interrupted lining and clustered adherent lavender platelets |
 | `scene-healed-flow.svg` | Quiet lumen, continuous surface, subdued retained implant |
 | `lipid-amber.svg` | Broad asymmetric pebble with a crescent fold |
@@ -117,6 +117,21 @@ destroy real tissue.
 
 Scene names describe arcade settings. Their order does not claim that all lesions follow one
 inevitable sequence or that stenting removes the underlying disease.
+
+### Rounded stent construction
+
+The stent uses rounded crown rings, sparse curved bridges, scalloped open ends and darker
+rear struts. These cues give the fired tool and retained implants a flexible tubular form.
+The original illustration draws on the curved wire construction described by
+[Medtronic](https://www.medtronic.com/me-en/healthcare-professionals/products/cardiovascular/stents/resolute-onyx-des.html).
+It represents a simplified device rather than a particular product.
+
+![Before and after stent geometry at projectile, icon and enlarged sizes](screenshots/stent_design.webp)
+
+Construction uses the local SVG skill corpus: *How to Draw* (2013), lines 1566-1605, for
+cylinder axes and curved end geometry; *Generative Art with JavaScript and SVG* (2024),
+lines 2349-2400, for semantic groups and reusable crown definitions. Validate through Canvas
+at 10x40 projectile size, the enlarged tool view, and horizontal artery-wall placement.
 
 ## Gameplay geometry presentation
 
@@ -263,7 +278,9 @@ Six editable victory variants accompany the base roster:
 [surgeon_alex_victory.svg](../src/assets/surgeon_alex_victory.svg). Each preserves its surgeon's
 identity, 96 by 128 viewBox, palette, feet and leg geometry. Raised arms, a raised applicator,
 crescent eyes and curved mask folds signal success. The runtime presents the final pop before
-the victory pose; the celebration is cosmetic and reduced motion uses a static pose.
+the victory pose. A full-body camera close-up enlarges the surgeon before their gesture starts;
+the celebration is cosmetic and reduced motion cuts to a static close-up. The presentation clock
+freezes when paused, and the next stage restores the ordinary arena view.
 
 The local asset evidence in `output/clear_flow/art/art_report.md` records the SVG references
 actually read, XML/reference validation, preserved geometry and inspected contact sheets at

@@ -35,6 +35,7 @@ const STREAK_CALLOUT_DURATION = 1.6;
 type PointLabel = { x: number; y: number; points: number; life: number };
 type StreakCallout = { streak: number; multiplier: 2 | 3; life: number };
 const VICTORY_POSE_DELAY = 0.3;
+const VICTORY_ZOOM_DURATION = 0.35;
 type ArenaEffect = {
   kind: "tissue_eroded" | "pocket_breached" | "pocket_released" | "targets_merged";
   x: number;
@@ -152,26 +153,39 @@ export function createRenderer(
     }
   }
 
-  function drawFloor(state: Readonly<SimulationState>): void {
+  function drawFloor(
+    state: Readonly<SimulationState>,
+    left: number,
+    right: number,
+    bottom: number,
+  ): void {
     const floor = state.level.arena.floor;
     ctx.save();
     ctx.beginPath();
-    ctx.moveTo(0, floorY(floor, 0));
+    ctx.moveTo(left, floorY(floor, left));
+    ctx.lineTo(0, floorY(floor, 0));
     for (let x = 2; x <= ARENA_WIDTH; x += 2) ctx.lineTo(x, floorY(floor, x));
-    ctx.lineTo(ARENA_WIDTH, ARENA_HEIGHT);
-    ctx.lineTo(0, ARENA_HEIGHT);
+    ctx.lineTo(right, floorY(floor, right));
+    ctx.lineTo(right, bottom);
+    ctx.lineTo(left, bottom);
     ctx.closePath();
     // Every lobule and fiber stays inside the actual solid floor silhouette.
     ctx.clip();
     const top = Math.min(...floor.controlPoints.map((point) => point.y));
+    // Keep material coordinates fixed while the camera moves across the floor.
     drawMembrane(ctx, 0, top, ARENA_WIDTH, ARENA_HEIGHT);
+    if (bottom > ARENA_HEIGHT) drawMembrane(ctx, 0, ARENA_HEIGHT, ARENA_WIDTH, ARENA_HEIGHT * 2);
+    if (left < 0) drawMembrane(ctx, -ARENA_WIDTH, top, 0, ARENA_HEIGHT * 2);
+    if (right > ARENA_WIDTH) drawMembrane(ctx, ARENA_WIDTH, top, ARENA_WIDTH * 2, ARENA_HEIGHT * 2);
     // Trace the exact collision surface, clipped inward so this highlight never
     // suggests an extra ledge above the walkable geometry.
     ctx.strokeStyle = "#efc2c2";
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(0, floorY(floor, 0));
+    ctx.moveTo(left, floorY(floor, left));
+    ctx.lineTo(0, floorY(floor, 0));
     for (let x = 2; x <= ARENA_WIDTH; x += 2) ctx.lineTo(x, floorY(floor, x));
+    ctx.lineTo(right, floorY(floor, right));
     ctx.stroke();
     ctx.restore();
   }
@@ -294,7 +308,10 @@ export function createRenderer(
     const surgeon = images[selected.portraitAssetId];
     const { x, y } = state.player.position;
     const victory = celebration !== undefined && celebration.elapsed >= VICTORY_POSE_DELAY;
-    const poseElapsed = victory ? celebration.elapsed - VICTORY_POSE_DELAY : 0;
+    // Let the camera arrive before the surgeon performs the full gesture.
+    const poseElapsed = victory
+      ? Math.max(0, celebration.elapsed - VICTORY_POSE_DELAY - VICTORY_ZOOM_DURATION)
+      : 0;
     const { hop, tilt } = celebrationMotion(selected.id, poseElapsed, reducedMotion);
     // Pivot at the feet and reserve the rotated sprite's full width at either wall.
     const halfWidth =
@@ -474,16 +491,32 @@ export function createRenderer(
     const scale = Math.min(canvas.width / ARENA_WIDTH, canvas.height / ARENA_HEIGHT);
     const offsetX = (canvas.width - ARENA_WIDTH * scale) / 2;
     const offsetY = (canvas.height - ARENA_HEIGHT * scale) / 2;
+    const zoomProgress = Math.max(
+      0,
+      Math.min(1, ((celebrationElapsed ?? 0) - VICTORY_POSE_DELAY) / VICTORY_ZOOM_DURATION),
+    );
+    const cameraProgress = reducedMotion
+      ? zoomProgress > 0
+        ? 1
+        : 0
+      : zoomProgress * zoomProgress * (3 - 2 * zoomProgress);
+    const cameraScale = scale * (1 + cameraProgress * 2.6);
+    const cameraX = ARENA_WIDTH / 2 + (state.player.position.x - ARENA_WIDTH / 2) * cameraProgress;
+    const cameraY =
+      ARENA_HEIGHT / 2 +
+      (state.player.position.y - PLAYER_HEIGHT / 2 - 6 - ARENA_HEIGHT / 2) * cameraProgress;
+    const cameraOffsetX = canvas.width / 2 - cameraX * cameraScale;
+    const cameraOffsetY = canvas.height / 2 - cameraY * cameraScale;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#844f68";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
+    ctx.setTransform(cameraScale, 0, 0, cameraScale, cameraOffsetX, cameraOffsetY);
     // Static material is clipped to the decorative frame outside the physics world.
-    const left = -offsetX / scale;
-    const top = -offsetY / scale;
-    const right = ARENA_WIDTH - left;
-    const bottom = ARENA_HEIGHT - top;
+    const left = Math.min(0, -cameraOffsetX / cameraScale);
+    const top = Math.min(0, -cameraOffsetY / cameraScale);
+    const right = Math.max(ARENA_WIDTH, (canvas.width - cameraOffsetX) / cameraScale);
+    const bottom = Math.max(ARENA_HEIGHT, (canvas.height - cameraOffsetY) / cameraScale);
     ctx.save();
     ctx.beginPath();
     ctx.rect(left, top, right - left, -top);
@@ -496,37 +529,47 @@ export function createRenderer(
     if (left < 0) drawMembrane(ctx, left, 0, 0, ARENA_HEIGHT);
     if (right > ARENA_WIDTH) drawMembrane(ctx, ARENA_WIDTH, 0, right, ARENA_HEIGHT);
     ctx.restore();
+    // A close-up can look past either arena edge. Reflect only scene decoration;
+    // the floor continues at its boundary height and collision geometry stays fixed.
+    if (cameraProgress > 0) {
+      for (const boundary of [0, ARENA_WIDTH * 2]) {
+        if ((boundary === 0 && left >= 0) || (boundary !== 0 && right <= ARENA_WIDTH)) continue;
+        ctx.save();
+        // Overlap by one device pixel so fractional camera transforms leave no seam.
+        ctx.translate(boundary + (boundary === 0 ? 1 : -1) / cameraScale, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(images[state.level.scene], 0, 0, ARENA_WIDTH, ARENA_HEIGHT);
+        ctx.drawImage(images[state.level.scene], 0, 480, ARENA_WIDTH, 1, 0, 480, ARENA_WIDTH, 60);
+        ctx.restore();
+      }
+    }
     ctx.drawImage(images[state.level.scene], 0, 0, ARENA_WIDTH, ARENA_HEIGHT);
     // Scene art retains its editable decorative lower wall. Extend the adjacent clean
     // lumen color beneath it so only the geometry-owned floor describes solid ground.
     ctx.drawImage(images[state.level.scene], 0, 480, ARENA_WIDTH, 1, 0, 480, ARENA_WIDTH, 60);
-    drawFloor(state);
+    drawFloor(
+      state,
+      cameraProgress > 0 ? left : 0,
+      cameraProgress > 0 ? right : ARENA_WIDTH,
+      cameraProgress > 0 ? bottom : ARENA_HEIGHT,
+    );
     drawPockets(state);
     drawTissue(state);
     const sceneHasImplant =
       state.level.scene === "scene-stented-lumen" || state.level.scene === "scene-healed-flow";
     if (state.level.act >= 2 && !sceneHasImplant) {
       // The installed implant follows the upper artery wall behind every gameplay object.
-      // Its horizontal mesh is distinct from the bright vertical fired stent trail.
+      // Reuse the rounded metal rings horizontally so implants and shots share a material.
       ctx.save();
       ctx.beginPath();
       ctx.roundRect(220, 8, 520, 28, 8);
       ctx.clip();
-      ctx.strokeStyle = "#d7edf4";
       ctx.globalAlpha = 0.48;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      for (let x = 192; x < 768; x += 28) {
-        ctx.moveTo(x, 8);
-        ctx.lineTo(x + 28, 36);
-        ctx.moveTo(x, 36);
-        ctx.lineTo(x + 28, 8);
-      }
-      ctx.moveTo(220, 9);
-      ctx.lineTo(740, 9);
-      ctx.moveTo(220, 35);
-      ctx.lineTo(740, 35);
-      ctx.stroke();
+      ctx.translate(220, 36);
+      ctx.rotate(-Math.PI / 2);
+      // Crop the icon's end padding so adjacent ring sections form one implant.
+      for (let offset = 0; offset < 520; offset += 104)
+        ctx.drawImage(images.stent, 0, 3, 32, 116, 0, offset, 28, 104);
       ctx.restore();
     }
     const alpha = state.phase === "playing" ? Math.max(0, Math.min(1, interpolation)) : 1;
@@ -538,7 +581,7 @@ export function createRenderer(
         projectile.previousPosition.y +
         (projectile.position.y - projectile.previousPosition.y) * alpha;
       if (projectile.kind === "stent") {
-        // Mesh is tiled rather than stretched, keeping diagonal struts legible on a long trail.
+        // Tile the mesh to keep rounded crowns legible along a long trail.
         const length = Math.max(12, projectile.origin.y - y);
         ctx.save();
         ctx.beginPath();
@@ -719,6 +762,7 @@ export function createRenderer(
       ctx.fillText(text, x, y);
       ctx.restore();
     }
+    ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
     if (streakCallout !== undefined) {
       // The 16:10 canvas provides decorative wall above the playable world.
       // Keep this stationary and separate from incoming warnings and the surgeon.

@@ -195,31 +195,28 @@ export async function captureGameplay({ browser, url, save, montage }) {
     );
     const finalPop = await page.locator("#arena").screenshot({ type: "png" });
     await page.clock.runFor(350);
-    const arenaBox = await page.locator("#arena").boundingBox();
-    assert.ok(arenaBox, "The victory close-up has a visible arena");
-    const victory = await page.screenshot({
-      type: "png",
-      clip: {
-        x: arenaBox.x + arenaBox.width * 0.4,
-        y: arenaBox.y + arenaBox.height * 0.76,
-        width: arenaBox.width * 0.2,
-        height: arenaBox.height * 0.24,
-      },
-    });
-    await page.clock.runFor(900);
+    await page.clock.runFor(1000);
+    const victory = await page.locator("#arena").screenshot({ type: "png" });
     await page.keyboard.up("Space");
-    await page
-      .getByRole("heading", { name: "Plaque cleared!", exact: true })
-      .waitFor({ state: "visible" });
+    const resultsHeading = page.getByRole("heading", {
+      name: "Plaque cleared!",
+      exact: true,
+    });
+    const resultDelay = await advanceUntil(
+      page,
+      () => resultsHeading.isVisible(),
+      "the stage results screen",
+    );
     const results = await page.locator("#result_panel").screenshot({ type: "png" });
+    const resultsTime = ((1000 + resultDelay) / 1000).toFixed(1);
     await montage(
       "clear_celebration",
       [
         { label: "Final lipid pop", png: finalPop },
-        { label: "Surgeon celebration (+350 ms)", png: victory },
-        { label: "Stage complete (+1.25 s)", png: results },
+        { label: "Zoomed surgeon celebration (+1.0 s)", png: victory },
+        { label: `Stage complete (+${resultsTime} s)`, png: results },
       ],
-      "Actual first campaign stage played from visible controls with ordinary held-Space input. The three panels are chronological captures of the final pop, the surgeon's celebration, and the resulting completion screen.",
+      "Actual first campaign stage played from visible controls with ordinary held-Space input. The three panels are chronological captures of the final pop, the camera-zoomed arena during the surgeon's celebration, and the resulting completion screen.",
     );
     captures.push({
       name: "clear_celebration",

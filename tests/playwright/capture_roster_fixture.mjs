@@ -77,7 +77,8 @@ export async function captureRosterFixture({ browser, url, save }) {
               state,
               0,
               id,
-              mode === "victory" ? { elapsed: 0.6, duration: 1.2 } : undefined,
+              // At 300 ms the production victory sprite appears before the camera zoom starts.
+              mode === "victory" ? { elapsed: 0.3, duration: 2.2 } : undefined,
             );
           } finally {
             CanvasRenderingContext2D.prototype.drawImage = nativeDraw;

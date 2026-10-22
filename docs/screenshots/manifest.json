@@ -1,11 +1,11 @@
 {
-  "capturedAt": "2026-10-22T21:58:44.000Z",
+  "capturedAt": "2026-10-22T22:13:30.852Z",
   "command": "node tests/playwright/capture_docs_screenshots.mjs",
   "browser": "156.0.8078.4",
   "format": "WebP",
   "quality": 90,
   "buildHashes": {
-    "main.js": "b0c9d4b20a8969947e13647176384f29ffdd7f61c00069d87603684676268d6d",
+    "main.js": "1a5ded4fb3c14cebd1b33bbaff315f5b25ddf55d1b1c9420d96220455a78f9f3",
     "index.html": "5a292275879f45a7b33ad5bab7f801326f11881e8b8cd0e7fffb13ebc61c5b5c",
     "style.css": "050e665782d2dc9f5301e3896baf1eed6566ad53bde256ce323d1a99ae649a5e"
   },
@@ -61,8 +61,8 @@
       "path": "floor_basin.webp",
       "width": 816,
       "height": 510,
-      "bytes": 31328,
-      "sha256": "6329073f88b16aa937c662193c772cd674252252ff888a17739abd4064889313",
+      "bytes": 31434,
+      "sha256": "59e7506153600f8fbf07ff4ee5f022aef7b3a794618a6b66588892bc4b8ca76b",
       "provenance": "Basin with raised flanks; actual Practice stage entered through the visible stage picker. The only staged state is the normal local unlock save; geometry, hazards, and physics are the production build."
     },
     {
@@ -70,8 +70,8 @@
       "path": "floor_shelf.webp",
       "width": 816,
       "height": 510,
-      "bytes": 37594,
-      "sha256": "39a73402ba8e6083c22f453373ab8c53d03bb1b4c8686226380f64d5d634b84b",
+      "bytes": 37344,
+      "sha256": "8f3c4fb6e05aa441acc291a6e503130c8819ae49f2309d22172468cd62b27a39",
       "provenance": "Shelf with a broad central platform; actual Practice stage entered through the visible stage picker. The only staged state is the normal local unlock save; geometry, hazards, and physics are the production build."
     },
     {
@@ -79,8 +79,8 @@
       "path": "floor_shoulder.webp",
       "width": 816,
       "height": 510,
-      "bytes": 38498,
-      "sha256": "238bd762da8db8514dda920860e8b801a60e5bd1df0f94cb94825679bb1e9add",
+      "bytes": 38296,
+      "sha256": "1da8598b3111fdd19a753244a90705b9a5332f0fd3cc6da91310079afecce707",
       "provenance": "Shoulder with unequal flanks; actual Practice stage entered through the visible stage picker. The only staged state is the normal local unlock save; geometry, hazards, and physics are the production build."
     },
     {
@@ -88,8 +88,8 @@
       "path": "tissue_carving.webp",
       "width": 1280,
       "height": 800,
-      "bytes": 54004,
-      "sha256": "6878cb2618e340557083dc1979b40653a08da77bdb8c8565271149d812dbe04a",
+      "bytes": 53510,
+      "sha256": "392ce413fa902c829c706f92dcb699f3e9af12bbc7068f7af7bc1a31121d7b04",
       "provenance": "Actual Stage 4 Practice: normal keyboard movement and stent shots repeatedly carve the real tissue obstacle. The local unlock save only exposes Practice; no targets, tissue, or physics are altered."
     },
     {
@@ -97,26 +97,26 @@
       "path": "streak_feedback.webp",
       "width": 1280,
       "height": 800,
-      "bytes": 45922,
-      "sha256": "524d75b73cf6e0f9cd417de902c249a09abe193f301a0da8bb60b296bb1bd9a6",
+      "bytes": 46032,
+      "sha256": "8b3f54ee4468e4acc5e2f8fca7362e8c610f8fb6f2e89f63384039cd11ffa518",
       "provenance": "Actual first campaign stage entered through Play campaign and Start stage. Held Space is ordinary player input; the capture waits for the game to award its visible five-hit streak multiplier."
     },
     {
       "name": "clear_celebration",
       "path": "clear_celebration.webp",
       "width": 1280,
-      "height": 1221,
-      "bytes": 59274,
-      "sha256": "dcf18bd86d56ce5211c7246ab21ad9b6b4e6e3677f2fbdffd8756c5b1a68396b",
-      "provenance": "Actual first campaign stage played from visible controls with ordinary held-Space input. The three panels are chronological captures of the final pop, the surgeon's celebration, and the resulting completion screen."
+      "height": 1145,
+      "bytes": 62890,
+      "sha256": "d9326adf8e3a93f2dc60b9e91289adb8aa8e8fb1065787b430059c61e9c3dd2b",
+      "provenance": "Actual first campaign stage played from visible controls with ordinary held-Space input. The three panels are chronological captures of the final pop, the camera-zoomed arena during the surgeon's celebration, and the resulting completion screen."
     },
     {
       "name": "art_identity_game",
       "path": "art_identity_game.webp",
       "width": 1280,
       "height": 800,
-      "bytes": 44630,
-      "sha256": "cf2c993a521366d13b83bf13ae12a5b6d9dd049764be6848c10a42d4251eed99",
+      "bytes": 44682,
+      "sha256": "4b4ab8bca724db26a0511271f3a15b8009a5b68f59da201be161d6db97424224",
       "provenance": "Current first-stage campaign gameplay entered from Play campaign and Start stage. This is a single current production scene, not a historical before/after comparison."
     },
     {
@@ -124,9 +124,10 @@
       "path": "art_identity_roster.webp",
       "width": 1200,
       "height": 831,
-      "bytes": 68018,
-      "sha256": "ee7efbb74d43621c854ab28d4763b15e95de21a2fd4f96fb98a65ad7832898b3",
+      "bytes": 67050,
+      "sha256": "77132c627397415b0d7f738498b3c0687d20155f638b55a26f8913b451e1b046",
       "provenance": "Current source production renderer: six native 44x60 figures in staged idle/walk/victory, grayscale and silhouette rows; not earned gameplay."
     }
-  ]
+  ],
+  "execution": "Bundled equivalent with an explicit workspace root; no Git commands. Temporary entry: output/celebration_zoom/capture_docs_no_git.mjs"
 }

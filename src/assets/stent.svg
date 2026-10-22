@@ -1,5 +1,56 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="128" viewBox="0 0 32 128" role="img" aria-labelledby="stent-title">
-  <title id="stent-title">Silver cylindrical mesh stent</title>
-  <defs><linearGradient id="stent-metal"><stop stop-color="#7492a8"/><stop offset=".35" stop-color="#f3ffff"/><stop offset=".7" stop-color="#a2c6d7"/><stop offset="1" stop-color="#e3f7ff"/></linearGradient><clipPath id="stent-cylinder"><rect x="4" y="5" width="24" height="118" rx="10"/></clipPath><pattern id="stent-mesh" width="24" height="20" patternUnits="userSpaceOnUse"><path d="m0 0 24 20M0 20 24 0" fill="none" stroke="url(#stent-metal)" stroke-width="2.7"/></pattern></defs>
-  <g id="stent-cylinder-body"><rect x="4" y="5" width="24" height="118" rx="10" fill="#163448" fill-opacity=".3"/><rect x="4" y="5" width="24" height="118" fill="url(#stent-mesh)" clip-path="url(#stent-cylinder)"/><rect x="4" y="5" width="24" height="118" rx="10" fill="none" stroke="url(#stent-metal)" stroke-width="2.5"/><ellipse cx="16" cy="7" rx="11" ry="4" fill="none" stroke="#e8fbff" stroke-width="2"/><ellipse cx="16" cy="121" rx="10" ry="3" fill="none" stroke="#d7edf4" stroke-width="2"/></g>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="128" viewBox="0 0 32 128" role="img" aria-labelledby="stent-title stent-desc">
+  <title id="stent-title">Silver open-cell coronary stent</title>
+  <desc id="stent-desc">A hollow flexible tube of rounded crown rings joined by curved links. Darker rear struts show through the open silver framework. Simplified arcade illustration, not a specific device or scale drawing.</desc>
+  <defs>
+    <linearGradient id="stent-metal" x1="4" y1="0" x2="28" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#80919f"/>
+      <stop offset=".24" stop-color="#e3edf0"/>
+      <stop offset=".43" stop-color="#fffdf6"/>
+      <stop offset=".7" stop-color="#afc3cb"/>
+      <stop offset="1" stop-color="#647f90"/>
+    </linearGradient>
+    <linearGradient id="stent-depth" x1="4" y1="0" x2="28" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#334956" stop-opacity=".12"/>
+      <stop offset=".45" stop-color="#1a2935" stop-opacity=".26"/>
+      <stop offset="1" stop-color="#334956" stop-opacity=".08"/>
+    </linearGradient>
+    <!-- Rounded crowns narrow at the cylinder's turned-away edges. -->
+    <path id="stent-front-crown" d="M4 0C4-3 5-4 6-2L9 5C10 8 12 8 13 5L16-2C17-5 19-5 20-2L23 5C24 8 26 7 27 4L28 0"/>
+    <path id="stent-rear-crown" d="M4 0C4 3 5 4 6 2L9-5C10-8 12-8 13-5L16 2C17 5 19 5 20 2L23-5C24-8 26-7 27-4L28 0"/>
+    <g id="stent-rear-rings">
+      <use href="#stent-rear-crown" y="12"/>
+      <use href="#stent-rear-crown" y="26"/>
+      <use href="#stent-rear-crown" y="40"/>
+      <use href="#stent-rear-crown" y="54"/>
+      <use href="#stent-rear-crown" y="68"/>
+      <use href="#stent-rear-crown" y="82"/>
+      <use href="#stent-rear-crown" y="96"/>
+      <use href="#stent-rear-crown" y="110"/>
+    </g>
+    <g id="stent-front-rings">
+      <use href="#stent-front-crown" y="12"/>
+      <use href="#stent-front-crown" y="26"/>
+      <use href="#stent-front-crown" y="40"/>
+      <use href="#stent-front-crown" y="54"/>
+      <use href="#stent-front-crown" y="68"/>
+      <use href="#stent-front-crown" y="82"/>
+      <use href="#stent-front-crown" y="96"/>
+      <use href="#stent-front-crown" y="110"/>
+    </g>
+    <path id="stent-flexible-links" d="M11 19C11 23 16 18 18 22M25 32C24 38 18 31 18 36M11 47C11 51 16 46 18 50M25 60C24 66 18 59 18 64M11 75C11 79 16 74 18 78M25 88C24 94 18 87 18 92M11 103C11 107 16 102 18 106"/>
+  </defs>
+  <g id="stent-cylinder-body" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 12C4 7 28 7 28 12V110C28 120 4 120 4 110Z" fill="url(#stent-depth)"/>
+    <use href="#stent-rear-rings" stroke="#6d8999" stroke-width="1.35" opacity=".72"/>
+    <path d="M5 13C6 16 6 22 5 26M27 26C26 31 26 36 27 40M5 41C6 46 6 50 5 54M27 54C26 59 26 64 27 68M5 69C6 74 6 78 5 82M27 82C26 87 26 92 27 96M5 97C6 102 6 106 5 110" stroke="#7d98a5" stroke-width="1.3"/>
+    <g stroke="#263c49" stroke-width="2.8" opacity=".85">
+      <use href="#stent-front-rings"/>
+      <use href="#stent-flexible-links"/>
+    </g>
+    <g stroke="url(#stent-metal)" stroke-width="1.85">
+      <use href="#stent-front-rings"/>
+      <use href="#stent-flexible-links"/>
+    </g>
+    <path d="M9 17Q11 22 13 17M9 45Q11 50 13 45M9 73Q11 78 13 73M9 101Q11 106 13 101" stroke="#fffdf5" stroke-width=".6"/>
+  </g>
 </svg>

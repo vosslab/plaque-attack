@@ -38,12 +38,13 @@ native button Enter/Space behavior and dialog focus restoration.
 ## Implementation contracts
 
 - Runtime owns a short successful-clear presentation interval: approximately 0.3 seconds for the
-  final pop, followed by surgeon victory, with results at approximately 1.2 seconds total.
+  final pop, a quick camera close-up, then surgeon victory, with results at approximately 2.2 seconds total.
   Game over retains its existing immediate result path. Durations are design defaults, not
   permanent test thresholds. Freeze the terminal simulation and continue rendering.
 - Renderer owns the final-hit visibility and cosmetic victory response: pop first, then a brief
-  surgeon celebratory pose/surge. This never adds jump input, modifies physics, moves colliders,
-  changes hazard state, or rewards extra score. Reduced motion uses static victory feedback.
+  full-body surgeon close-up and celebratory gesture. The gesture starts after the camera settles.
+  This never adds jump input, modifies physics, moves colliders, changes hazard state, or rewards
+  extra score. Reduced motion cuts to a static close-up; pause freezes the presentation camera.
 - Runtime owns contextual continuation and physical press/release tracking across screen changes.
   Enter is the primary hint; Space is supported after a fresh press. Ignore auto-repeat and
   carried presses. One physical activation causes at most one screen transition.

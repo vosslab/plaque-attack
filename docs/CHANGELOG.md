@@ -2,6 +2,17 @@
 
 ### Additions and New Features
 
+- Zoom in on the selected surgeon after a successful stage. Preserve the final pop, frame the
+  whole figure, then play the victory gesture at close range before results. Use a static
+  close-up with reduced motion and freeze the camera when paused. Verify both real-clear
+  browser journeys, 50 source tests, and all six surgeons at center and edges in desktop/small
+  viewports. Refresh all thirteen managed documentation screenshots from the rebuilt game.
+
+- Replace the stent's crossed lattice with rounded metal rings and curved links. Carry the
+  flexible tubular form into implanted artery artwork and the shared Canvas wall decoration.
+  Verify XML, native-size renders in three scenes, 50 source tests and the focused browser
+  firing/pause test. Rebuild locally and add a before/after artwork comparison.
+
 - Rework the six surgeons as original scientist-inspired individuals across age ranges, with
   distinct facial structures, silhouettes, personal interests, ergonomic tool housings and
   hobby-linked victory gestures. Replace generic personality labels and tune cosmetic rhythms;

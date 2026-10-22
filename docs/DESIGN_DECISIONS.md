@@ -353,8 +353,10 @@ Scope chooser layout rules to that dialog so other dialogs retain their own scro
 
 ### Successful clear presentation and input
 
-**Decision.** Preserve the final pop for approximately 0.3 seconds, show a short cosmetic surgeon
-victory, then show results at approximately 1.2 seconds total. These are tunable presentation defaults.
+**Decision.** Preserve the final pop for approximately 0.3 seconds, move into a full-body surgeon
+close-up, then play the victory gesture and hold before results at approximately 2.2 seconds total.
+Start the gesture after the camera settles so its action is visible at the enlarged scale.
+Reduced motion cuts to a static close-up. These are tunable presentation defaults.
 Use contextual Enter and freshly pressed Space for continuation, with one transition per physical
 press. Show newly restored routes inline and open the recovery map by explicit action.
 
@@ -449,3 +451,18 @@ menu; campaign play reopens the prompt while no choice exists.
 
 **Owner.** [src/main.ts](../src/main.ts), [src/dialogs.ts](../src/dialogs.ts) and
 [src/save_load.ts](../src/save_load.ts).
+
+### Flexible stent geometry
+
+**Decision.** Depict stents with rounded crown rings, short curved bridges and restrained
+front/back metal shading. Use the same visual language for fired tools and retained implants.
+
+**Why.** Straight crossed struts and long boundary rails read as a trellis. Curved open cells
+give the medical device a flexible tubular form while remaining readable at gameplay size.
+
+**Consequence.** Keep the projectile footprint, timing and collision behavior unchanged. The
+generic wall implant reuses the tool SVG; the two artery scenes retain editable wall-fitted art.
+
+**Owner.** [src/assets/stent.svg](../src/assets/stent.svg), the retained-implant groups in the
+stented/healed scene SVGs, and [src/renderer.ts](../src/renderer.ts).
+

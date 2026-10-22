@@ -27,6 +27,10 @@ async function canvasImage(page: Page): Promise<string> {
   return page.locator("#arena").evaluate((node) => (node as HTMLCanvasElement).toDataURL());
 }
 
+async function surgeonScale(page: Page): Promise<number> {
+  return page.evaluate(() => Reflect.get(globalThis, "__clearFlowSurgeonScale") as number);
+}
+
 for (const advanceKey of ["Enter", "Space"]) {
   test(`a real clear celebrates before fresh ${advanceKey} advances, with keyboard controls intact`, async ({
     page,
@@ -37,16 +41,22 @@ for (const advanceKey of ["Enter", "Space"]) {
     await page.addInitScript(() => {
       type CanvasDraw = (this: CanvasRenderingContext2D, ...args: unknown[]) => void;
       const sources = new Set<string>();
+      let scale = 0;
       const draw = Reflect.get(CanvasRenderingContext2D.prototype, "drawImage") as CanvasDraw;
       CanvasRenderingContext2D.prototype.drawImage = function (
         this: CanvasRenderingContext2D,
         ...args: unknown[]
       ): void {
         const source = args[0];
-        if (source instanceof HTMLImageElement) sources.add(source.currentSrc || source.src);
+        if (source instanceof HTMLImageElement) {
+          const path = source.currentSrc || source.src;
+          sources.add(path);
+          if (/surgeon_maya(?:_victory)?\.svg$/.test(path)) scale = this.getTransform().a;
+        }
         draw.apply(this, args);
       };
       Object.defineProperty(globalThis, "__clearFlowDrawnAssets", { value: sources });
+      Object.defineProperty(globalThis, "__clearFlowSurgeonScale", { get: () => scale });
     });
     await page.clock.install({ time: new Date("2026-10-22T12:00:00.000Z") });
     await page.goto("/");
@@ -78,6 +88,7 @@ for (const advanceKey of ["Enter", "Space"]) {
     await expect(cleared).toBeHidden();
     await expect(arena).toBeVisible();
     expect(await drawnVictory(page), "The last pop precedes the victory pose").toBe(false);
+    const gameplayScale = await surgeonScale(page);
     const frozenHud = await page.locator(".game_hud").innerText();
 
     // A paused presentation freezes its own effects as well as the terminal simulation.
@@ -107,6 +118,16 @@ for (const advanceKey of ["Enter", "Space"]) {
     await expect(status).toBeVisible();
     await expect(cleared).toBeHidden();
     expect(await page.locator(".game_hud").innerText()).toBe(frozenHud);
+    await page.clock.runFor(600);
+    expect(
+      await surgeonScale(page),
+      "Victory actions receive a substantial close-up",
+    ).toBeGreaterThan(gameplayScale * 2);
+    await page.keyboard.press("p");
+    const closeup = await canvasImage(page);
+    await page.clock.runFor(5000);
+    expect(await canvasImage(page), "Pause freezes the close-up and its gesture").toBe(closeup);
+    await page.keyboard.press("p");
     // Repeated keydown while Space is still held cannot arm the next screen.
     await page.keyboard.down("Space");
     for (let elapsed = 0; elapsed < 5000 && !(await cleared.isVisible()); elapsed += 100)
@@ -153,6 +174,10 @@ for (const advanceKey of ["Enter", "Space"]) {
     await expect(briefing).toBeHidden();
     await page.clock.runFor(100);
     await expect(page.locator("#hud_level")).toHaveText("Stage 2: Little trouble");
+    expect(await surgeonScale(page), "The next stage restores the gameplay camera").toBeCloseTo(
+      gameplayScale,
+      1,
+    );
     expect(errors).toEqual([]);
   });
 }
