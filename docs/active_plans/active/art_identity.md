@@ -18,8 +18,8 @@ verification remain open. Sources are frozen for final checks and captures.
 | B. Artery world | Scene artist: six editable artery settings that feel like one tangible world | Asset delivery complete | Scene report covers XML/Canvas renders and target fixtures; integrated stage before/after remains E |
 | C. Patient recovery | Recovery artist: one editable cardiac composition with meaningful visible recovery | Asset delivery complete | Recovery report covers five poses and real consumer 0/12/24-route fixtures; final build acceptance remains E |
 | D. Brand and docs | Documentation owner: Plaque Attack title, lean brief, provenance, plan and status | Complete | Old-name inventory and diff review pass; 268 documentation checks pass; report in `output/art_identity/BRAND_DOCS.md` |
-| E. Integrated evidence | Manager/checker: build, repository checks and browser captures of integrated assets | Source freeze released; checks/build/browser active | Capture all six cast members at gameplay size, stage before/after, 0/12/24 recovery fixtures, reduced motion and narrow layouts; label fixtures |
-| F. Fresh acceptance | Fresh specification reviewer, then independent visual-quality reviewer, then final integration reviewer | Pending E | Correct findings at their owners and verify corrections before closing |
+| E. Integrated evidence | Manager/checker: build, repository checks and browser captures of integrated assets | Capture repair active | Initial recovery image and doubled victory fixture are under diagnosis/recapture; preserve failed evidence; final report must confirm decoded images, clean fixture and all checks |
+| F. Fresh acceptance | Fresh specification reviewer, then independent visual-quality reviewer, then final integration reviewer | Source/specification ACCEPT; quality/integration pending corrected E | SPEC_REVIEW.md accepts current source/owner evidence only; correct findings at their owners and verify corrections before closing |
 
 A-C, including A2/A3, run within explicit source ownership. D can proceed alongside them. E consumes
 the integrated result; F follows E in the stated order. Complete corrections autonomously;

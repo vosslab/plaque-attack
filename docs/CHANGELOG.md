@@ -146,6 +146,10 @@
 - Refresh README, GitHub setup, current game specification, decisions, and expansion ledger for the
   expanded source contract. Keep 15-level acceptance evidence explicitly historical.
 
+### Fixes and Maintenance
+
+- Synchronized shared style guides, tests, and repository support files from the starter template.
+
 ### Removals and Deprecations
 
 - Supersede the unapplied higher-bounce novice experiments with the fluid-motion direction.

@@ -98,12 +98,25 @@ await browser.close();
 
 ### Take a screenshot
 
+Save the final named screenshot as WebP at quality 90, following the screenshot policy in
+`docs/REPO_STYLE.md`. Playwright's
+[screenshot API](https://playwright.dev/docs/api/class-page#page-screenshot) captures PNG or JPEG;
+pass a PNG buffer directly to [cwebp](https://developers.google.com/speed/webp/docs/cwebp) so only
+the WebP file is retained. Install the WebP command-line tools so `cwebp` is available on `PATH`.
+
 ```javascript
-await page.screenshot({
-	path: "capture.png",
+import { execFileSync } from "node:child_process";
+
+const screenshot = await page.screenshot({
+	type: "png",
 	fullPage: true,
 });
+execFileSync("cwebp", ["-quiet", "-q", "90", "-o", "capture.webp", "--", "-"], {
+	input: screenshot,
+});
 ```
+
+Inspect `capture.webp` and use that filename in documentation, reports, and artifact manifests.
 
 ### Generate a PDF
 
@@ -152,10 +165,6 @@ Choose output locations according to the purpose of the generated files.
 Playwright does not dictate where generated files belong. Follow the repository's
 normal conventions. Repositories may override `docs/screenshots/` when they have an established
 location for committed documentation captures.
-
-This repository configures test output in `output/playwright/` in
-[playwright.config.ts](../playwright.config.ts). The `/output*/` rule in
-[.gitignore](../.gitignore) ignores that directory; `test-results/` is only a general example above.
 
 ## Repository helpers
 
@@ -213,7 +222,7 @@ See `E2E_TESTS.md` for repository testing conventions.
 ### Test artifacts
 
 Temporary screenshots, recordings, traces, and similar evidence normally belong
-in an ignored output directory. This repository uses `output/playwright/` for test-run artifacts.
+in an ignored output directory such as `test-results/`.
 
 ## Troubleshooting
 

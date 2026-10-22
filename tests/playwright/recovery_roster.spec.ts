@@ -103,7 +103,7 @@ test("six equally able surgeons are accessible, selectable, and persist after re
   await waitForReady(page);
   await openRoster(page);
   const dialog = page.getByRole("dialog", { name: "Choose your surgeon", exact: true });
-  await expect(dialog).toContainText("Same abilities for every surgeon");
+  await expect(dialog).toContainText("Six personalities. Same abilities.");
   await expect(
     dialog.getByRole("group", { name: "Choose your surgeon", exact: true }).getByRole("button"),
   ).toHaveCount(surgeons.length);
