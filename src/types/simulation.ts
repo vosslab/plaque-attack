@@ -4,14 +4,28 @@ import type { DrugKind, LevelConfig, PlaqueSize, PlateletSize, TargetSpawn } fro
 import type { InputState, LogicalPoint, PlayerState } from "./player";
 
 export type Velocity = { x: number; y: number };
+export type TargetMotionSegment = {
+  // Normalized times within one tick, ordered in [0, 1].
+  startTime: number;
+  endTime: number;
+  start: LogicalPoint;
+  end: LogicalPoint;
+};
 type TargetBody = {
   id: TargetId;
   position: LogicalPoint;
   previousPosition: LogicalPoint;
+  // Piecewise swept path, including reflections; empty before the first motion step.
+  motionSegments: TargetMotionSegment[];
   velocity: Velocity;
+  // Vertical fluid orbit is deterministic and continuous from the spawn position.
+  fluidPhase: number;
+  fluidAngularSpeed: number;
   radius: number;
   // Children created on tick N first participate in collision on tick N + 1.
   activeFromTick: number;
+  // Active-play elapsed seconds; inherited by split descendants.
+  mergeCooldownUntil: number;
 };
 export type PlaqueTarget = TargetBody & { kind: "plaque"; size: PlaqueSize };
 export type PlateletTarget = TargetBody & { kind: "platelet"; size: PlateletSize };
@@ -52,6 +66,72 @@ export type WaveState = {
   warning: SpawnWarning | undefined;
 };
 
+export type RuntimeTissueCell = {
+  id: string;
+  position: LogicalPoint;
+  occupied: boolean;
+};
+
+export type FrozenTissueCell = {
+  readonly patchId: string;
+  readonly cellId: string;
+  readonly position: Readonly<LogicalPoint>;
+};
+
+export type TissueErosionRequest = {
+  readonly cell: FrozenTissueCell;
+  readonly cause: "projectile" | "target";
+};
+
+// Occupancy is an immutable snapshot from tick start; repeated erosion requests
+// are deduplicated by cell key and committed once after the tick's interactions.
+export type TissueTick = {
+  readonly cells: readonly FrozenTissueCell[];
+  readonly erosion: Map<string, TissueErosionRequest>;
+};
+
+export type RuntimeTissuePatch = {
+  id: string;
+  pocketId: string | undefined;
+  cells: RuntimeTissueCell[];
+};
+
+export type RuntimePocket = {
+  id: string;
+  status: "sealed" | "pending" | "released";
+  warningRemaining: number;
+  // Next authored content index; advances only when its insertion is committed.
+  nextContentIndex: number;
+};
+
+export type PendingTargetInsertion =
+  | { kind: "pocket"; pocketId: string; contentIndex: number; target: TargetSpawn }
+  | { kind: "split"; sourceId: TargetId; target: Target };
+
+export type TissueContactLatch = {
+  targetId: TargetId;
+  patchId: string;
+  touching: boolean;
+  // Active-play elapsed seconds; erosion needs both re-entry and cooldown.
+  lastErosionAt: number;
+};
+
+export type ArenaState = {
+  tissue: RuntimeTissuePatch[];
+  pockets: RuntimePocket[];
+  pendingInsertions: PendingTargetInsertion[];
+  tissueContacts: TissueContactLatch[];
+};
+
+export type MergeState = {
+  remainingBudget: number;
+  // Previous tick's touching pairs, keyed `${lowerTargetId}:${higherTargetId}`.
+  contacts: Set<string>;
+  // Attempt history uses the same sorted keys; prune entries when either ID is removed.
+  // Per-target mergeCooldownUntil is the authoritative cooldown clock.
+  lastAttemptTicks: Map<string, number>;
+};
+
 export type SimulationState = {
   mode: RunMode;
   phase: SimulationPhase;
@@ -77,6 +157,8 @@ export type SimulationState = {
   completionAwarded: boolean;
   recordCommitted: boolean;
   waves: WaveState;
+  arena: ArenaState;
+  merge: MergeState;
 };
 
 // Pure of browser I/O; the sole owner mutates state and returns this tick's events.

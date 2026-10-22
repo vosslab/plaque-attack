@@ -10,7 +10,9 @@ explain the simplified subject. Visible scenery contains no lettering.
 
 The new scenes use a `960 540` viewBox and preserve the arena aspect ratio. Wall tissue occupies
 the upper edge (at most about 78 units) and lower edge (about 510-540); the central lumen stays
-dark and open. These are decorative image layers, with no new collision geometry. Warm pink
+dark and open. These scene SVGs are decorative image layers. Gameplay tissue and sloping floors are separate
+procedural Canvas geometry owned by the arena model; visible occupied cells match collision, and
+cleared cells expose the background. Warm pink
 wall cells, muted tan foam cells, lavender adherent platelets, and cool silver mesh distinguish
 anatomical materials from bright gold moving targets. Scenes retain restrained center contrast
 so player, projectiles, and warning overlays remain easy to see.
@@ -72,7 +74,9 @@ These machine-local references live under
 The scenery is conventional simplified longitudinal anatomy, with inferred cell arrangements
 and fictional colors. Cell sizes, wall thickness, and arcade scale are artistic choices.
 The floating golden globules are arcade representations of lipid material rather than literal
-LDL particles or a claim that established arterial plaque normally bounces through the lumen.
+LDL particles or a claim that established arterial plaque normally floats through the lumen. Tissue carving
+and plaque size coalescence are explicit arcade abstractions; the artwork does not imply drugs
+destroy real tissue.
 
 - [NHLBI: Atherosclerosis](https://www.nhlbi.nih.gov/health/atherosclerosis): plaque accumulates
   in artery walls and may narrow the passage. This grounds wall-attached deposits.
@@ -87,7 +91,20 @@ LDL particles or a claim that established arterial plaque normally bounces throu
 Scene names describe arcade settings. Their order does not claim that all lesions follow one
 inevitable sequence or that stenting removes the underlying disease.
 
-## Rendered verification
+## Gameplay geometry presentation
+
+The complete asset family currently has 19 editable SVGs: the twelve expansion assets above and
+seven existing surgeon, tool, plaque, platelet and scene assets. Tissue arches and membrane shells
+use rounded cellular silhouettes inside their occupied 12x12 cells. Draw floor scallops inside
+the solid floor silhouette, with an uninterrupted walking surface. Neither decorative anatomy
+nor strokes may fill a carved firing lane.
+
+Show sealed pocket contents with a distinct thin shell; warn visibly before committed release.
+Use text as well as color for optional/releasing status. Cover, shots, hazards and the surgeon
+need separate silhouettes at tiny and narrow-mobile scales. Integrated captures for the new
+mechanics remain acceptance work; the following art evidence predates them.
+
+## Historical asset verification
 
 Chromium decoded all twelve SVG images and rendered the family at 480-pixel scene width,
 960-pixel scene width, 128-pixel sprite width, and actual 32/64-pixel sprite widths. Visual

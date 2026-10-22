@@ -10,6 +10,8 @@ import {
 import type { SimulationEvent } from "./types/events";
 import type { ArenaRenderer, AssetImages } from "./types/runtime";
 import type { SimulationState } from "./types/simulation";
+import { floorY } from "./arena_geometry";
+import { sampleTargetPath } from "./motion";
 
 type Particle = { x: number; y: number; vx: number; vy: number; life: number; color: string };
 type HitEffect = {
@@ -22,6 +24,13 @@ type HitEffect = {
 const PARTICLE_LIMIT = 160;
 const HIT_EFFECT_LIMIT = 32;
 const HIT_EFFECT_DURATION = 0.48;
+type ArenaEffect = {
+  kind: "tissue_eroded" | "pocket_breached" | "pocket_released" | "targets_merged";
+  x: number;
+  y: number;
+  life: number;
+  radius: number;
+};
 
 /** Canvas owns visual effects only. The runtime calls render once per animation frame. */
 export function createRenderer(
@@ -34,6 +43,7 @@ export function createRenderer(
   const ctx = context;
   let particles: Particle[] = [];
   let hitEffects: HitEffect[] = [];
+  let arenaEffects: ArenaEffect[] = [];
   let lastTick = 0;
   let lastLevel = 0;
   let lastPlayerX: number | undefined;
@@ -57,6 +67,25 @@ export function createRenderer(
     for (const event of events) {
       if (event.type === "shot") firingRemaining = 0.16;
       if (event.type === "damage") damageRemaining = 0.3;
+      if (
+        event.type === "tissue_eroded" ||
+        event.type === "pocket_breached" ||
+        event.type === "pocket_released" ||
+        event.type === "targets_merged"
+      ) {
+        if (arenaEffects.length >= HIT_EFFECT_LIMIT) arenaEffects.shift();
+        arenaEffects.push({
+          kind: event.type,
+          ...event.position,
+          life: 0.6,
+          radius:
+            event.type === "targets_merged"
+              ? TARGET_PRESETS[event.size].radius
+              : event.type === "tissue_eroded"
+                ? 7
+                : 20,
+        });
+      }
       if (event.type === "target_hit") {
         if (hitEffects.length >= HIT_EFFECT_LIMIT) hitEffects.shift();
         hitEffects.push({
@@ -82,6 +111,145 @@ export function createRenderer(
           color,
         });
       }
+    }
+  }
+
+  function drawFloor(state: Readonly<SimulationState>): void {
+    const floor = state.level.arena.floor;
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(0, floorY(floor, 0));
+    for (let x = 2; x <= ARENA_WIDTH; x += 2) ctx.lineTo(x, floorY(floor, x));
+    ctx.lineTo(ARENA_WIDTH, ARENA_HEIGHT);
+    ctx.lineTo(0, ARENA_HEIGHT);
+    ctx.closePath();
+    ctx.fillStyle = "#844f68";
+    ctx.fill();
+    // Every scallop and nucleus stays inside the actual solid floor silhouette.
+    ctx.clip();
+    for (let x = -12; x < ARENA_WIDTH + 24; x += 27) {
+      const y = floorY(floor, Math.max(0, x)) + 14 + Math.sin(x * 0.09) * 3;
+      ctx.fillStyle = "#ab7188";
+      ctx.strokeStyle = "#d5a5ad";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(x, y, 18, 13, Math.sin(x) * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#624457";
+      ctx.beginPath();
+      ctx.ellipse(x + 3, y + 2, 5, 3, 0.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawTissue(state: Readonly<SimulationState>): void {
+    for (const patch of state.arena.tissue) {
+      const cells = patch.cells.filter((cell) => cell.occupied);
+      ctx.save();
+      // The union clip is occupancy itself: removed cells reveal the original scene.
+      ctx.beginPath();
+      for (const cell of cells) ctx.rect(cell.position.x, cell.position.y, 12, 12);
+      ctx.fillStyle = patch.pocketId === undefined ? "#b48292" : "#a78aa9";
+      ctx.fill();
+      ctx.clip();
+      for (const cell of cells) {
+        const { x, y } = cell.position;
+        const variation = Math.sin(x * 0.39 + y * 0.71);
+        ctx.fillStyle = variation > 0 ? "#c99aa5" : "#c08e9d";
+        ctx.strokeStyle = "#e0b7bd";
+        ctx.lineWidth = 0.65;
+        ctx.beginPath();
+        ctx.ellipse(x + 6, y + 6, 8.5, 6.7, variation * 0.6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        if (Math.cos(x * 0.27 + y) > -0.35) {
+          ctx.fillStyle = "#805c78";
+          ctx.beginPath();
+          ctx.ellipse(x + 6 + variation, y + 6, 2.5, 1.6, variation, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      // One exposed contour, rather than a rectangular outline around every cell.
+      const occupied = new Set(cells.map((cell) => `${cell.position.x}:${cell.position.y}`));
+      ctx.strokeStyle = patch.pocketId === undefined ? "#ebc2c4" : "#dfc6e7";
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      for (const cell of cells) {
+        const { x, y } = cell.position;
+        if (!occupied.has(`${x}:${y - 12}`)) {
+          ctx.moveTo(x, y + 0.7);
+          ctx.lineTo(x + 12, y + 0.7);
+        }
+        if (!occupied.has(`${x}:${y + 12}`)) {
+          ctx.moveTo(x, y + 11.3);
+          ctx.lineTo(x + 12, y + 11.3);
+        }
+        if (!occupied.has(`${x - 12}:${y}`)) {
+          ctx.moveTo(x + 0.7, y);
+          ctx.lineTo(x + 0.7, y + 12);
+        }
+        if (!occupied.has(`${x + 12}:${y}`)) {
+          ctx.moveTo(x + 11.3, y);
+          ctx.lineTo(x + 11.3, y + 12);
+        }
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function drawPockets(state: Readonly<SimulationState>): void {
+    for (const pocket of state.arena.pockets) {
+      if (pocket.status === "released") continue;
+      const definition = state.level.arena.pockets.find((item) => item.id === pocket.id);
+      if (definition === undefined) continue;
+      ctx.save();
+      if (pocket.status === "sealed") {
+        ctx.globalAlpha = 0.65;
+        for (const content of definition.contents) {
+          const radius = TARGET_PRESETS[content.size].radius;
+          const appearance =
+            content.kind === "platelet" ? "platelet" : state.level.lipidVariants[0];
+          ctx.drawImage(
+            images[appearance],
+            content.position.x - radius,
+            content.position.y - radius,
+            radius * 2,
+            radius * 2,
+          );
+        }
+      }
+      const { x, y } = definition.releasePosition;
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = "#fff0d9";
+      ctx.font = "bold 12px system-ui, sans-serif";
+      ctx.textAlign = "center";
+      if (pocket.status === "pending") {
+        ctx.strokeStyle = "#ffd39a";
+        ctx.lineWidth = 2;
+        const pulse = reducedMotion ? 0 : Math.sin(state.elapsed * 10) * 3;
+        ctx.beginPath();
+        ctx.arc(x, y, 27 + pulse, 0, Math.PI * 2);
+        ctx.moveTo(x, y - 46);
+        ctx.lineTo(x, y - 30);
+        ctx.moveTo(x - 5, y - 36);
+        ctx.lineTo(x, y - 30);
+        ctx.lineTo(x + 5, y - 36);
+        ctx.stroke();
+        const caption =
+          pocket.warningRemaining > 0
+            ? `RELEASING ${pocket.warningRemaining.toFixed(1)} s`
+            : "RELEASING / WAITING FOR SPACE";
+        const halfWidth = ctx.measureText(caption).width / 2;
+        const captionX = Math.max(halfWidth + 8, Math.min(ARENA_WIDTH - halfWidth - 8, x));
+        ctx.fillText(caption, captionX, Math.max(18, y - 56));
+      } else {
+        const first = definition.contents[0];
+        if (first !== undefined) ctx.fillText("OPTIONAL", first.position.x, first.position.y + 32);
+      }
+      ctx.restore();
     }
   }
 
@@ -190,6 +358,7 @@ export function createRenderer(
     if (newLevel) {
       particles = [];
       hitEffects = [];
+      arenaEffects = [];
       lastPlayerX = undefined;
       firingRemaining = 0;
       damageRemaining = 0;
@@ -205,6 +374,12 @@ export function createRenderer(
     ctx.setTransform(canvas.width / ARENA_WIDTH, 0, 0, canvas.height / ARENA_HEIGHT, 0, 0);
     ctx.clearRect(0, 0, ARENA_WIDTH, ARENA_HEIGHT);
     ctx.drawImage(images[state.level.scene], 0, 0, ARENA_WIDTH, ARENA_HEIGHT);
+    // Scene art retains its editable decorative lower wall. Extend the adjacent clean
+    // lumen color beneath it so only the geometry-owned floor describes solid ground.
+    ctx.drawImage(images[state.level.scene], 0, 480, ARENA_WIDTH, 1, 0, 480, ARENA_WIDTH, 60);
+    drawFloor(state);
+    drawPockets(state);
+    drawTissue(state);
     const sceneHasImplant =
       state.level.scene === "scene-stented-lumen" || state.level.scene === "scene-healed-flow";
     if (state.level.act >= 2 && !sceneHasImplant) {
@@ -231,7 +406,7 @@ export function createRenderer(
       ctx.stroke();
       ctx.restore();
     }
-    const alpha = Math.max(0, Math.min(1, interpolation));
+    const alpha = state.phase === "playing" ? Math.max(0, Math.min(1, interpolation)) : 1;
     for (const projectile of state.projectiles) {
       const x =
         projectile.previousPosition.x +
@@ -270,8 +445,9 @@ export function createRenderer(
       }
     }
     for (const target of state.targets) {
-      const x = target.previousPosition.x + (target.position.x - target.previousPosition.x) * alpha;
-      const y = target.previousPosition.y + (target.position.y - target.previousPosition.y) * alpha;
+      const { x, y } =
+        sampleTargetPath(target.motionSegments, state.phase === "playing" ? alpha : 1) ??
+        target.position;
       ctx.save();
       ctx.translate(x, y);
       if (!reducedMotion) ctx.rotate(Math.sin(state.elapsed * 1.2 + target.id) * 0.1);
@@ -327,6 +503,31 @@ export function createRenderer(
       ctx.restore();
     }
     hitEffects = hitEffects.filter((effect): boolean => effect.life > 0);
+    for (const effect of arenaEffects) {
+      effect.life -= dt;
+      const progress = Math.max(0, Math.min(1, 1 - effect.life / 0.6));
+      ctx.save();
+      ctx.globalAlpha = (1 - progress) * 0.85;
+      ctx.strokeStyle =
+        effect.kind === "targets_merged"
+          ? "#ffe4a3"
+          : effect.kind === "tissue_eroded"
+            ? "#f1c8d0"
+            : "#dec6ff";
+      ctx.lineWidth = 2;
+      const radius = effect.radius;
+      ctx.beginPath();
+      ctx.arc(effect.x, effect.y, radius + (reducedMotion ? 0 : progress * 18), 0, Math.PI * 2);
+      ctx.stroke();
+      if (effect.kind === "targets_merged") {
+        ctx.font = "bold 13px system-ui, sans-serif";
+        ctx.fillStyle = "#ffe4a3";
+        ctx.textAlign = "center";
+        ctx.fillText("MERGED", effect.x, effect.y - radius - 9);
+      }
+      ctx.restore();
+    }
+    arenaEffects = arenaEffects.filter((effect) => effect.life > 0);
     const warning = state.waves.warning;
     if (warning !== undefined) {
       const { x, y } = warning.target.position;
@@ -407,6 +608,7 @@ export function createRenderer(
       destroyed = true;
       particles = [];
       hitEffects = [];
+      arenaEffects = [];
       observer.disconnect();
     },
   };

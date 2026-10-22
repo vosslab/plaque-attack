@@ -4,8 +4,10 @@ This guide covers the repository-side build and the GitHub Pages configuration. 
 
 ## Current status
 
-The complete 15-level campaign builds successfully into `dist/`. Local verification and acceptance
-reviews pass. The local build is Pages-ready, and the local preview serves the game successfully.
+The 24-level expansion is integrated in source and under local verification. The accepted
+15-level baseline has passing build and acceptance evidence; that evidence does not establish
+acceptance of the expansion. Fresh repository, build, browser, and full-campaign replay gates are
+tracked in [the expansion ledger](active_plans/active/organic_expansion.md).
 
 The repository's SSH remote is `git@github.com:vosslab/plaque-attack.git`. No deployed site URL has been confirmed.
 

@@ -56,7 +56,18 @@ export function showBriefing(level: LevelConfig, practice: boolean): void {
   element("briefing_act").textContent =
     `Chapter ${level.chapter} / ${CHAPTER_NAMES[level.chapter]}${practice ? " / Practice" : ""}`;
   element("briefing_title").textContent = `Stage ${campaignPosition(level.id)}: ${level.name}`;
-  element("briefing_objective").textContent = level.briefing;
+  const mechanics: string[] = [];
+  if (level.arena.tissue.length > 0)
+    mechanics.push("Tissue blocks every shot. Repeated shots carve openings and remove shelter.");
+  if (level.arena.floor.controlPoints.some((point) => point.y < 540))
+    mechanics.push("Move left and right to follow the wavy floor automatically.");
+  if (level.merge.budget > 0)
+    mechanics.push("Matching small lipid fragments can merge into a larger target.");
+  if (level.arena.pockets.length > 0)
+    mechanics.push(
+      "Sealed pockets are optional. Breach one to release extra hazards after a short warning.",
+    );
+  element("briefing_objective").textContent = [level.briefing, ...mechanics].join(" ");
   const position = campaignPosition(level.id);
   element("briefing_feel").textContent =
     position <= 3
@@ -108,14 +119,25 @@ export function updateHud(state: Readonly<SimulationState>): void {
       : level.act === 1
         ? `Plaque fragments: ${state.targets.length}`
         : `Hazards remaining: ${state.targets.length + objective.reinforcements.length - state.waves.spawned}`;
+  const sealed = state.arena.pockets.filter((pocket) => pocket.status === "sealed").length;
+  const pending = state.arena.pockets.filter((pocket) => pocket.status === "pending").length;
+  const deferred = state.arena.pendingInsertions.filter((entry) => entry.kind === "split").length;
+  if (sealed > 0) element("hud_objective").textContent += ` / Optional pockets: ${sealed}`;
+  if (pending > 0) element("hud_objective").textContent += ` / Releasing pockets: ${pending}`;
+  if (deferred > 0) element("hud_objective").textContent += ` / Pending hazards: ${deferred}`;
   const expired = objective.kind === "maintenance" && state.elapsed >= objective.duration;
   const countdown =
     state.overloadElapsed > 0
       ? `Reduce hazards: ${Math.max(0, OVERLOAD_DURATION - state.overloadElapsed).toFixed(1)} s`
       : "";
-  element("hud_warning").textContent = expired
-    ? `Time complete - reduce hazards to finish${countdown ? ` / ${countdown}` : ""}`
-    : countdown || (state.waves.warning !== undefined ? "Incoming hazard" : "");
+  const warnings = [
+    expired ? "Time complete - return to safe maximum and finish pending releases" : "",
+    countdown,
+    state.waves.warning !== undefined ? "Incoming hazard" : "",
+    pending > 0 ? "Opened pockets must finish releasing" : "",
+    deferred > 0 ? "Clear hazards to make room for pending fragments" : "",
+  ].filter(Boolean);
+  element("hud_warning").textContent = warnings.join(" / ");
 }
 
 export function showResult(state: Readonly<SimulationState>, recordRank?: number): void {

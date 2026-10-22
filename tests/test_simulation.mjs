@@ -3,6 +3,7 @@ import test from "node:test";
 import { logicalCoordinate, projectileId, targetId } from "../src/brands.ts";
 import { createTarget } from "../src/characters.ts";
 import {
+  ARENA_HEIGHT,
   FIXED_STEP,
   getLevel,
   nextLevelId,
@@ -63,6 +64,8 @@ test("a large plaque family needs fifteen separate hits and eight final removals
     state.targets.forEach((entity, index) => {
       entity.position = { x: logicalCoordinate(100 + index * 100), y: logicalCoordinate(200) };
       entity.velocity = { x: 0, y: 0 };
+      entity.fluidAngularSpeed = 0;
+      entity.fluidPhase = Math.acos((ARENA_HEIGHT / 2 - 200) / (ARENA_HEIGHT / 2 - entity.radius));
     });
     state.projectiles = [shot(state, "stent")];
     const before = state.targets.length;
@@ -82,6 +85,35 @@ test("a large plaque family needs fifteen separate hits and eight final removals
   assert.equal(allHits.filter((event) => !event.split).length, 8);
   assert.equal(new Set(allHits.map((event) => event.targetId)).size, 15);
   assert.equal(state.phase, "level_complete");
+});
+
+test("split children begin at the swept contact and continue smoothly on their first active tick", () => {
+  const state = playing();
+  const parent = target(state, "plaque", "large", 100, 200);
+  parent.velocity.x = 2000;
+  state.targets = [parent];
+  const stent = shot(state, "stent", 250, 400);
+  stent.position.y = logicalCoordinate(100);
+  state.projectiles = [stent];
+  const events = stepSimulation(state, idle, 0.1);
+  const hit = hits(events)[0];
+  assert.ok(hit?.split);
+  assert.ok(hit.position.x > 100 && hit.position.x < 300, "contact precedes the tick endpoint");
+  assert.equal(state.targets.length, 2);
+  for (const child of state.targets) {
+    assert.deepEqual(child.position, hit.position);
+    assert.deepEqual(child.previousPosition, hit.position);
+    assert.equal(child.activeFromTick, state.tick + 1);
+  }
+  const positions = state.targets.map((child) => ({ ...child.position }));
+  stepSimulation(state, idle, FIXED_STEP);
+  state.targets.forEach((child, index) => {
+    assert.deepEqual(child.previousPosition, positions[index]);
+    assert.ok(
+      Math.abs(child.position.y - positions[index].y) < 5,
+      "newborn orbit has no vertical teleport",
+    );
+  });
 });
 
 test("incompatible shots leave targets and score intact; intersecting shots award a target once", () => {

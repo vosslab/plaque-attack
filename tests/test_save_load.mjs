@@ -13,6 +13,7 @@ function storageFixture(context, storage) {
 
 function record(score, levelReached, day) {
   return {
+    campaign: "expanded",
     score,
     levelReached,
     outcome: "ended",
@@ -35,6 +36,13 @@ test("storage rejects corrupt and unsupported saves without overwriting their or
   });
   for (const [raw, status] of [
     ["{broken", "malformed"],
+    [
+      JSON.stringify({
+        ...defaultSave(),
+        records: [{ ...record(100, 1, 1), campaign: undefined }],
+      }),
+      "malformed",
+    ],
     [JSON.stringify({ version: 999 }), "unsupported"],
   ]) {
     stored = raw;
@@ -45,6 +53,47 @@ test("storage rejects corrupt and unsupported saves without overwriting their or
     assert.equal(stored, raw);
     assert.equal(writes, 0);
   }
+});
+
+test("version one migration preserves classic results, settings and stable unlock IDs", (context) => {
+  const legacyRecord = {
+    score: 12000,
+    levelReached: 15,
+    outcome: "completed",
+    date: "2026-01-01T00:00:00.000Z",
+  };
+  const legacy = {
+    version: 1,
+    settings: { music: true, effects: false, completedTutorials: ["move", "split"] },
+    unlockedLevel: 8,
+    records: [legacyRecord],
+  };
+  let stored = JSON.stringify(legacy);
+  storageFixture(context, {
+    getItem() {
+      return stored;
+    },
+    setItem(_key, value) {
+      stored = value;
+    },
+  });
+  const loaded = loadSave();
+  assert.deepEqual(loaded, {
+    status: "available",
+    save: { ...legacy, version: 2, records: [{ ...legacyRecord, campaign: "classic" }] },
+  });
+  assert.equal(stored, JSON.stringify(legacy), "loading alone does not rewrite storage");
+  assert.equal(saveSave(loaded.save, loaded.status), "available");
+  assert.deepEqual(loadSave(), loaded);
+});
+
+test("record progress uses campaign positions rather than numeric content IDs", () => {
+  const before = record(500, 24, 1);
+  const finale = record(500, 15, 2);
+  const classic = { ...record(500, 15, 3), campaign: "classic", outcome: "completed" };
+  let save = defaultSave();
+  for (const entry of [before, classic, finale]) save = addRecord(save, entry);
+  assert.deepEqual(save.records, [finale, before, classic]);
 });
 
 test("unavailable browser storage falls back to playable defaults and reports write failure", (context) => {

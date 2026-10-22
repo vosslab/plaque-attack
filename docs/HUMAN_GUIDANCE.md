@@ -17,6 +17,8 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 - Use the TypeScript engineer, SVG creator expert, CSS creative expert, and
   HTML game parallel builder skills for this work.
 - After the game work, refresh the README and prepare the GitHub setup.
+- The GitHub Pages game is live at https://vosslab.github.io/plaque-attack/. Link it in the README
+  and write for gamers and biology enthusiasts.
 - The root `test-results` directory is not ignored; account for that in the project setup.
 - Use the UI/UX engineer review skill for runtime flows and the final interface audit.
 - Expand Plaque Trouble with more levels and an ordered challenge curve; keep the game fun, since
@@ -24,3 +26,13 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 - The first three levels are pretty easy; low, fast, small balls are hard. Put fun first.
 - Give the expansion more organic medical-inspired scenes and a broader variety of lipid art, with
   editable SVGs. Use Barnsy Ink as artistic inspiration.
+- Imagine the inside of the body as a fluid, gravityless space for lipids and bubbles; gravity matters
+  less than bouncing-ball motion. Keep the first three levels easy and prioritize fun.
+- Add Space Invaders-style tissue shelters that erode when hazards hit them. The surgeon cannot
+  shoot through tissue: a shot removes a visible piece, so carving a lane trades cover for firing.
+- Make the cellular floor wavy or sloped, with the surgeon moving up and down automatically while
+  moving left and right. Do not add jumping or a jump control.
+- Let colliding lipid balls sometimes merge: tiny into small, small into medium, medium into large.
+  Keep merging off in the first three stages and keep those stages easy.
+- Finish every milestone through the manager and subagents. Remove visible and hidden human
+  approval or playtesting dependencies; optional feedback must not hold up completion.

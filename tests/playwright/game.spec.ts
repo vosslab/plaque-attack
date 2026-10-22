@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 
-// Selector contract: src/index.html owns named regions, buttons, arena and HUD IDs;
-// src/ui.ts:updateHud/showResult owns visible gameplay and result text;
-// src/main.ts owns navigation, pause focus, tutorials and asset retry;
-// src/save_load.ts owns the version-one device-save schema used as prior progress.
+// Selector contract: src/index.html:18 owns named regions, buttons, arena and HUD IDs;
+// src/ui.ts:55/91/121 owns briefing, HUD and result text;
+// src/main.ts:139/411 and src/dialogs.ts:167 own pause, art retry and score display;
+// src/save_load.ts:83 owns v1 migration and v2 campaign-tagged device saves.
 // Failures require repairing the corresponding user journey before release.
 const save_key = "plaque_trouble_save";
 
@@ -13,11 +13,14 @@ async function controlledPage(page: Page): Promise<void> {
   await page.clock.install({ time: start });
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Play campaign", exact: true })).toBeVisible();
-  await page.clock.pauseAt(new Date(start.getTime() + 1000));
+  // Art loads independently of the menu; finish startup before freezing game time.
+  await expect(page.locator("#start_level")).toBeEnabled();
+  const ready = await page.evaluate(() => Date.now());
+  await page.clock.pauseAt(new Date(ready + 100));
 }
 
 async function startLevel(page: Page): Promise<void> {
-  const start = page.getByRole("button", { name: "Start level", exact: true });
+  const start = page.getByRole("button", { name: "Start stage", exact: true });
   await expect(start).toBeEnabled();
   await start.click();
   await page.clock.runFor(100);
@@ -25,13 +28,16 @@ async function startLevel(page: Page): Promise<void> {
   await expect(page.locator("#arena")).toBeFocused();
 }
 
-async function idleUntilRunEnds(page: Page): Promise<void> {
+async function untilRunEnds(page: Page, move = false): Promise<void> {
   const result = page
     .getByRole("region")
     .filter({ has: page.getByRole("heading", { name: "Run ended", exact: true }) });
-  // Run every animation frame, stopping when the result proves the run ended.
-  for (let elapsed = 0; elapsed < 120_000 && !(await result.isVisible()); elapsed += 5000) {
-    await page.clock.runFor(5000);
+  // Actual movement meets drifting hazards; practice overload also ends an idle run.
+  for (let elapsed = 0; elapsed < 240_000 && !(await result.isVisible()); elapsed += 3000) {
+    const direction = elapsed % 6000 === 0 ? "ArrowLeft" : "ArrowRight";
+    if (move) await page.keyboard.down(direction);
+    await page.clock.runFor(3000);
+    if (move) await page.keyboard.up(direction);
   }
   await expect(result).toBeVisible();
 }
@@ -46,10 +52,10 @@ test("smoke: campaign opens the first briefing and returns to the menu", async (
   await expect(menu).toBeVisible();
   await play.click();
 
-  const briefing = page.getByRole("region", { name: /^Level 1:/ });
+  const briefing = page.getByRole("region", { name: /^Stage 1:/ });
   await expect(briefing).toBeVisible();
   await expect(menu).toBeHidden();
-  await expect(briefing.getByRole("heading", { name: /^Level 1:/ })).toBeVisible();
+  await expect(briefing.getByRole("heading", { name: /^Stage 1:/ })).toBeVisible();
   await briefing.getByRole("button", { name: "Back to menu", exact: true }).click();
 
   await expect(menu).toBeVisible();
@@ -58,12 +64,35 @@ test("smoke: campaign opens the first briefing and returns to the menu", async (
   expect(page_errors, "Uncaught application errors during campaign navigation").toEqual([]);
 });
 
-test("held fire splits plaque, and P and Escape freeze and resume the game", async ({ page }) => {
+test("movement and held fire split plaque, and P and Escape freeze and resume the game", async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
   await controlledPage(page);
   await page.getByRole("button", { name: "Play campaign", exact: true }).click();
   await startLevel(page);
+  await page.clock.runFor(3200);
+  await page.keyboard.down("ArrowRight");
+  await page.clock.runFor(100);
+  await page.keyboard.up("ArrowRight");
+  await page.keyboard.down("ArrowLeft");
+  await page.clock.runFor(100);
+  await page.keyboard.up("ArrowLeft");
   await page.keyboard.down("Space");
-  await page.clock.runFor(12_000);
+  // Observe an actual split rather than assuming a particular fragment travel time.
+  for (let elapsed = 0; elapsed < 30_000; elapsed += 250) {
+    await page.clock.runFor(250);
+    const complete = await page.evaluate((key) => {
+      const raw = localStorage.getItem(key);
+      return (
+        raw !== null &&
+        (
+          JSON.parse(raw) as { settings: { completedTutorials: string[] } }
+        ).settings.completedTutorials.includes("split")
+      );
+    }, save_key);
+    if (complete) break;
+  }
   await page.keyboard.up("Space");
   await expect(page.getByRole("region", { name: "Arcade arena" })).toBeVisible();
   expect(Number(await page.locator("#hud_score").textContent())).toBeGreaterThan(0);
@@ -74,6 +103,7 @@ test("held fire splits plaque, and P and Escape freeze and resume the game", asy
       : (JSON.parse(raw) as { settings: { completedTutorials: string[] } }).settings
           .completedTutorials;
   }, save_key);
+  expect(tutorials).toContain("move");
   expect(tutorials).toContain("fire");
   expect(tutorials).toContain("split");
 
@@ -81,7 +111,7 @@ test("held fire splits plaque, and P and Escape freeze and resume the game", asy
     await page.keyboard.press(key);
     const pause = page.getByRole("dialog", { name: "Take a breather" });
     await expect(pause).toBeVisible();
-    await expect(pause.getByRole("button", { name: "Resume game" })).toBeFocused();
+    await expect(pause.getByRole("heading", { name: "Take a breather" })).toBeFocused();
     const frozen = await page.locator(".game_hud").innerText();
     await page.clock.runFor(5000);
     expect(await page.locator(".game_hud").innerText()).toBe(frozen);
@@ -92,16 +122,27 @@ test("held fire splits plaque, and P and Escape freeze and resume the game", asy
     await page.clock.runFor(1100);
     await expect(page.locator("#hud_time")).not.toHaveText(before ?? "");
   }
+  await page.keyboard.down("Space");
+  const cleared = page.getByRole("heading", { name: "Plaque cleared!", exact: true });
+  for (let elapsed = 0; elapsed < 120_000 && !(await cleared.isVisible()); elapsed += 1000) {
+    await page.clock.runFor(1000);
+  }
+  await page.keyboard.up("Space");
+  await expect(cleared).toBeVisible();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Stage 2: Little trouble", exact: true }),
+  ).toBeVisible();
+  await startLevel(page);
+  await expect(page.locator("#hud_level")).toHaveText("Stage 2: Little trouble");
 });
 
-test("an idle campaign ends once, records its score, and offers a fresh retry", async ({
-  page,
-}) => {
-  test.setTimeout(60_000);
+test("a campaign ends once, records its score, and offers a fresh retry", async ({ page }) => {
+  test.setTimeout(120_000);
   await controlledPage(page);
   await page.getByRole("button", { name: "Play campaign", exact: true }).click();
   await startLevel(page);
-  await idleUntilRunEnds(page);
+  await untilRunEnds(page, true);
   const result = page
     .getByRole("region")
     .filter({ has: page.getByRole("heading", { name: "Run ended", exact: true }) });
@@ -112,32 +153,38 @@ test("an idle campaign ends once, records its score, and offers a fresh retry", 
   const saved = await page.evaluate((key) => localStorage.getItem(key), save_key);
   expect(saved).not.toBeNull();
   const data = JSON.parse(saved ?? "null") as {
-    records: { levelReached: number; outcome: string }[];
+    version: number;
+    records: { campaign: string; levelReached: number; outcome: string }[];
   };
+  expect(data.version).toBe(2);
   expect(data.records).toHaveLength(1);
-  expect(data.records[0]).toMatchObject({ levelReached: 1, outcome: "ended" });
+  expect(data.records[0]).toMatchObject({
+    campaign: "expanded",
+    levelReached: 1,
+    outcome: "ended",
+  });
   await page.clock.runFor(10_000);
   expect(await page.evaluate((key) => localStorage.getItem(key), save_key)).toBe(saved);
-  await result.getByRole("button", { name: "Main menu", exact: true }).click();
-  await page.getByRole("button", { name: "High scores", exact: true }).click();
-  const scores = page.getByRole("dialog", { name: "High scores", exact: true });
-  await expect(scores.getByRole("listitem")).toHaveCount(1);
-  await expect(scores).toContainText("Level 1 / Run ended");
-  await scores.getByRole("button", { name: "Close", exact: true }).click();
-  await page.getByRole("button", { name: "Play campaign", exact: true }).click();
-  await startLevel(page);
-  await idleUntilRunEnds(page);
   await result.getByRole("button", { name: "Retry campaign", exact: true }).click();
-  await expect(page.getByRole("heading", { name: /^Level 1:/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^Stage 1:/ })).toBeVisible();
   await startLevel(page);
   await expect(page.locator("#hud_lives")).toContainText("3 / 3");
   await expect(page.locator("#hud_score")).toHaveText("000000");
+  await page.keyboard.press("p");
+  await page.getByRole("button", { name: "Main menu", exact: true }).click();
+  await page.clock.runFor(1);
+  await page.getByRole("button", { name: "Leave campaign", exact: true }).click();
+  await page.getByRole("button", { name: "High scores", exact: true }).click();
+  const scores = page.getByRole("dialog", { name: "High scores", exact: true });
+  await expect(scores.getByRole("listitem")).toHaveCount(1);
+  await expect(scores).toContainText("Expanded 24 / Stage 1 / Run ended");
+  expect(await page.evaluate((key) => localStorage.getItem(key), save_key)).toBe(saved);
 });
 
 test("prior progress unlocks the drug and maintenance practice modes without ranking", async ({
   page,
 }) => {
-  test.setTimeout(60_000);
+  test.setTimeout(120_000);
   const prior = JSON.stringify({
     version: 1,
     settings: { music: false, effects: false, completedTutorials: ["move", "fire", "split"] },
@@ -151,29 +198,36 @@ test("prior progress unlocks the drug and maintenance practice modes without ran
     value: prior,
   });
   await controlledPage(page);
-  for (const [id, tool] of [
-    [6, "Aspirin"],
-    [8, "Clopidogrel"],
-    [15, "Dual antiplatelet mode"],
+  await page.getByRole("button", { name: "High scores", exact: true }).click();
+  const scores = page.getByRole("dialog", { name: "High scores", exact: true });
+  await expect(scores).toContainText("Classic 15 / Stage 15 / Completed");
+  await expect(scores).not.toContainText("Stage 24");
+  await scores.getByRole("button", { name: "Close", exact: true }).click();
+  for (const [ordinal, tool] of [
+    [7, "Aspirin"],
+    [13, "Clopidogrel"],
+    [24, "Dual antiplatelet mode"],
   ] as const) {
     await page.getByRole("button", { name: "Practice", exact: true }).click();
-    await page.getByRole("button", { name: new RegExp(`^Level ${id}:`) }).click();
+    await page.getByRole("button", { name: new RegExp(`^Stage ${ordinal}:`) }).click();
     await expect(page.locator("#briefing_weapon")).toHaveText(tool);
     await startLevel(page);
-    await expect(page.locator("#hud_level")).toContainText(`Level ${id}:`);
+    await expect(page.locator("#hud_level")).toContainText(`Stage ${ordinal}:`);
     await expect(page.locator("#hud_level")).toContainText("Practice");
     await expect(page.locator("#hud_weapon")).toHaveText(tool);
     await page.clock.runFor(4000);
-    await expect(page.locator("#hud_time_label")).toHaveText(id === 15 ? "Remaining" : "Elapsed");
+    await expect(page.locator("#hud_time_label")).toHaveText(
+      ordinal === 24 ? "Remaining" : "Elapsed",
+    );
     await expect(page.locator("#hud_objective")).toContainText(
-      id === 15 ? "Active platelet hazards:" : "Hazards remaining:",
+      ordinal === 24 ? "Active platelet hazards:" : "Hazards remaining:",
     );
     await page.keyboard.press("p");
     await page.getByRole("button", { name: "Restart practice", exact: true }).click();
     await page.clock.runFor(100);
-    await expect(page.locator("#hud_level")).toContainText(`Level ${id}:`);
+    await expect(page.locator("#hud_level")).toContainText(`Stage ${ordinal}:`);
     await expect(page.locator("#hud_score")).toHaveText("000000");
-    await idleUntilRunEnds(page);
+    await untilRunEnds(page);
     const result = page
       .getByRole("region")
       .filter({ has: page.getByRole("heading", { name: "Run ended", exact: true }) });
@@ -181,10 +235,30 @@ test("prior progress unlocks the drug and maintenance practice modes without ran
     await expect(result).toContainText("Practice / Unranked");
     await expect(result).not.toContainText("High-score rank");
     await result.getByRole("button", { name: "Retry practice", exact: true }).click();
-    await expect(page.getByRole("heading", { name: new RegExp(`^Level ${id}:`) })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: new RegExp(`^Stage ${ordinal}:`) }),
+    ).toBeVisible();
     await page.getByRole("button", { name: "Back to menu", exact: true }).click();
   }
   expect(await page.evaluate((key) => localStorage.getItem(key), save_key)).toBe(prior);
+  await page.getByRole("button", { name: "Settings", exact: true }).click();
+  const settings = page.getByRole("dialog", { name: "Settings", exact: true });
+  await settings.getByLabel("Music", { exact: true }).check();
+  await settings.getByRole("button", { name: "Done", exact: true }).click();
+  const migratedRaw = await page.evaluate((key) => localStorage.getItem(key), save_key);
+  const migrated = JSON.parse(migratedRaw ?? "null") as {
+    version: number;
+    unlockedLevel: number;
+    records: { campaign: string; levelReached: number; outcome: string }[];
+  };
+  expect(migrated.version).toBe(2);
+  expect(migrated.unlockedLevel).toBe(15);
+  expect(migrated.records).toHaveLength(1);
+  expect(migrated.records[0]).toMatchObject({
+    campaign: "classic",
+    levelReached: 15,
+    outcome: "completed",
+  });
 });
 
 test("malformed saved bytes survive settings changes with a visible recovery explanation", async ({
@@ -209,22 +283,22 @@ test("malformed saved bytes survive settings changes with a visible recovery exp
   await settings.getByRole("button", { name: "Done", exact: true }).click();
   expect(await page.evaluate((key) => localStorage.getItem(key), save_key)).toBe(malformed);
   await page.getByRole("button", { name: "Practice", exact: true }).click();
-  await expect(page.getByRole("button", { name: /^Level 1:/ })).toBeEnabled();
-  await expect(page.getByRole("button", { name: /^Level 2:/ })).toBeDisabled();
+  await expect(page.getByRole("button", { name: /^Stage 1:/ })).toBeEnabled();
+  await expect(page.getByRole("button", { name: /^Stage 2:/ })).toBeDisabled();
 });
 
 test("failed required art blocks play and can be retried without reloading", async ({ page }) => {
   await page.route("**/assets/clopidogrel.svg", (route) => route.abort());
   await page.goto("/");
   await page.getByRole("button", { name: "Play campaign", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Start level", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Start stage", exact: true })).toBeDisabled();
   await expect(
     page.getByText("Could not load clopidogrel art. Check your connection and retry."),
   ).toBeVisible();
   await page.unroute("**/assets/clopidogrel.svg");
   await page.getByRole("button", { name: "Retry loading art", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Start level", exact: true })).toBeEnabled();
-  await page.getByRole("button", { name: "Start level", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Start stage", exact: true })).toBeEnabled();
+  await page.getByRole("button", { name: "Start stage", exact: true }).click();
   await expect(page.getByRole("region", { name: "Arcade arena" })).toBeVisible();
   await expect(page.locator("#arena")).toBeFocused();
 });

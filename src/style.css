@@ -237,6 +237,12 @@ h2 { margin: 0 0 24px; max-width: 750px; font-size: clamp(2rem, 4.5vw, 3.7rem); 
 .practice_levels button:disabled { opacity: 1; color: #b7a9c1; border-color: #594763; background: #211c30; cursor: not-allowed; }
 .briefing_art .briefing_scene { width: 100%; max-width: 350px; border: 1px solid #665476; border-radius: 14px; filter: none; }
 @media (max-width: 620px) {
-  .briefing_art .briefing_scene { width: 100%; max-width: none; height: 82px; object-fit: cover; }
+  .briefing_art .briefing_scene { width: 100%; max-width: none; height: 82px; object-fit: contain; }
   .briefing_art { grid-template-columns: 1fr 90px; gap: 14px; }
 }
+.medicine_cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-block: 22px; }
+.medicine_cards article { min-width: 0; border: 1px solid #665476; border-radius: 12px; padding: 12px; background: #15152b; }
+.medicine_cards img { display: block; width: 100%; height: 90px; object-fit: contain; border-radius: 8px; }
+.game_dialog .medicine_cards h3 { font-size: 1rem; margin: 12px 0 6px; }
+.game_dialog .medicine_cards p { font-size: .85rem; line-height: 1.5; margin: 0; }
+@media (max-width: 360px) { .medicine_cards { grid-template-columns: 1fr; } }

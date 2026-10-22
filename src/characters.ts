@@ -1,15 +1,10 @@
 import { logicalCoordinate } from "./brands";
+import { FLAT_FLOOR, targetVerticalBounds } from "./arena_geometry";
+import { targetVerticalVelocity } from "./motion";
 import type { TargetId } from "./brands";
-import { ARENA_HEIGHT, ARENA_WIDTH, GRAVITY, TARGET_PRESETS } from "./constants";
-import type { PlaqueSize, TargetSpawn } from "./types/level";
+import { ARENA_WIDTH, FLUID_ANGULAR_SPEED, TARGET_PRESETS } from "./constants";
+import type { FloorProfile, PlaqueSize, TargetSpawn } from "./types/level";
 import type { Target } from "./types/simulation";
-
-export function bounceVelocity(size: PlaqueSize, bounceMultiplier: number = 1): number {
-  const preset = TARGET_PRESETS[size];
-  // A floor bounce cannot rise farther than the space between floor and ceiling contacts.
-  const rise = Math.min(preset.bounceRise * bounceMultiplier, ARENA_HEIGHT - 2 * preset.radius);
-  return -Math.sqrt(2 * GRAVITY * rise);
-}
 
 // Copy coordinates so mutating an entity cannot mutate the canonical level configuration.
 export function createTarget(
@@ -17,30 +12,41 @@ export function createTarget(
   id: TargetId,
   speedMultiplier: number,
   activeFromTick: number = 0,
-  bounceMultiplier: number = 1,
+  floor: FloorProfile = FLAT_FLOOR,
 ): Target {
   const preset = TARGET_PRESETS[spawn.size];
+  const x = Math.max(preset.radius, Math.min(ARENA_WIDTH - preset.radius, spawn.position.x));
+  const [top, bottom] = targetVerticalBounds(floor, x, preset.radius);
   const position = {
-    x: logicalCoordinate(
-      Math.max(preset.radius, Math.min(ARENA_WIDTH - preset.radius, spawn.position.x)),
-    ),
-    y: logicalCoordinate(
-      Math.max(preset.radius, Math.min(ARENA_HEIGHT - preset.radius, spawn.position.y)),
-    ),
+    x: logicalCoordinate(x),
+    y: logicalCoordinate(Math.max(top, Math.min(bottom, spawn.position.y))),
   };
+  const amplitude = (bottom - top) / 2;
+  const phase =
+    Math.acos(Math.max(-1, Math.min(1, ((top + bottom) / 2 - position.y) / amplitude))) *
+    (id % 2 === 0 ? -1 : 1);
+  const angularSpeed = FLUID_ANGULAR_SPEED * speedMultiplier;
   const body = {
     id,
     position,
     previousPosition: { ...position },
+    motionSegments: [],
     radius: preset.radius,
     activeFromTick,
+    mergeCooldownUntil: 0,
+    fluidPhase: phase,
+    fluidAngularSpeed: angularSpeed,
     velocity: {
       x: spawn.direction * preset.horizontalSpeed * speedMultiplier,
-      y: bounceVelocity(spawn.size, bounceMultiplier),
+      y: 0,
     },
   };
-  if (spawn.kind === "plaque") return { ...body, kind: "plaque", size: spawn.size };
-  return { ...body, kind: "platelet", size: spawn.size };
+  const target: Target =
+    spawn.kind === "plaque"
+      ? { ...body, kind: "plaque", size: spawn.size }
+      : { ...body, kind: "platelet", size: spawn.size };
+  target.velocity.y = targetVerticalVelocity(target, floor);
+  return target;
 }
 
 export function nextPlaqueSize(size: PlaqueSize): PlaqueSize | undefined {

@@ -1,6 +1,9 @@
+import { ARENA_LAYOUTS, MERGE_RULES } from "./arena_layouts";
 import { logicalCoordinate } from "./brands";
 import type {
+  ArenaLayout,
   LevelConfig,
+  MergeRule,
   LevelId,
   PlaqueSize,
   ProjectileKind,
@@ -12,7 +15,10 @@ import type {
 
 export const ARENA_WIDTH = 960;
 export const ARENA_HEIGHT = 540;
-export const GRAVITY = 900;
+// Radians per second at normal campaign speed; shared by every lipid size.
+export const FLUID_ANGULAR_SPEED = 0.6;
+// Keep circulating bodies suspended off the walls while retaining player contact.
+export const FLUID_WALL_INSET = 24;
 export const FIXED_STEP = 1 / 60;
 export const MAX_FRAME_TIME = 0.1;
 export const PLAYER_SPEED = 300;
@@ -34,10 +40,10 @@ export const NO_DAMAGE_POINTS = 500;
 export const SURVIVAL_POINTS_PER_SECOND = 10;
 
 export const TARGET_PRESETS = {
-  large: { radius: 58, horizontalSpeed: 105, bounceRise: 310, points: 100 },
-  medium: { radius: 40, horizontalSpeed: 135, bounceRise: 230, points: 150 },
-  small: { radius: 26, horizontalSpeed: 170, bounceRise: 150, points: 200 },
-  tiny: { radius: 16, horizontalSpeed: 210, bounceRise: 90, points: 250 },
+  large: { radius: 58, horizontalSpeed: 72, points: 100 },
+  medium: { radius: 40, horizontalSpeed: 84, points: 150 },
+  small: { radius: 26, horizontalSpeed: 94, points: 200 },
+  tiny: { radius: 16, horizontalSpeed: 104, points: 250 },
 } as const satisfies Record<PlaqueSize, TargetPreset>;
 
 export const WEAPON_CONFIGS = {
@@ -124,6 +130,20 @@ function reinforcements(
   });
 }
 
+// Explicit flat defaults for isolated configurations and baseline comparisons.
+export const DEFAULT_ARENA: ArenaLayout = {
+  floor: {
+    controlPoints: [
+      { x: logicalCoordinate(0), y: logicalCoordinate(ARENA_HEIGHT) },
+      { x: logicalCoordinate(ARENA_WIDTH), y: logicalCoordinate(ARENA_HEIGHT) },
+    ],
+  },
+  tissue: [],
+  pockets: [],
+};
+
+export const DISABLED_MERGE_RULE: MergeRule = { probability: 0, cooldown: 0, budget: 0 };
+
 export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
   1: {
     id: 1,
@@ -141,7 +161,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "First blockage",
     weapon: "stent",
     speedMultiplier: 0.55,
-    bounceMultiplier: 1.5,
+    arena: ARENA_LAYOUTS[1],
+    merge: MERGE_RULES[1],
     briefing:
       "Move, fire upward, and split every plaque fragment. Arcade model: real stents hold arteries open.",
     initialTargets: [plaque("medium", 480, 1)],
@@ -164,9 +185,10 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Little trouble",
     weapon: "stent",
     speedMultiplier: 0.6,
-    bounceMultiplier: 1.45,
-    briefing: "Clear one large plaque family. Its fragments have slower, higher arcs.",
-    initialTargets: [plaque("large", 350, 1)],
+    arena: ARENA_LAYOUTS[16],
+    merge: MERGE_RULES[16],
+    briefing: "Clear one medium family and a small fragment drifting on crossing currents.",
+    initialTargets: [plaque("medium", 350, 1), plaque("small", 650, -1)],
     objective: { kind: "clear", reinforcements: [] },
     fact: undefined,
   },
@@ -186,9 +208,10 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Crossing currents",
     weapon: "stent",
     speedMultiplier: 0.65,
-    bounceMultiplier: 1.4,
-    briefing: "Track one large family and one small fragment on opposing arcs.",
-    initialTargets: [plaque("large", 270, 1), plaque("small", 690, -1)],
+    arena: ARENA_LAYOUTS[2],
+    merge: MERGE_RULES[2],
+    briefing: "Track one large family as its fragments drift through the bloodstream.",
+    initialTargets: [plaque("large", 480, 1)],
     objective: { kind: "clear", reinforcements: [] },
     fact: undefined,
   },
@@ -208,7 +231,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Three-way squeeze",
     weapon: "stent",
     speedMultiplier: 0.8,
-    bounceMultiplier: 1.2,
+    arena: ARENA_LAYOUTS[3],
+    merge: MERGE_RULES[3],
     briefing: "Keep the center fragment in view while two large families cross the arena.",
     initialTargets: [plaque("large", 200, 1), plaque("medium", 480, -1), plaque("large", 760, -1)],
     objective: { kind: "clear", reinforcements: [] },
@@ -230,7 +254,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Lesion junction",
     weapon: "stent",
     speedMultiplier: 0.9,
-    bounceMultiplier: 1.1,
+    arena: ARENA_LAYOUTS[4],
+    merge: MERGE_RULES[4],
     briefing: "Manage three splitting families. Smaller fragments move faster.",
     initialTargets: [plaque("large", 200, 1), plaque("large", 480, -1), plaque("large", 760, 1)],
     objective: { kind: "clear", reinforcements: [] },
@@ -252,7 +277,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Plaque crescendo",
     weapon: "stent",
     speedMultiplier: 1.0,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[5],
+    merge: MERGE_RULES[5],
     briefing: "Keep moving through four families with staggered starting heights.",
     initialTargets: [
       plaque("large", 150, 1, 100),
@@ -279,7 +305,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Aspirin arcade",
     weapon: "aspirin",
     speedMultiplier: 0.85,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[6],
+    merge: MERGE_RULES[6],
     briefing:
       "New target: platelet activation. Antiplatelet drugs help prevent clot formation. Inactivate all four hazards.",
     initialTargets: platelets(4, "small"),
@@ -302,7 +329,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Pocket-sized panic",
     weapon: "aspirin",
     speedMultiplier: 0.9,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[17],
+    merge: MERGE_RULES[17],
     briefing: "Alternate your attention between small and tiny hazards. Inactivate all six.",
     initialTargets: mixedPlatelets(3, 3),
     objective: { kind: "clear", reinforcements: [] },
@@ -324,7 +352,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Platelet parade",
     weapon: "aspirin",
     speedMultiplier: 0.9,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[7],
+    merge: MERGE_RULES[7],
     briefing: "Watch alternating outer entries. Inactivate all 12 hazards.",
     initialTargets: platelets(4, "small"),
     objective: { kind: "clear", reinforcements: reinforcements(8, 3, entries([160, 800])) },
@@ -346,7 +375,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Side-to-side",
     weapon: "aspirin",
     speedMultiplier: 0.95,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[18],
+    merge: MERGE_RULES[18],
     briefing: "Read the left-left-right-right parade. Inactivate all 14 hazards.",
     initialTargets: platelets(4, "small"),
     objective: {
@@ -371,7 +401,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Center stage",
     weapon: "aspirin",
     speedMultiplier: 1,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[19],
+    merge: MERGE_RULES[19],
     briefing: "Return to the center between outer entries. Inactivate all 16 hazards.",
     initialTargets: platelets(4, "small"),
     objective: {
@@ -396,7 +427,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Aspirin encore",
     weapon: "aspirin",
     speedMultiplier: 1.05,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[20],
+    merge: MERGE_RULES[20],
     briefing: "Track the four-position fan and inactivate all 20 hazards.",
     initialTargets: platelets(4, "small"),
     objective: {
@@ -421,7 +453,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Slow shot, big chance",
     weapon: "clopidogrel",
     speedMultiplier: 0.85,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[8],
+    merge: MERGE_RULES[8],
     briefing: "Line up persistent shots. Each can inactivate three distinct hazards. Clear all 12.",
     initialTargets: platelets(6, "small"),
     objective: { kind: "clear", reinforcements: reinforcements(6, 4, entries([480])) },
@@ -443,7 +476,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Three in a line",
     weapon: "clopidogrel",
     speedMultiplier: 0.9,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[21],
+    merge: MERGE_RULES[21],
     briefing:
       "Use persistent shots along two alternating entry columns. Inactivate all 16 hazards.",
     initialTargets: platelets(6, "small"),
@@ -466,7 +500,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Better together",
     weapon: "dual",
     speedMultiplier: 0.9,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[9],
+    merge: MERGE_RULES[9],
     briefing: "Shots alternate automatically. Find the rhythm and inactivate all 18 hazards.",
     initialTargets: platelets(6, "small"),
     objective: { kind: "clear", reinforcements: reinforcements(12, 2.5, entries([160, 800])) },
@@ -488,7 +523,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Crossfire chorus",
     weapon: "dual",
     speedMultiplier: 1,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[22],
+    merge: MERGE_RULES[22],
     briefing: "Read opposing entries followed by an outer fan. Inactivate all 20 hazards.",
     initialTargets: mixedPlatelets(4, 4),
     objective: {
@@ -513,9 +549,9 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Tiny target tango",
     weapon: "dual",
     speedMultiplier: 1.05,
-    bounceMultiplier: 1,
-    briefing:
-      "Follow low-bouncing tiny targets through changing columns. Inactivate all 26 hazards.",
+    arena: ARENA_LAYOUTS[23],
+    merge: MERGE_RULES[23],
+    briefing: "Follow tiny targets drifting through changing columns. Inactivate all 26 hazards.",
     initialTargets: mixedPlatelets(4, 6),
     objective: {
       kind: "clear",
@@ -539,7 +575,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Find your flow",
     weapon: "dual",
     speedMultiplier: 1,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[10],
+    merge: MERGE_RULES[10],
     briefing:
       "Keep eight or fewer hazards for 40 seconds. Recover from overload within five seconds.",
     initialTargets: platelets(4, "tiny"),
@@ -569,7 +606,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Recovery groove",
     weapon: "dual",
     speedMultiplier: 1,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[11],
+    merge: MERGE_RULES[11],
     briefing: "Sustain the outer left-right rhythm for 40 seconds with eight or fewer hazards.",
     initialTargets: platelets(3, "tiny"),
     objective: {
@@ -598,7 +636,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Rehab rhythm",
     weapon: "dual",
     speedMultiplier: 1.02,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[12],
+    merge: MERGE_RULES[12],
     briefing: "Follow the left-left-right-right rhythm for 45 seconds with seven or fewer hazards.",
     initialTargets: platelets(3, "tiny"),
     objective: {
@@ -627,7 +666,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Centerline shuffle",
     weapon: "dual",
     speedMultiplier: 1.04,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[13],
+    merge: MERGE_RULES[13],
     briefing: "Return through the center for 45 seconds with six or fewer hazards.",
     initialTargets: platelets(3, "tiny"),
     objective: {
@@ -656,7 +696,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Keep the beat",
     weapon: "dual",
     speedMultiplier: 1.06,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[14],
+    merge: MERGE_RULES[14],
     briefing:
       "Keep five or fewer hazards for 50 seconds through a left-center-right-center rhythm.",
     initialTargets: platelets(3, "tiny"),
@@ -686,7 +727,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Last-lap lipids",
     weapon: "dual",
     speedMultiplier: 1.08,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[24],
+    merge: MERGE_RULES[24],
     briefing:
       "Follow the traveling sweep for 50 seconds with five or fewer hazards. Wall plaque remains scenery.",
     initialTargets: platelets(3, "tiny"),
@@ -716,7 +758,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     name: "Flow state finale",
     weapon: "dual",
     speedMultiplier: 1.1,
-    bounceMultiplier: 1,
+    arena: ARENA_LAYOUTS[15],
+    merge: MERGE_RULES[15],
     briefing:
       "Complete 60 seconds with four or fewer hazards through alternating outer and inner entries.",
     initialTargets: platelets(3, "tiny"),

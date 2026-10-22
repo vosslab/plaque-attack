@@ -1,16 +1,19 @@
 import { logicalCoordinate, projectileId, targetId } from "./brands";
 import { createTarget, nextPlaqueSize } from "./characters";
 import {
+  MAX_TARGETS,
   DUAL_ACTIVE_LIMIT,
   DUAL_FIRE_INTERVAL,
   PLAYER_HEIGHT,
   STENT_CEILING_LINGER,
   WEAPON_CONFIGS,
 } from "./constants";
-import { projectileContact } from "./collision";
+import { projectileContact, targetPathSegments } from "./collision";
+import { sampleTargetPath } from "./motion";
+import { freezeTissue, projectileTissueContact, queueProjectileErosion } from "./tissue";
 import { awardHit } from "./scoring";
 import type { SimulationEvent } from "./types/events";
-import type { Projectile, SimulationState, Target } from "./types/simulation";
+import type { Projectile, SimulationState, Target, TissueTick } from "./types/simulation";
 
 export function fireWeapon(state: SimulationState, events: SimulationEvent[]): void {
   if (state.fireCooldown > 1e-9) return;
@@ -79,23 +82,16 @@ function splitTarget(state: SimulationState, target: Target): void {
   const size = nextPlaqueSize(target.size);
   if (size === undefined) return;
   for (const direction of [-1, 1] as const) {
-    state.targets.push(
-      createTarget(
-        {
-          kind: "plaque",
-          size,
-          direction,
-          position: {
-            x: logicalCoordinate(target.position.x + direction * 8),
-            y: target.position.y,
-          },
-        },
-        targetId(state.nextTargetId++),
-        state.level.speedMultiplier,
-        state.tick + 1,
-        state.level.bounceMultiplier,
-      ),
+    const child = createTarget(
+      { kind: "plaque", size, direction, position: { ...target.position } },
+      targetId(state.nextTargetId++),
+      state.level.speedMultiplier,
+      state.tick + 1,
+      state.level.arena.floor,
     );
+    child.mergeCooldownUntil = target.mergeCooldownUntil;
+    if (state.targets.length < MAX_TARGETS) state.targets.push(child);
+    else state.arena.pendingInsertions.push({ kind: "split", sourceId: target.id, target: child });
   }
 }
 
@@ -105,14 +101,32 @@ export function resolveProjectileHits(
   state: SimulationState,
   dt: number,
   events: SimulationEvent[],
+  tissue: TissueTick = freezeTissue(state),
 ): void {
   const consumed = new Set<Projectile>();
   const sweeps = new Map(state.projectiles.map((shot) => [shot, advanceProjectile(shot, dt)]));
   let minimumTime = 0;
   for (;;) {
     let best: { projectile: Projectile; target: Target; time: number } | undefined;
+    let solid:
+      { projectile: Projectile; cell: TissueTick["cells"][number]; time: number } | undefined;
     for (const projectile of state.projectiles) {
       if (consumed.has(projectile)) continue;
+      const shotSweep = sweeps.get(projectile);
+      if (shotSweep !== undefined) {
+        const hit = projectileTissueContact(projectile, shotSweep.active, shotSweep.growth, tissue);
+        if (
+          hit !== undefined &&
+          hit.time >= minimumTime &&
+          (solid === undefined ||
+            hit.time < solid.time ||
+            (hit.time === solid.time &&
+              (hit.cell.patchId.localeCompare(solid.cell.patchId) ||
+                hit.cell.cellId.localeCompare(solid.cell.cellId) ||
+                projectile.id - solid.projectile.id) < 0))
+        )
+          solid = { projectile, ...hit };
+      }
       for (const target of state.targets) {
         if (target.activeFromTick > state.tick) continue;
         const sweep = sweeps.get(projectile);
@@ -130,10 +144,18 @@ export function resolveProjectileHits(
         }
       }
     }
+    if (solid !== undefined && (best === undefined || solid.time <= best.time)) {
+      minimumTime = solid.time;
+      queueProjectileErosion(tissue, solid.cell);
+      consumed.add(solid.projectile);
+      continue;
+    }
     if (best === undefined) break;
     const { projectile, target, time } = best;
     minimumTime = time;
     state.targets = state.targets.filter((candidate) => candidate.id !== target.id);
+    // Splits originate at the swept contact, rather than the target's end-of-tick position.
+    target.position = sampleTargetPath(targetPathSegments(target), time) ?? { ...target.position };
     const points = awardHit(state, target);
     const split = target.kind === "plaque" && nextPlaqueSize(target.size) !== undefined;
     events.push({

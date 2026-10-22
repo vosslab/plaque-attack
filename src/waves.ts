@@ -1,6 +1,7 @@
 import { randomSeed, targetId } from "./brands";
 import { createTarget } from "./characters";
 import { MAX_TARGETS, SPAWN_WARNING_DURATION } from "./constants";
+import { hasPendingTargets } from "./tissue";
 import type { SimulationEvent } from "./types/events";
 import type { TargetSpawn } from "./types/level";
 import type { SimulationState } from "./types/simulation";
@@ -30,7 +31,7 @@ export function advanceWaves(state: SimulationState, dt: number, events: Simulat
       targetId(state.nextTargetId++),
       state.level.speedMultiplier,
       state.tick + 1,
-      state.level.bounceMultiplier,
+      state.level.arena.floor,
     );
     state.targets.push(target);
     state.waves.spawned += 1;
@@ -61,6 +62,7 @@ export function clearObjectiveSatisfied(state: SimulationState): boolean {
   return (
     state.level.objective.kind === "clear" &&
     state.targets.length === 0 &&
+    !hasPendingTargets(state) &&
     state.waves.spawned === state.level.objective.reinforcements.length &&
     state.waves.warning === undefined
   );

@@ -43,6 +43,32 @@ export type SpawnEvent = {
 export type OverloadEvent = { type: "overload"; active: boolean };
 export type SurvivalEvent = { type: "survival_points"; points: number };
 
+export type TissueErodedEvent = {
+  type: "tissue_eroded";
+  patchId: string;
+  cellIds: string[];
+  position: LogicalPoint;
+  cause: "projectile" | "target";
+};
+export type PocketBreachedEvent = {
+  type: "pocket_breached";
+  pocketId: string;
+  position: LogicalPoint;
+};
+export type PocketReleasedEvent = {
+  type: "pocket_released";
+  pocketId: string;
+  targetIds: TargetId[];
+  position: LogicalPoint;
+};
+export type TargetsMergedEvent = {
+  type: "targets_merged";
+  parentIds: readonly [TargetId, TargetId];
+  targetId: TargetId;
+  size: PlaqueSize;
+  position: LogicalPoint;
+};
+
 export type SimulationEvent =
   | ShotEvent
   | TargetHitEvent
@@ -51,4 +77,8 @@ export type SimulationEvent =
   | RunEndEvent
   | SpawnEvent
   | OverloadEvent
-  | SurvivalEvent;
+  | SurvivalEvent
+  | TissueErodedEvent
+  | PocketBreachedEvent
+  | PocketReleasedEvent
+  | TargetsMergedEvent;

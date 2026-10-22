@@ -146,6 +146,19 @@ export function createAudio(): {
           case "damage":
             tone(170, 0.3, 0.05, now, effectVoices, "triangle", 75);
             break;
+          case "tissue_eroded":
+            tone(260, 0.11, 0.018, now, effectVoices, "triangle", 150);
+            break;
+          case "pocket_breached":
+            tone(420, 0.22, 0.022, now, effectVoices, "sine", 600);
+            break;
+          case "pocket_released":
+            tone(600, 0.18, 0.022, now, effectVoices, "sine", 320);
+            break;
+          case "targets_merged":
+            tone(180, 0.24, 0.025, now, effectVoices, "sine", 310);
+            tone(270, 0.24, 0.012, now, effectVoices, "sine", 465);
+            break;
           case "level_complete":
             if (completedRun) break;
             for (const [index, note] of [523.25, 659.25, 783.99].entries())

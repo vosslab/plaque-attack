@@ -1,14 +1,8 @@
 import { logicalCoordinate, randomSeed, targetId } from "./brands";
+import { playerSupportY } from "./arena_geometry";
 import type { RandomSeed } from "./brands";
 import { createTarget } from "./characters";
-import {
-  ARENA_HEIGHT,
-  ARENA_WIDTH,
-  getLevel,
-  nextLevelId,
-  READY_DURATION,
-  STARTING_LIVES,
-} from "./constants";
+import { ARENA_WIDTH, getLevel, nextLevelId, READY_DURATION, STARTING_LIVES } from "./constants";
 import type { LevelConfig } from "./types/level";
 import type { RunMode, SimulationState } from "./types/simulation";
 
@@ -29,12 +23,15 @@ export function createSimulation(
     resumePhase: "ready",
     level,
     player: {
-      position: { x: logicalCoordinate(ARENA_WIDTH / 2), y: logicalCoordinate(ARENA_HEIGHT) },
+      position: {
+        x: logicalCoordinate(ARENA_WIDTH / 2),
+        y: logicalCoordinate(playerSupportY(level.arena.floor, ARENA_WIDTH / 2)),
+      },
       lives,
       contactInvulnerabilityRemaining: 0,
     },
     targets: level.initialTargets.map((spawn, index) =>
-      createTarget(spawn, targetId(index + 1), level.speedMultiplier, 0, level.bounceMultiplier),
+      createTarget(spawn, targetId(index + 1), level.speedMultiplier, 0, level.arena.floor),
     ),
     projectiles: [],
     tick: 0,
@@ -54,6 +51,30 @@ export function createSimulation(
     completionAwarded: false,
     recordCommitted: false,
     waves: { spawned: 0, nextSpawnAt: firstWave, warning: undefined },
+    arena: {
+      tissue: level.arena.tissue.map((patch) => ({
+        id: patch.id,
+        pocketId: patch.pocketId,
+        cells: patch.cells.map((cell) => ({
+          id: cell.id,
+          position: { ...cell.position },
+          occupied: true,
+        })),
+      })),
+      pockets: level.arena.pockets.map((pocket) => ({
+        id: pocket.id,
+        status: "sealed",
+        warningRemaining: 0,
+        nextContentIndex: 0,
+      })),
+      pendingInsertions: [],
+      tissueContacts: [],
+    },
+    merge: {
+      remainingBudget: level.merge.budget,
+      contacts: new Set(),
+      lastAttemptTicks: new Map(),
+    },
   };
   return state;
 }

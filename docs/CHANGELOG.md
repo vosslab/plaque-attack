@@ -2,19 +2,21 @@
 
 ### Additions and New Features
 
-- Set the expanded campaign at 24 levels across four chapters, with stable IDs in the canonical
-  order recorded in the expansion contracts. Preserve Act III mechanics and add Chapter 4
-  presentation; legacy version-1 save migration is planned and not yet verified.
-- Accept the expansion plan, difficulty rubric, and art direction contracts. Record the beginner
-  tuning evidence: the first three levels are pretty easy, while low, fast, small balls are hard.
-  Campaign pacing is being adjusted; 12 new SVG assets passed art specification and quality review,
-  but renderer integration remains pending. No complete expansion acceptance is claimed.
-- Record the requested additive campaign expansion in
-  [active_plans/active/organic_expansion.md](active_plans/active/organic_expansion.md). The design
-  contracts are accepted; campaign metadata/order and wave pacing are landed, beginner tuning is
-  active, and reviewed SVG assets still need renderer integration.
-- Record new human guidance for a fun, progressively challenging campaign and organic
-  medical-inspired scenes with varied editable lipid SVG art.
+- Put the confirmed live GitHub Pages game near the README opening, address gamers and biology
+  enthusiasts, and make browser play the first quick-start path before local development setup.
+
+- Integrate erodible tissue, all-shot solid blocking, reflected fluid paths, automatic floor
+  following, optional warned membrane releases and bounded same-size plaque coalescence. Introduce
+  them at stages 4/5/6/9; keep the first three stages and stage 6's four large plaques intact.
+  Complete S1-S7 with accepted fresh specification, quality and final integration reviews.
+
+- Integrate the 24-stage, four-chapter expansion in canonical stable-ID order, with nine new IDs,
+  authored entry cycles, version-2 save migration, and separately labeled classic/expanded records.
+- Add six original scene SVGs, six editable lipid SVGs, renderer-selected visual variants, and six
+  optional medicine cards. Keep weapon compatibility and plaque/platelet identity unchanged.
+- Accept the expansion plan, difficulty rubric, and art direction contracts; add config-derived
+  difficulty reporting and focused behavior coverage. Record the fun-first, easy-opening and
+  fluid-body human guidance.
 - Complete A0 shared contracts and Batch 1 foundation for the 15-level Plaque Trouble campaign.
   Batch 1 passed TypeScript, repository checks, GitHub Pages build, and one Playwright smoke test.
 - Start Batch 2 presentation and utility work with separate renderer/assets, shell/style, and
@@ -58,6 +60,22 @@
 - Ignore generated `output/**` files in consumer-local `eslint.config.local.js` after generated
   artifacts initially failed lint. Keep source lint rules active.
 
+### Behavior or Interface Changes
+
+- Freeze paused projectile presentation and explain committed pocket releases after the
+  maintenance timer reaches zero. Refresh the two README captures with the current menu and
+  actual tissue-carving practice, and record distinct proof lanes in
+  [MECHANICS_ACCEPTANCE.md](MECHANICS_ACCEPTANCE.md).
+- Replace ballistic target motion with deterministic lateral drift and smooth vertical circulation.
+  Use a shared 24-unit wall inset, gentle first-three-stage work/speeds, and 40-60-second maintenance
+  rounds. Tutorial copy now describes drifting hazards.
+- Refresh README, GitHub setup, current game specification, decisions, and expansion ledger for the
+  expanded source contract. Keep 15-level acceptance evidence explicitly historical.
+
+### Removals and Deprecations
+
+- Supersede the unapplied higher-bounce novice experiments with the fluid-motion direction.
+
 ### Decisions and Failures
 
 - Use a `LevelId` union paired with a `Record` for complete level configuration while avoiding an
@@ -70,6 +88,19 @@
 
 ### Developer Tests and Notes
 
+- Current new-mechanics integration passes TypeScript, the full repository check, 39 Node tests,
+  production build (74746-byte JavaScript), and final six browser journeys (49.0 s). Exact state checks
+  preserve each opening stage over 1,800 ticks. Focused geometry/tissue/merge probes and fresh
+  S1-S5 reviews pass. Fresh 24-stage completion/replay ends at score 327950 with three lives and
+  zero damage; separate practice/replay opens and completes an optional pocket. Final integration
+  accepts refreshed hashes/layouts, four-viewport rendered evidence and density profiling.
+  All 27 reported axe samples detect zero violations; 19/24 initial samples retain unresolved
+  contrast incompletes. See [MECHANICS_ACCEPTANCE.md](MECHANICS_ACCEPTANCE.md) for exact proof limits.
+- Refresh the README, game spec, rubric, art direction, expansion contracts and active ledger for
+  implemented mechanics. Keep one canonical placement matrix, separate optional/bounded work
+  from guaranteed workload, and keep human feedback optional. No remote deployment is claimed.
+- Documentation/README/ASCII checks pass (209 tests); TypeScript and focused `src/main.ts` lint
+  pass after the instruction-copy edit. No build was run during this documentation pass.
 - Batch 1 gates passed: `npx tsc --noEmit -p tsconfig.json`, `./check_codebase.sh`,
   `./build_github_pages.sh`, and Playwright (1 test, 541 ms).
 - Local runtime is available through `run_web_server.sh` at `http://localhost:8728`.

@@ -1,6 +1,6 @@
 import { loadAssets } from "./assets";
 import { createAudio } from "./audio";
-import { getLevel, isLevelUnlocked, LEVEL_IDS, nextLevelId } from "./constants";
+import { campaignPosition, getLevel, isLevelUnlocked, LEVEL_IDS, nextLevelId } from "./constants";
 import { createDialogs, medicine, paragraph, scoresPanel, settingsPanel } from "./dialogs";
 import { advanceLevel, createSimulation, pauseSimulation, resumeSimulation } from "./game_state";
 import { createInputController } from "./input";
@@ -326,7 +326,7 @@ function main(): void {
       stages.className = "practice_stages";
       for (const id of LEVEL_IDS.filter((id) => getLevel(id).chapter === chapter)) {
         const unlocked = isLevelUnlocked(id, runtime.save.unlockedLevel);
-        const position = LEVEL_IDS.indexOf(id) + 1;
+        const position = campaignPosition(id);
         const entry = action(
           `Stage ${position}: ${getLevel(id).name}${unlocked ? "" : " / Locked"}`,
           (): void => {
@@ -349,7 +349,7 @@ function main(): void {
     dialogs.open("How to play", (body, close): void => {
       paragraph(
         body,
-        "Move with A/D or the arrow keys. Hold Space to fire upward. Dodge bouncing hazards. On touch screens, hold the left or right button while firing. P or Escape pauses and resumes.",
+        "Move with A/D or the arrow keys. Hold Space to fire upward. Dodge drifting hazards. On touch screens, hold the left or right button while firing. P or Escape pauses and resumes.",
       );
       paragraph(
         body,

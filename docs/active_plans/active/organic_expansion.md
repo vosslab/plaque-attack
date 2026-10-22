@@ -1,71 +1,80 @@
 # Plaque Trouble organic expansion plan
 
-**Goal:** Extend the accepted Plaque Trouble campaign with a larger, deliberately paced campaign
-and richer organic medical-inspired scenes and lipid artwork. Keep the experience playful and make
-challenge progression clear. The existing 15-level campaign is the accepted baseline.
+**Goal:** Deliver a fun, deliberately paced 24-stage campaign with fluid motion, organic artwork,
+erodible shelter, automatic floor following, optional pockets and bounded plaque coalescence.
 
-**Status:** Design contracts accepted; campaign tuning and asset integration are active. The 12 new
-SVG assets passed art specification and quality review but are not integrated. **Updated:**
-2026-10-22.
+**Status:** Complete and locally accepted, 2026-10-22. S1-S7 pass, including fresh final
+integration review, 24-stage completion/replay, browser and rendered acceptance, and records.
+Evidence and limitations are preserved in [MECHANICS_ACCEPTANCE.md](../../MECHANICS_ACCEPTANCE.md).
+
+[STAGE_MECHANICS_PLAN.md](../../STAGE_MECHANICS_PLAN.md) owns executable mechanics and the single
+placement matrix. [EXPANSION_PLAN.md](../../EXPANSION_PLAN.md) owns target/wave composition and
+stable identities. The manager completes review, repair and acceptance autonomously. Optional
+human feedback never blocks completion.
 
 ## Product direction
 
-- Use 24 total levels across four chapters, expanding the accepted 15-level baseline. The canonical
-  stable-ID play order is `[1, 16, 2, 3, 4, 5, 6, 17, 7, 18, 19, 20, 8, 21, 9, 22, 23, 10, 11,
-  12, 13, 14, 24, 15]`.
-- Preserve the original Act III maintenance mechanics and use Chapter 4 for presentation. Plan a
-  coherent migration for legacy version-1 saves; migration implementation and verification remain
-  pending.
-- Document an ordered challenge curve and chapter progression in the difficulty rubric.
-- Expand organic artery scenes and lipid variety through original, editable SVG art. Use Barnsy Ink
-  as artistic inspiration, not as a source to copy.
-- Keep the game fun as well as informative. Learning does not need to feel like a lecture or a
-  memorization test.
-- Keep medical framing accurate at an arcade-metaphor level. New lipid forms and scenes should not
-  imply that a game object, intervention, or level outcome represents an individual diagnosis or
-  treatment recommendation.
+- Keep fun first, optional learning brief, and the first three rounds easy with slow fluid drift.
+- Preserve 24 stages, four chapters, stable IDs, version-2 saves and historical record labels.
+- Introduce tissue at stage 4, gentle floor at stage 5, merging at stage 6, and pockets at stage 9.
+- Keep left/right/fire as the complete controls; follow the floor automatically without jumping.
+- Preserve all-shot tissue blocking, frozen per-tick occupancy, and contact erosion/deflection.
+- Keep unopened pockets optional; warn and safely admit every committed release at capacity.
+- Retain stage 6's four large plaques and its finite merge budget without capacity compensation.
+- Keep platelet and plaque identities distinct. Carving and coalescence are arcade abstractions.
 
 ## Delivery sequence
 
-| Stage | Work and owner | Exit evidence |
+| Stage | Status | Implemented outcome / remaining evidence |
 | --- | --- | --- |
-| 1. Design contracts | Accepted: `docs/EXPANSION_PLAN.md`, `docs/DIFFICULTY_RUBRIC.md`, and `docs/ART_DIRECTION.md` define the scope, chapter structure, challenge measures, progression rules, art requirements, and medical-art guardrails. | Contract review accepted; campaign implementation proceeds against these settled contracts. |
-| 2. Campaign content and runtime | Active: campaign metadata/order and wave pacing are landed; the beginner owner is adjusting the first three levels toward fewer small fragments, higher bounce arcs, and a simpler policy. The progression test was corrected and 10 simulation runs completed; the earlier 13-test baseline predates this tuning. Preserve stable IDs and plan the legacy version-1 save migration. | Verify the canonical order in consumers and evaluate the beginner curve with progression evidence. Do not report the expansion accepted until the campaign checks are complete. |
-| 3. Art production and integration | Active: 12 editable SVG assets passed art specification and quality review. Renderer integration is pending. | Integrate and load all assets; verify rendered sizes, distinguishable lipid forms, contrast, and gameplay readability. |
-| 4. Integrated acceptance | Fresh reviewers compare the complete expanded game with the accepted contracts. Run the repository's required checks and browser journeys against the integrated campaign, and record actual play evidence and any limits. | All contract gaps are resolved; the expanded campaign is playable from start to finish; progression, art, interface, and medical framing pass review. Record measured evidence and unresolved limitations in the implementation ledger. |
+| Earlier expansion | Accepted historical baseline | 24 stages, organic art, fluid drift, ordinal progression and version-2 saves; proof predates new mechanics. |
+| S1. Shared contracts | Accepted | Arena geometry, tissue/pocket, merge and event contracts compile and pass review. |
+| S2. Geometry | Accepted | One floor sampler, feet/muzzle/hitbox alignment and local-floor fluid paths; geometry spec and quality reviews accepted. |
+| S3. Tissue and pockets | Accepted | Frozen collision occupancy, visible deferred erosion, shared reflected paths and warned finite releases; spec and quality reviews accepted. |
+| S4. Coalescence | Accepted | Seeded eligible contact entries, inherited cooldowns, finite budgets and new-size speed; spec and quality reviews accepted. |
+| S5. Integration | Accepted | Simulation, renderer, all placements and config-derived metrics integrated; spec and quality reviews pass. |
+| S6. Acceptance | Accepted | Fresh final integration review accepts full checks, final six browser journeys, responsive captures, density profile and campaign/practice replays. |
+| S7. Closeout | Complete | Canonical prose, final evidence, limitations and current README captures recorded. |
 
-## Dispatch and dependency rules
+## Current evidence
 
-- Keep Stage 1 contract authors separate from runtime implementation owners. The expansion designer
-  owns the expansion plan and rubric; the organic art direction owner owns the art direction.
-- Design contracts are accepted. Keep campaign tuning and art integration tied to those contracts;
-  ask focused questions when level pacing, lipid interpretation, scene variety, or visual legibility
-  is unclear.
-- Once the contracts are accepted, content/runtime and SVG production may proceed as separate
-  workstreams with named, non-overlapping file ownership. Renderer integration follows both outputs.
-- Run tests and independent acceptance reviews after integration, not as a substitute for the
-  design and content questions that shape the expansion.
-- Keep the existing 15-level acceptance record intact. Record expansion evidence separately and do
-  not treat the old campaign's replay as evidence for new levels.
-- Route complex gameplay, campaign, or art judgments to `gpt-6.1-sol`; use `gpt-6-luna` for bounded
-  documentation work.
+- Current source passes TypeScript, the full repository check and 39 Node behavior tests, including
+  12 new arena tests. The approximately 73 KB production bundle builds successfully.
+- Final six browser journeys pass in 49.0 seconds. The ordinary-input state-aware campaign and
+  independent replay complete all 24 stages: score 327950, three lives, zero damage, 935.733
+  playing seconds, 207 eroded cells and one natural merge. Separate stage-9 practice breaches
+  a pocket and releases both targets, then completes and independently replays.
+- All 24 practice starts and four viewports are inspected. The initial production gallery and
+  final affected-state refresh have separately recorded hashes. All 27 reported axe samples
+  detect zero violations, but 19/24 initial samples have unresolved contrast incompletes with
+  unknown cause. This does not certify full accessibility conformance.
+- A source-imported synthetic 32-target/five-shot density fixture samples 600 frames per motion
+  setting: approximately 59.7/60.0 FPS and 1.4 ms combined step/render CPU p95 on Apple M4 Max.
+  These are fixture/setup observations, not organic campaign or universal device performance.
+- The integration fixture `/private/tmp/plaque_s5_integration.mjs` compares exact state equivalence
+  for each of stages 1-3 over 1,800 fixed ticks. It passes with all new mechanics disabled.
+- Geometry owner evidence is `/private/tmp/plaque_s2_geometry_check.mjs` (1,024 samples over 300
+  ticks each). Independent read-only inspection additionally reported 7,684 samples, 38,400 motion
+  ticks and 256 phase reconstructions; those counts are review reports, not a separate saved artifact.
+- Tissue runtime probes live in `output/mechanics_tissue/runtime.mjs`; independent review reported
+  2,000 additional cases. Merge evidence is 13 probes in `output/mechanics_merge/probes.mjs` with
+  `output/mechanics_merge/results.txt`. Focused probes are distinct from ordinary-input campaign proof.
 
-## Review checkpoints
+The accepted earlier 24-stage expansion passed 22 source tests, six browser journeys (49 seconds),
+a normal-input state-aware completion and independent replay, responsive start captures, 15
+zero-violation accessibility samples and approximately 60 fps observations. The original 15-stage
+record remains in [game_implementation.md](game_implementation.md). Both are historical evidence,
+not acceptance of tissue, floor, pocket or merge mechanics.
 
-At the contract boundary, ask: Does each chapter add a meaningful kind of challenge? Does the
-rubric explain why later levels are harder, rather than only assigning larger numbers? Do new lipid
-forms communicate a visual difference without suggesting a clinical classification? Do the new
-scenes enrich the setting while keeping hazards, targets, and player actions easy to read? Does each
-change keep play enjoyable for learners with varied backgrounds?
+## Review and completion
 
-Raise unresolved questions to the manager before dependent work begins. Record settled product
-decisions in [../../DESIGN_DECISIONS.md](../../DESIGN_DECISIONS.md), human-stated preferences in
-[../../HUMAN_GUIDANCE.md](../../HUMAN_GUIDANCE.md), and implementation evidence in
-[game_implementation.md](game_implementation.md) when expansion work is dispatched.
+Keep one source owner per mutation boundary. Resolve contract questions from actual source and
+focused evidence; fresh reviewers check the implemented behavior. The difficulty report reads real
+configs through `src/difficulty.ts` and `devel/report_difficulty.mjs`, with bounds separated from
+observed play. Record settled choices in [DESIGN_DECISIONS.md](../../DESIGN_DECISIONS.md) and human
+preferences in [HUMAN_GUIDANCE.md](../../HUMAN_GUIDANCE.md).
 
-## Completion
-
-This plan is complete when the accepted design contracts, expanded campaign, integrated artwork,
-and fresh acceptance evidence are all in place. Until then, report each stage as planned, active,
-or accepted based on its evidence; do not infer implementation completion from the completed
-15-level baseline.
+S1-S7 are complete against the integrated result, including ordinary-input 24-stage completion,
+independent replay, responsive rendered inspection and documented limitations. Automated completion
+proves mechanical reachability; it does not prove human enjoyment. Optional feedback is welcome
+without becoming a milestone or hidden approval requirement. Remote deployment is separate.

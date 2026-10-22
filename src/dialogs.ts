@@ -49,6 +49,9 @@ export function createDialogs(onChange: (open: boolean) => void): {
       fill(body, close);
       onChange(true);
       dialog.showModal();
+      heading.tabIndex = -1;
+      heading.focus({ preventScroll: true });
+      dialog.scrollTop = 0;
     },
   };
 }
@@ -68,7 +71,51 @@ export function medicine(body: HTMLElement): void {
     body,
     "Plaque contains more than cholesterol. Long-term cardiovascular care can include lipid management, medicines, and lifestyle changes. Projectile speed, range, and timing are game balance choices, not comparisons of real treatment efficacy. The surgeon and artery are schematic, with no anatomical scale.",
   );
+  const cards = document.createElement("div");
+  cards.className = "medicine_cards";
+  for (const [title, art, fact] of [
+    [
+      "Endothelium",
+      "scene-endothelium",
+      "The endothelium is the thin cell lining at the blood-facing surface of an artery.",
+    ],
+    [
+      "Foam cells",
+      "scene-fatty-streak",
+      "Macrophages that accumulate lipids can become foam cells within the artery wall.",
+    ],
+    [
+      "Fibrous cap",
+      "scene-fibrous-cap",
+      "A fibrous cap covers the lipid-rich core of many atherosclerotic plaques.",
+    ],
+    ["Stent", "stent", "A coronary stent is a mesh support that holds a narrowed artery open."],
+    [
+      "Platelets",
+      "platelet",
+      "Activated platelets help form clots; antiplatelet medicines reduce their activity.",
+    ],
+    [
+      "Healing and care",
+      "scene-healed-flow",
+      "A stent supports blood flow, while ongoing care still addresses the underlying disease.",
+    ],
+  ] as const) {
+    const card = document.createElement("article");
+    const image = document.createElement("img");
+    image.src = "assets/" + art + ".svg";
+    image.alt = "";
+    image.loading = "lazy";
+    const heading = document.createElement("h3");
+    heading.textContent = title;
+    card.append(image, heading);
+    paragraph(card, fact);
+    cards.append(card);
+  }
+  body.append(cards);
   for (const [label, href] of [
+    ["NHLBI: How plaque develops", "https://www.nhlbi.nih.gov/health/atherosclerosis/causes"],
+    ["NCBI: Lipids and plaque biology", "https://www.ncbi.nlm.nih.gov/books/NBK343489/"],
     ["NHLBI: Stents", "https://www.nhlbi.nih.gov/health/stents"],
     ["NHLBI: Living with a stent", "https://www.nhlbi.nih.gov/health/stents/living-with"],
     [
