@@ -36,3 +36,17 @@ authoritative code or contract document, rather than a person.
 
 **Owner.** <the authoritative code or contract doc>
 ```
+
+### Game specification authority
+
+**Decision.** Use [GAME_SPEC.md](GAME_SPEC.md) as the proposed implementation contract for
+Plaque Trouble, preserving the supplied 15-level campaign and five-level first playable milestone.
+
+**Why.** The concept needs explicit collision, scoring, progression, and maintenance rules before
+parallel implementation can share reliable contracts.
+
+**Consequence.** Keep plaque fragmentation as an arcade metaphor and use distinct platelet hazards
+for antiplatelet stages. Numerical balance settings remain playtest defaults. Specification work
+does not establish implementation, browser acceptance, or deployment.
+
+**Owner.** [GAME_SPEC.md](GAME_SPEC.md).
