@@ -129,6 +129,13 @@ test("movement and held fire split plaque, and P and Escape freeze and resume th
   }
   await page.keyboard.up("Space");
   await expect(cleared).toBeVisible();
+  const recovery = page.getByRole("dialog", { name: "Patient recovery", exact: true });
+  await expect(recovery).toBeHidden();
+  await expect(page.locator("#result_recovery_note")).toContainText("Route restored");
+  await page.getByRole("button", { name: "Patient recovery", exact: true }).click();
+  await expect(recovery).toBeVisible();
+  await recovery.getByRole("button", { name: "Close", exact: true }).click();
+  await expect(recovery).toBeHidden();
   await page.getByRole("button", { name: "Continue", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Stage 2: Little trouble", exact: true }),
@@ -139,6 +146,16 @@ test("movement and held fire split plaque, and P and Escape freeze and resume th
 
 test("a campaign ends once, records its score, and offers a fresh retry", async ({ page }) => {
   test.setTimeout(120_000);
+  await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
+    key: save_key,
+    value: JSON.stringify({
+      version: 3,
+      settings: { music: false, effects: false, completedTutorials: [], surgeonId: "maya" },
+      unlockedLevel: 1,
+      records: [],
+      completedLevelIds: [1],
+    }),
+  });
   await controlledPage(page);
   await page.getByRole("button", { name: "Play campaign", exact: true }).click();
   await startLevel(page);
@@ -155,8 +172,10 @@ test("a campaign ends once, records its score, and offers a fresh retry", async 
   const data = JSON.parse(saved ?? "null") as {
     version: number;
     records: { campaign: string; levelReached: number; outcome: string }[];
+    completedLevelIds: number[];
   };
-  expect(data.version).toBe(2);
+  expect(data.version).toBe(3);
+  expect(data.completedLevelIds).toEqual([1]);
   expect(data.records).toHaveLength(1);
   expect(data.records[0]).toMatchObject({
     campaign: "expanded",
@@ -251,7 +270,7 @@ test("prior progress unlocks the drug and maintenance practice modes without ran
     unlockedLevel: number;
     records: { campaign: string; levelReached: number; outcome: string }[];
   };
-  expect(migrated.version).toBe(2);
+  expect(migrated.version).toBe(3);
   expect(migrated.unlockedLevel).toBe(15);
   expect(migrated.records).toHaveLength(1);
   expect(migrated.records[0]).toMatchObject({

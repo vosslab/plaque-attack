@@ -110,7 +110,7 @@ make it the sole ordering test. Novelty and endurance stay separate from that in
 
 Comparable blocks in campaign order:
 
-- Stages 1-6: stent clear. W is 7, 10, 15, 37, 45, 60. The first three deliberately use slower fluid drift; later stages add cover, floor variation, then bounded merging. The listed W excludes optional and merge work.
+- Stages 1-6: stent clear. W is 7, 10, 15, 25, 37, 60. The first three deliberately use slower fluid drift; stage speeds are 0.55, 0.60, 0.65, 0.75, 0.85, and 1.00. All six permit bounded merging, with probabilities rising from 5% to 25% and budgets of 1, 1, 2, 3, 4, 5. Later stages add cover and floor variation. The listed W excludes optional and merge work.
 - Stages 7-12: aspirin clear. W is 4, 6, 12, 14, 16, 20. Later rows add arrivals and motifs.
 - Stages 13-14: clopidogrel clear. W is 12 then 16; alignment opportunities introduce persistence.
 - Stages 15-17: dual clear. W is 18, 20, 26; growing tiny fraction increases precision pressure.
@@ -164,3 +164,10 @@ sampled through fixtures, and any normal full-campaign completion separately. Hu
 proven by bot completion or monotonic config measurements. Optional feedback never blocks completion. If the campaign drags, shorten exposure
 or reduce repeated arrivals while retaining motifs. If precision overwhelms readability, adjust
 actual target speed/art or composition; do not improve the rubric score without improving play.
+
+The stage-4/5 correction and before/after evidence are recorded in
+[DIFFICULTY_REVIEW.md](DIFFICULTY_REVIEW.md). Its six-stage assisted simulation is a separate
+proof lane from historical 24-stage completion evidence.
+
+The later basin, shelf and shoulder variants, rendered evidence and geometry/completion checks
+are recorded in [FLOOR_VARIATION.md](FLOOR_VARIATION.md).

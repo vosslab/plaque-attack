@@ -8,10 +8,13 @@ import {
   WEAPON_CONFIGS,
 } from "./constants";
 import type { SimulationEvent } from "./types/events";
-import type { ArenaRenderer, AssetImages } from "./types/runtime";
+import type { ArenaRenderer, AssetImages, CelebrationPresentation } from "./types/runtime";
 import type { SimulationState } from "./types/simulation";
-import { floorY } from "./arena_geometry";
+import type { SurgeonId } from "./types/surgeon";
+import { DEFAULT_SURGEON_ID, getSurgeon } from "./surgeons";
+import { floorY, playerSupportY } from "./arena_geometry";
 import { sampleTargetPath } from "./motion";
+import { streakMilestone } from "./scoring";
 
 type Particle = { x: number; y: number; vx: number; vy: number; life: number; color: string };
 type HitEffect = {
@@ -24,6 +27,12 @@ type HitEffect = {
 const PARTICLE_LIMIT = 160;
 const HIT_EFFECT_LIMIT = 32;
 const HIT_EFFECT_DURATION = 0.48;
+const POINT_LABEL_LIMIT = 12;
+const POINT_LABEL_DURATION = 0.85;
+const STREAK_CALLOUT_DURATION = 1.6;
+type PointLabel = { x: number; y: number; points: number; life: number };
+type StreakCallout = { streak: number; multiplier: 2 | 3; life: number };
+const VICTORY_POSE_DELAY = 0.3;
 type ArenaEffect = {
   kind: "tissue_eroded" | "pocket_breached" | "pocket_released" | "targets_merged";
   x: number;
@@ -44,6 +53,11 @@ export function createRenderer(
   let particles: Particle[] = [];
   let hitEffects: HitEffect[] = [];
   let arenaEffects: ArenaEffect[] = [];
+  let pointLabels: PointLabel[] = [];
+  let streakCallout: StreakCallout | undefined;
+  let pendingEvents: SimulationEvent[] = [];
+  let lastSimulation: Readonly<SimulationState> | undefined;
+  let lastCelebrationElapsed: number | undefined;
   let lastTick = 0;
   let lastLevel = 0;
   let lastPlayerX: number | undefined;
@@ -64,9 +78,17 @@ export function createRenderer(
   }
 
   function consumeEvents(events: readonly SimulationEvent[]): void {
+    // A fresh attempt is identified at render time; drain after its old effects are cleared.
+    pendingEvents.push(...events);
+  }
+
+  function applyEvents(events: readonly SimulationEvent[]): void {
     for (const event of events) {
       if (event.type === "shot") firingRemaining = 0.16;
-      if (event.type === "damage") damageRemaining = 0.3;
+      if (event.type === "damage") {
+        damageRemaining = 0.3;
+        streakCallout = undefined;
+      }
       if (
         event.type === "tissue_eroded" ||
         event.type === "pocket_breached" ||
@@ -87,6 +109,20 @@ export function createRenderer(
         });
       }
       if (event.type === "target_hit") {
+        if (pointLabels.length >= POINT_LABEL_LIMIT) pointLabels.shift();
+        pointLabels.push({
+          x: event.position.x,
+          y: event.position.y - TARGET_PRESETS[event.size].radius - 12,
+          points: event.points,
+          life: POINT_LABEL_DURATION,
+        });
+        const milestone = streakMilestone(event.streak);
+        if (milestone !== undefined)
+          streakCallout = {
+            streak: event.streak,
+            multiplier: milestone,
+            life: STREAK_CALLOUT_DURATION,
+          };
         if (hitEffects.length >= HIT_EFFECT_LIMIT) hitEffects.shift();
         hitEffects.push({
           kind: event.targetKind,
@@ -123,7 +159,10 @@ export function createRenderer(
     ctx.lineTo(ARENA_WIDTH, ARENA_HEIGHT);
     ctx.lineTo(0, ARENA_HEIGHT);
     ctx.closePath();
-    ctx.fillStyle = "#844f68";
+    const tissueDepth = ctx.createLinearGradient(0, 492, 0, ARENA_HEIGHT);
+    tissueDepth.addColorStop(0, "#ab7188");
+    tissueDepth.addColorStop(1, "#68445f");
+    ctx.fillStyle = tissueDepth;
     ctx.fill();
     // Every scallop and nucleus stays inside the actual solid floor silhouette.
     ctx.clip();
@@ -141,6 +180,14 @@ export function createRenderer(
       ctx.ellipse(x + 3, y + 2, 5, 3, 0.4, 0, Math.PI * 2);
       ctx.fill();
     }
+    // Trace the exact collision surface, clipped inward so this highlight never
+    // suggests an extra ledge above the walkable geometry.
+    ctx.strokeStyle = "#efc2c2";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0, floorY(floor, 0));
+    for (let x = 2; x <= ARENA_WIDTH; x += 2) ctx.lineTo(x, floorY(floor, x));
+    ctx.stroke();
     ctx.restore();
   }
 
@@ -253,9 +300,24 @@ export function createRenderer(
     }
   }
 
-  function drawSurgeon(state: Readonly<SimulationState>): void {
+  function drawSurgeon(
+    state: Readonly<SimulationState>,
+    surgeonId: SurgeonId | undefined,
+    celebration: Readonly<CelebrationPresentation> | undefined,
+  ): void {
+    const selected = getSurgeon(surgeonId ?? DEFAULT_SURGEON_ID);
+    const surgeon = images[selected.portraitAssetId];
     const { x, y } = state.player.position;
-    const victory = state.phase === "level_complete" || state.phase === "campaign_complete";
+    const victory = celebration !== undefined && celebration.elapsed >= VICTORY_POSE_DELAY;
+    const poseElapsed = victory ? celebration.elapsed - VICTORY_POSE_DELAY : 0;
+    const hop =
+      !reducedMotion && victory ? Math.sin(Math.min(1, poseElapsed / 0.42) * Math.PI) * 18 : 0;
+    const tilt = !reducedMotion && victory ? Math.sin(poseElapsed * 13) * 0.045 : 0;
+    // Pivot at the feet and reserve the rotated sprite's full width at either wall.
+    const halfWidth =
+      (PLAYER_WIDTH / 2) * Math.cos(tilt) + PLAYER_HEIGHT * Math.abs(Math.sin(tilt));
+    const poseX = Math.max(halfWidth, Math.min(ARENA_WIDTH - halfWidth, x));
+    const poseY = Math.min(y, playerSupportY(state.level.arena.floor, poseX, halfWidth * 2));
     const running = moving && state.phase === "playing" && !reducedMotion;
     const stride = running ? Math.sin(state.elapsed * 22) : 0;
     const recoil = firingRemaining > 0 ? 2 : 0;
@@ -269,7 +331,23 @@ export function createRenderer(
     ctx.ellipse(0, PLAYER_HEIGHT - 2, 26, 4, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalAlpha = 1;
-    ctx.translate(0, recoil + breathing - (victory ? 5 : 0));
+    ctx.translate(0, recoil + breathing);
+    if (victory) {
+      ctx.translate(
+        poseX - x,
+        PLAYER_HEIGHT + poseY - y - hop - (Math.abs(Math.sin(tilt)) * PLAYER_WIDTH) / 2,
+      );
+      ctx.rotate(tilt);
+      ctx.drawImage(
+        images[`surgeon-${selected.id}-victory`],
+        -PLAYER_WIDTH / 2,
+        -PLAYER_HEIGHT,
+        PLAYER_WIDTH,
+        PLAYER_HEIGHT,
+      );
+      ctx.restore();
+      return;
+    }
     ctx.rotate(stride * 0.035);
     if (state.player.contactInvulnerabilityRemaining > 0) {
       const pulse = reducedMotion ? 0.5 : (Math.sin(state.elapsed * Math.PI * 2) + 1) / 2;
@@ -292,7 +370,7 @@ export function createRenderer(
     }
     // Source regions preserve the original editable sprite while articulating the two legs.
     ctx.drawImage(
-      images.surgeon,
+      surgeon,
       0,
       0,
       96,
@@ -308,7 +386,7 @@ export function createRenderer(
       ctx.rotate(stride * side * 0.28);
       const sourceX = side < 0 ? 0 : 48;
       ctx.drawImage(
-        images.surgeon,
+        surgeon,
         sourceX,
         100,
         48,
@@ -319,15 +397,6 @@ export function createRenderer(
         (PLAYER_HEIGHT * 28) / 128,
       );
       ctx.restore();
-    }
-    if (victory) {
-      ctx.strokeStyle = "#caffee";
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(-13, 33);
-      ctx.lineTo(-26, 15);
-      ctx.stroke();
-      ctx.drawImage(images.surgeon, 10, 78, 17, 19, -31, 5, 12, 13);
     }
     if (firingRemaining > 0) {
       ctx.strokeStyle = "#edfcff";
@@ -351,28 +420,98 @@ export function createRenderer(
     ctx.restore();
   }
 
-  function render(state: Readonly<SimulationState>, interpolation: number): void {
+  function render(
+    state: Readonly<SimulationState>,
+    interpolation: number,
+    surgeonId?: SurgeonId,
+    celebration?: Readonly<CelebrationPresentation>,
+  ): void {
     if (destroyed) return;
     resize();
-    const newLevel = state.level.id !== lastLevel || state.tick < lastTick;
+    const newLevel =
+      state !== lastSimulation || state.level.id !== lastLevel || state.tick < lastTick;
     if (newLevel) {
       particles = [];
       hitEffects = [];
       arenaEffects = [];
+      pointLabels = [];
+      streakCallout = undefined;
       lastPlayerX = undefined;
       firingRemaining = 0;
       damageRemaining = 0;
+      moving = false;
+      lastCelebrationElapsed = undefined;
     }
-    const dt = newLevel ? 0 : Math.max(0, Math.min(0.1, (state.tick - lastTick) * FIXED_STEP));
+    const simulationDt = newLevel
+      ? 0
+      : Math.max(0, Math.min(0.1, (state.tick - lastTick) * FIXED_STEP));
+    const celebrationElapsed =
+      celebration === undefined
+        ? undefined
+        : Math.max(0, Math.min(celebration.duration, celebration.elapsed));
+    const dt =
+      celebrationElapsed === undefined
+        ? simulationDt
+        : lastCelebrationElapsed === undefined
+          ? simulationDt + celebrationElapsed
+          : Math.max(0, celebrationElapsed - lastCelebrationElapsed);
     if (lastPlayerX !== undefined && state.tick !== lastTick)
       moving = Math.abs(state.player.position.x - lastPlayerX) > 0.1;
     lastPlayerX = state.player.position.x;
     lastTick = state.tick;
     lastLevel = state.level.id;
+    lastSimulation = state;
+    lastCelebrationElapsed = celebrationElapsed;
     firingRemaining = Math.max(0, firingRemaining - dt);
     damageRemaining = Math.max(0, damageRemaining - dt);
-    ctx.setTransform(canvas.width / ARENA_WIDTH, 0, 0, canvas.height / ARENA_HEIGHT, 0, 0);
-    ctx.clearRect(0, 0, ARENA_WIDTH, ARENA_HEIGHT);
+    // Only renderer-owned effects advance on the celebration clock. Gameplay stays frozen.
+    for (const effect of hitEffects) effect.life -= dt;
+    for (const effect of arenaEffects) effect.life -= dt;
+    for (const label of pointLabels) label.life -= dt;
+    if (streakCallout !== undefined) {
+      streakCallout.life -= dt;
+      if (streakCallout.life <= 0) streakCallout = undefined;
+    }
+    for (const particle of particles) {
+      particle.x += particle.vx * dt;
+      particle.y += particle.vy * dt;
+      particle.life -= dt;
+    }
+    applyEvents(pendingEvents);
+    pendingEvents = [];
+    // Keep the physics world uniform inside the taller canvas. At 16:10 this
+    // exposes 30 logical pixels of artery wall above and below the 960x540 world.
+    const scale = Math.min(canvas.width / ARENA_WIDTH, canvas.height / ARENA_HEIGHT);
+    const offsetX = (canvas.width - ARENA_WIDTH * scale) / 2;
+    const offsetY = (canvas.height - ARENA_HEIGHT * scale) / 2;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#844f68";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
+    // Static tissue texture fills the frame without moving when the game pauses.
+    // The scene covers its center, leaving only the decorative outer wall visible.
+    const left = -offsetX / scale;
+    const top = -offsetY / scale;
+    const right = ARENA_WIDTH - left;
+    const bottom = ARENA_HEIGHT - top;
+    for (let y = top - 12; y < bottom + 12; y += 22) {
+      if (y > 12 && y < ARENA_HEIGHT - 12 && offsetX === 0) continue;
+      for (let x = left - 18; x < right + 18; x += 31) {
+        const variation = Math.sin(x * 0.09 + y * 0.13);
+        ctx.fillStyle = "#986279";
+        ctx.strokeStyle = "#b37e90";
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.ellipse(x + variation * 4, y, 18, 12, variation * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "#71495f";
+        ctx.beginPath();
+        ctx.ellipse(x + 3, y + 1, 4, 2, 0.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
     ctx.drawImage(images[state.level.scene], 0, 0, ARENA_WIDTH, ARENA_HEIGHT);
     // Scene art retains its editable decorative lower wall. Extend the adjacent clean
     // lumen color beneath it so only the geometry-owned floor describes solid ground.
@@ -468,7 +607,6 @@ export function createRenderer(
       ctx.restore();
     }
     for (const effect of hitEffects) {
-      effect.life -= dt;
       const progress = Math.min(1, 1 - effect.life / HIT_EFFECT_DURATION);
       ctx.save();
       ctx.translate(effect.x, effect.y);
@@ -504,7 +642,6 @@ export function createRenderer(
     }
     hitEffects = hitEffects.filter((effect): boolean => effect.life > 0);
     for (const effect of arenaEffects) {
-      effect.life -= dt;
       const progress = Math.max(0, Math.min(1, 1 - effect.life / 0.6));
       ctx.save();
       ctx.globalAlpha = (1 - progress) * 0.85;
@@ -562,11 +699,8 @@ export function createRenderer(
       ctx.fillText("INCOMING", x, y + 59);
       ctx.restore();
     }
-    drawSurgeon(state);
+    drawSurgeon(state, surgeonId, celebration);
     for (const particle of particles) {
-      particle.x += particle.vx * dt;
-      particle.y += particle.vy * dt;
-      particle.life -= dt;
       ctx.globalAlpha = Math.max(0, particle.life / 0.42);
       ctx.fillStyle = particle.color;
       ctx.fillRect(particle.x - 2, particle.y - 2, 4, 4);
@@ -580,6 +714,45 @@ export function createRenderer(
         particle.y <= ARENA_HEIGHT,
     );
     ctx.globalAlpha = 1;
+    pointLabels = pointLabels.filter((label) => label.life > 0);
+    for (const label of pointLabels) {
+      const progress = Math.min(1, 1 - label.life / POINT_LABEL_DURATION);
+      const text = `+${label.points}`;
+      ctx.save();
+      ctx.font = "800 15px system-ui, sans-serif";
+      const halfWidth = ctx.measureText(text).width / 2 + 7;
+      const x = Math.max(halfWidth + 4, Math.min(ARENA_WIDTH - halfWidth - 4, label.x));
+      const y = Math.max(
+        18,
+        Math.min(ARENA_HEIGHT - 18, label.y - (reducedMotion ? 0 : progress * 18)),
+      );
+      ctx.globalAlpha = Math.min(1, label.life / 0.25);
+      ctx.fillStyle = "#211e34";
+      ctx.fillRect(x - halfWidth, y - 11, halfWidth * 2, 22);
+      ctx.fillStyle = "#ffdf8e";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, x, y);
+      ctx.restore();
+    }
+    if (streakCallout !== undefined) {
+      // The 16:10 canvas provides decorative wall above the playable world.
+      // Keep this stationary and separate from incoming warnings and the surgeon.
+      const wallHeight = offsetY / scale;
+      const y = wallHeight >= 24 ? -wallHeight / 2 : 16;
+      const text = `${streakCallout.streak}-HIT STREAK / x${streakCallout.multiplier} POINTS`;
+      ctx.save();
+      ctx.font = "800 16px system-ui, sans-serif";
+      const width = ctx.measureText(text).width + 24;
+      ctx.globalAlpha = Math.min(1, streakCallout.life / 0.3);
+      ctx.fillStyle = "#211e34";
+      ctx.fillRect((ARENA_WIDTH - width) / 2, y - 12, width, 24);
+      ctx.fillStyle = "#ffdf8e";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, ARENA_WIDTH / 2, y);
+      ctx.restore();
+    }
     if (state.overloadElapsed > 0) {
       ctx.strokeStyle = "#ffbf69";
       ctx.lineWidth = 6;
@@ -609,6 +782,9 @@ export function createRenderer(
       particles = [];
       hitEffects = [];
       arenaEffects = [];
+      pointLabels = [];
+      streakCallout = undefined;
+      pendingEvents = [];
       observer.disconnect();
     },
   };

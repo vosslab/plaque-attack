@@ -1,4 +1,5 @@
 import { campaignPosition, getLevel, LEVEL_IDS, OVERLOAD_DURATION } from "./constants";
+import { hitMultiplier } from "./scoring";
 import type { LevelConfig, WeaponMode } from "./types/level";
 import type { AppScreen } from "./types/runtime";
 import type { SimulationState } from "./types/simulation";
@@ -48,7 +49,8 @@ export function showScreen(screen: AppScreen): void {
   element("main_menu").hidden = kind !== "menu";
   element("practice_select").hidden = kind !== "practice_select";
   element("level_briefing").hidden = kind !== "briefing";
-  element("gameplay").hidden = kind !== "gameplay" && kind !== "pause";
+  element("gameplay").hidden = kind !== "gameplay" && kind !== "celebration" && kind !== "pause";
+  element("celebration_status").hidden = kind !== "celebration";
   element("result_panel").hidden = !["level_result", "game_over", "campaign_result"].includes(kind);
 }
 
@@ -106,6 +108,8 @@ export function updateHud(state: Readonly<SimulationState>): void {
   element("hud_lives").textContent =
     `${"\u2665".repeat(state.player.lives)}${"\u2661".repeat(3 - state.player.lives)} ${state.player.lives} / 3`;
   element("hud_score").textContent = String(state.score).padStart(6, "0");
+  element("hud_streak").textContent = `${state.streak}-hit streak`;
+  element("hud_multiplier").textContent = `x${hitMultiplier(state.streak)} points`;
   element("hud_weapon").textContent = TOOL_NAMES[level.weapon];
   const objective = level.objective;
   element("hud_time_label").textContent =
@@ -168,5 +172,13 @@ export function showResult(state: Readonly<SimulationState>, recordRank?: number
   button("retry_button").hidden = !lost && !final && state.mode !== "practice";
   button("retry_button").textContent =
     state.mode === "practice" ? "Retry practice" : final ? "Play again" : "Retry campaign";
+  element("result_keyboard_hint").textContent =
+    state.mode === "practice"
+      ? "Press Enter or Space to retry practice."
+      : final
+        ? "Press Enter or Space to play again."
+        : lost
+          ? "Press Enter or Space to retry the campaign."
+          : "Press Enter or Space for the next stage.";
   element("result_title").focus();
 }

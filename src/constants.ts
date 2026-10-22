@@ -230,11 +230,11 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     ],
     name: "Three-way squeeze",
     weapon: "stent",
-    speedMultiplier: 0.8,
+    speedMultiplier: 0.75,
     arena: ARENA_LAYOUTS[3],
     merge: MERGE_RULES[3],
-    briefing: "Keep the center fragment in view while two large families cross the arena.",
-    initialTargets: [plaque("large", 200, 1), plaque("medium", 480, -1), plaque("large", 760, -1)],
+    briefing: "Track a large family, a medium family, and a small fragment crossing the arena.",
+    initialTargets: [plaque("large", 200, 1), plaque("medium", 480, -1), plaque("small", 760, -1)],
     objective: { kind: "clear", reinforcements: [] },
     fact: "A coronary stent helps hold a narrowed artery open.",
   },
@@ -253,11 +253,11 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     ],
     name: "Lesion junction",
     weapon: "stent",
-    speedMultiplier: 0.9,
+    speedMultiplier: 0.85,
     arena: ARENA_LAYOUTS[4],
     merge: MERGE_RULES[4],
     briefing: "Manage three splitting families. Smaller fragments move faster.",
-    initialTargets: [plaque("large", 200, 1), plaque("large", 480, -1), plaque("large", 760, 1)],
+    initialTargets: [plaque("large", 200, 1), plaque("medium", 480, -1), plaque("large", 760, 1)],
     objective: { kind: "clear", reinforcements: [] },
     fact: undefined,
   },
@@ -377,7 +377,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     speedMultiplier: 0.95,
     arena: ARENA_LAYOUTS[18],
     merge: MERGE_RULES[18],
-    briefing: "Read the left-left-right-right parade. Inactivate all 14 hazards.",
+    briefing:
+      "Cross the low central basin between raised flanks. Read the left-left-right-right parade and clear 14 hazards.",
     initialTargets: platelets(4, "small"),
     objective: {
       kind: "clear",
@@ -479,7 +480,7 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     arena: ARENA_LAYOUTS[21],
     merge: MERGE_RULES[21],
     briefing:
-      "Use persistent shots along two alternating entry columns. Inactivate all 16 hazards.",
+      "Work the broad central shelf or its lower flanks. Use persistent shots to clear 16 hazards.",
     initialTargets: platelets(6, "small"),
     objective: { kind: "clear", reinforcements: reinforcements(10, 3, entries([320, 640])) },
     fact: undefined,
@@ -551,7 +552,8 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     speedMultiplier: 1.05,
     arena: ARENA_LAYOUTS[23],
     merge: MERGE_RULES[23],
-    briefing: "Follow tiny targets drifting through changing columns. Inactivate all 26 hazards.",
+    briefing:
+      "Cross the off-center tissue shoulder as tiny targets change columns. Inactivate all 26 hazards.",
     initialTargets: mixedPlatelets(4, 6),
     objective: {
       kind: "clear",
@@ -730,7 +732,7 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     arena: ARENA_LAYOUTS[24],
     merge: MERGE_RULES[24],
     briefing:
-      "Follow the traveling sweep for 50 seconds with five or fewer hazards. Wall plaque remains scenery.",
+      "Follow the traveling sweep across the basin for 50 seconds with five or fewer hazards. Wall plaque remains scenery.",
     initialTargets: platelets(3, "tiny"),
     objective: {
       kind: "maintenance",
@@ -761,7 +763,7 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     arena: ARENA_LAYOUTS[15],
     merge: MERGE_RULES[15],
     briefing:
-      "Complete 60 seconds with four or fewer hazards through alternating outer and inner entries.",
+      "Move between the central shelf and lower flanks. Complete 60 seconds with four or fewer hazards.",
     initialTargets: platelets(3, "tiny"),
     objective: {
       kind: "maintenance",

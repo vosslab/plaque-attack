@@ -166,6 +166,7 @@ export function resolveProjectileHits(
       size: target.size,
       position: { ...target.position },
       points,
+      streak: state.streak,
       split,
     });
     splitTarget(state, target);

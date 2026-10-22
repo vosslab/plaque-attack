@@ -93,16 +93,18 @@ inevitable sequence or that stenting removes the underlying disease.
 
 ## Gameplay geometry presentation
 
-The complete asset family currently has 19 editable SVGs: the twelve expansion assets above and
-seven existing surgeon, tool, plaque, platelet and scene assets. Tissue arches and membrane shells
+The asset family includes the twelve expansion assets above, the original seven baseline
+sources, six roster SVGs, six victory variants, and the cardiac recovery composition. Tissue arches and membrane shells
 use rounded cellular silhouettes inside their occupied 12x12 cells. Draw floor scallops inside
 the solid floor silhouette, with an uninterrupted walking surface. Neither decorative anatomy
 nor strokes may fill a carved firing lane.
 
 Show sealed pocket contents with a distinct thin shell; warn visibly before committed release.
 Use text as well as color for optional/releasing status. Cover, shots, hazards and the surgeon
-need separate silhouettes at tiny and narrow-mobile scales. Integrated captures for the new
-mechanics remain acceptance work; the following art evidence predates them.
+need separate silhouettes at tiny and narrow-mobile scales.
+[MECHANICS_ACCEPTANCE.md](MECHANICS_ACCEPTANCE.md) records the accepted integrated mechanics
+captures and their limits. The following art evidence predates that delivery and covers the
+assets separately.
 
 ## Historical asset verification
 
@@ -123,3 +125,45 @@ fit within a 60-unit radius around the source center (maximum measured radius 59
 The ruffled sprite was tightened by three percent after the first measurement. Results are
 recorded in `output/expansion_art/collision_visual_bounds.json`; the existing 64-unit image
 square leaves a small antialiasing margin around the silhouette.
+
+## Surgeon and recovery art
+
+Six original editable `surgeon_*.svg` figures share a `96 128` viewBox, foot position and tool
+anchor. Maya wears cobalt with coral accents; Jules violet; Imani deep teal with a berry
+headscarf; Leo blue with a beard; Samira plum and rose; Alex forest green with round glasses.
+Skin, hair and clothing make the figures distinct. None changes physics or weapon configuration.
+The selected portrait appears in the roster and Canvas arena. Briefing and results open the same
+full roster chooser.
+
+Six editable victory variants accompany the base roster:
+[surgeon_maya_victory.svg](../src/assets/surgeon_maya_victory.svg),
+[surgeon_jules_victory.svg](../src/assets/surgeon_jules_victory.svg),
+[surgeon_imani_victory.svg](../src/assets/surgeon_imani_victory.svg),
+[surgeon_leo_victory.svg](../src/assets/surgeon_leo_victory.svg),
+[surgeon_samira_victory.svg](../src/assets/surgeon_samira_victory.svg), and
+[surgeon_alex_victory.svg](../src/assets/surgeon_alex_victory.svg). Each preserves its surgeon's
+identity, 96 by 128 viewBox, palette, feet and leg geometry. Raised arms, a raised applicator,
+crescent eyes and curved mask folds signal success. The runtime presents the final pop before
+the victory pose; the celebration is cosmetic and reduced motion uses a static pose.
+
+The local asset evidence in `output/clear_flow/art/art_report.md` records the SVG references
+actually read, XML/reference validation, preserved geometry and inspected contact sheets at
+48 by 64, 72 by 96 and 288 by 384. It includes Drawing Mentor lines 640-662 on simplified
+silhouettes and Mastering SVG lines 635-675 on viewBox coordinates. These are asset-level checks;
+[CLEAR_FLOW.md](CLEAR_FLOW.md) owns integrated sequencing, motion and continuation acceptance.
+Its [clear_celebration.png](screenshots/clear_celebration.png) montage shows the actual final hit,
+selected victory pose and result; final normal/reduced-motion capture evidence is retained in
+`output/clear_flow/visual/acceptance.md`.
+
+`cardiac_recovery.svg` supplies an original ruby-heart and branching-vessel composition, with
+reusable patient symbols for recovery tiers. `src/recovery.ts` owns fixed stable-ID map slots
+and the text/state overlays. Restored territory, available/locked stage state, current stage
+and newly restored feedback use text and control state as well as color. The patient becomes
+more active at the four six-route milestones. The biological setting remains an arcade story.
+
+This artwork does not reuse Bad Cell Day's full-body layout, geometry or asset identifiers.
+[RECOVERY_ROSTER_ACCEPTANCE.md](RECOVERY_ROSTER_ACCEPTANCE.md) owns new rendered evidence and
+its limits; the historical twelve-asset checks above do not prove these additions.
+
+The later basin, shelf and shoulder variants, rendered evidence and geometry/completion checks
+are recorded in [FLOOR_VARIATION.md](FLOOR_VARIATION.md).

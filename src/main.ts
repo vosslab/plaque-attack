@@ -1,11 +1,19 @@
 import { loadAssets } from "./assets";
 import { createAudio } from "./audio";
 import { campaignPosition, getLevel, isLevelUnlocked, LEVEL_IDS, nextLevelId } from "./constants";
-import { createDialogs, medicine, paragraph, scoresPanel, settingsPanel } from "./dialogs";
+import {
+  createDialogs,
+  medicine,
+  paragraph,
+  scoresPanel,
+  settingsPanel,
+  surgeonChooser,
+} from "./dialogs";
 import { advanceLevel, createSimulation, pauseSimulation, resumeSimulation } from "./game_state";
 import { createInputController } from "./input";
+import { createRecoveryMap } from "./recovery";
 import { createRenderer } from "./renderer";
-import { addRecord, loadSave, saveSave, storageMessage } from "./save_load";
+import { addRecord, loadSave, markLevelCompleted, saveSave, storageMessage } from "./save_load";
 import { stepSimulation } from "./simulation";
 import { createFixedLoop } from "./timer";
 import {
@@ -19,7 +27,13 @@ import {
   updateHud,
 } from "./ui";
 import type { LevelId } from "./types/level";
-import type { ArenaRenderer, AppScreen, AssetLoadState, RuntimeState } from "./types/runtime";
+import type {
+  ArenaRenderer,
+  AppScreen,
+  AssetLoadState,
+  CelebrationPresentation,
+  RuntimeState,
+} from "./types/runtime";
 import type { TutorialPrompt } from "./types/save";
 import type { RunMode } from "./types/simulation";
 
@@ -40,6 +54,11 @@ function main(): void {
   let renderer: ArenaRenderer | undefined;
   let campaignStarted = false;
   let recordRank: number | undefined;
+  let newlyRestoredLevelId: LevelId | undefined;
+  let celebration: CelebrationPresentation | undefined;
+  let celebrationRendered = false;
+  const heldAdvanceKeys = new Set<string>();
+  let pendingAdvance: { code: string; screen: AppScreen; primary: HTMLButtonElement } | undefined;
   const bestScore = document.createElement("p");
   bestScore.className = "control_hint";
   bestScore.id = "menu_best_score";
@@ -56,6 +75,7 @@ function main(): void {
     runtime.storageStatus = saveSave(runtime.save, runtime.storageStatus);
   };
   const dialogs = createDialogs((open): void => {
+    pendingAdvance = undefined;
     if (!open) runtime.dialog = undefined;
   });
   const isActive = (): boolean => runtime.screen.kind === "gameplay" && !dialogs.isOpen();
@@ -67,16 +87,23 @@ function main(): void {
   );
   function screen(next: AppScreen, focus?: HTMLElement): void {
     input.clear();
+    pendingAdvance = undefined;
     runtime.screen = next;
     showScreen(next);
+    element("celebration_status").hidden =
+      celebration === undefined || (next.kind !== "celebration" && next.kind !== "pause");
     audio.setPaused(
       next.kind !== "gameplay",
-      next.kind === "level_result" || next.kind === "game_over" || next.kind === "campaign_result",
+      next.kind === "celebration" ||
+        next.kind === "level_result" ||
+        next.kind === "game_over" ||
+        next.kind === "campaign_result",
     );
     focus?.focus({ preventScroll: true });
   }
   function menu(): void {
     runtime.simulation = undefined;
+    celebration = undefined;
     campaignStarted = false;
     element("overlay").hidden = true;
     updateBestScore();
@@ -91,12 +118,12 @@ function main(): void {
     let confirmed = false;
     dialogs.open(
       "Leave this campaign?",
-      (body, close): void => {
+      (body, close, footer): void => {
         paragraph(
           body,
           "Your current run will end without a high-score record. Unlocked levels and settings stay saved on this device.",
         );
-        body.append(
+        footer.append(
           action("Keep playing", close, true),
           action("Leave campaign", (): void => {
             confirmed = true;
@@ -108,7 +135,7 @@ function main(): void {
         if (confirmed) {
           campaignStarted = false;
           destination();
-        } else if (runtime.simulation?.phase === "paused") resume();
+        } else if (runtime.simulation?.phase === "paused" || celebration !== undefined) resume();
       },
     );
   }
@@ -117,6 +144,7 @@ function main(): void {
   }
   function briefing(level: LevelId, mode: RunMode): void {
     recordRank = undefined;
+    celebration = undefined;
     runtime.simulation = createSimulation(getLevel(level), mode);
     screen({ kind: "briefing", levelId: level });
     showBriefing(getLevel(level), mode === "practice");
@@ -132,7 +160,12 @@ function main(): void {
   }
   function resume(): void {
     const state = runtime.simulation;
-    if (state === undefined || !resumeSimulation(state)) return;
+    if (state === undefined) return;
+    if (celebration !== undefined) {
+      screen({ kind: "celebration" }, arena);
+      return;
+    }
+    if (!resumeSimulation(state)) return;
     screen({ kind: "gameplay" }, arena);
     audio.unlock();
   }
@@ -142,18 +175,20 @@ function main(): void {
       return;
     }
     const state = runtime.simulation;
-    if (!isActive() || state === undefined || !pauseSimulation(state)) return;
+    const celebrating = runtime.screen.kind === "celebration" && !dialogs.isOpen();
+    if (state === undefined || (!isActive() && !celebrating)) return;
+    if (!celebrating && !pauseSimulation(state)) return;
     screen({ kind: "pause" });
     dialogs.open(
       "Take a breather",
-      (body, close): void => {
+      (body, close, footer): void => {
         paragraph(
           body,
           "Game paused. Press P or Escape to resume. Move with A/D or arrows; hold Space to fire.",
         );
-        body.append(action("Resume game", close, true));
+        footer.append(action("Resume game", close, true));
         if (state.mode === "practice")
-          body.append(
+          footer.append(
             action("Restart practice", (): void => {
               runtime.screen = { kind: "gameplay" };
               close();
@@ -167,10 +202,10 @@ function main(): void {
           settingsChanged,
           storageMessage(runtime.storageStatus),
         );
-        body.append(
+        footer.append(
           action("Main menu", (): void => {
             // Dismiss the pause first; its close handler leaves the simulation frozen.
-            runtime.screen = { kind: "gameplay" };
+            runtime.screen = { kind: celebration === undefined ? "gameplay" : "celebration" };
             close();
             window.setTimeout(quit, 0);
           }),
@@ -188,9 +223,49 @@ function main(): void {
   }
   function openMedicine(): void {
     runtime.dialog = "medicine";
-    dialogs.open("The real medicine", (body, close): void => {
+    dialogs.open("The real medicine", (body, close, footer): void => {
       medicine(body);
-      body.append(action("Close", close, true));
+      footer.append(action("Close", close, true));
+    });
+  }
+  function openSurgeonChooser(): void {
+    runtime.dialog = "surgeon";
+    dialogs.open("Choose your surgeon", (body, close, footer): void => {
+      surgeonChooser(
+        body,
+        runtime.save.settings.surgeonId,
+        (surgeonId): void => {
+          runtime.save.settings.surgeonId = surgeonId;
+          settingsChanged();
+        },
+        close,
+        footer,
+      );
+    });
+  }
+  function openRecovery(selectedLevelId?: LevelId, includeNewlyRestored = false): void {
+    dialogs.open("Patient recovery", (body, close, footer): void => {
+      body.append(
+        createRecoveryMap({
+          completedLevelIds: runtime.save.completedLevelIds,
+          unlockedLevel: runtime.save.unlockedLevel,
+          selectedLevelId,
+          newlyCompletedLevelId: includeNewlyRestored ? newlyRestoredLevelId : undefined,
+          onStageSelected: (levelId): void => {
+            if (!isLevelUnlocked(levelId, runtime.save.unlockedLevel)) return;
+            close();
+            leaveCampaign((): void => {
+              campaignStarted = false;
+              briefing(levelId, "practice");
+            });
+          },
+        }),
+      );
+      paragraph(
+        body,
+        "Select an available route to practice it. Practice is unranked and does not change recovery.",
+      );
+      footer.append(action("Close", close, true));
     });
   }
   function completeTutorial(prompt: TutorialPrompt): void {
@@ -210,22 +285,35 @@ function main(): void {
   };
   function finish(): void {
     const state = runtime.simulation;
-    if (state === undefined) return;
+    if (
+      state === undefined ||
+      (runtime.screen.kind !== "gameplay" && runtime.screen.kind !== "celebration")
+    )
+      return;
     input.clear();
+    newlyRestoredLevelId = undefined;
     if (state.mode === "campaign") {
-      if (state.phase === "level_complete") {
-        const next = nextLevelId(state.level.id);
-        if (next !== undefined && !isLevelUnlocked(next, runtime.save.unlockedLevel)) {
-          runtime.save.unlockedLevel = next;
-          persist();
+      const campaignCompleted = state.phase === "campaign_complete";
+      const clearedStage = state.phase === "level_complete" || campaignCompleted;
+      if (clearedStage) {
+        const wasRestored = runtime.save.completedLevelIds.includes(state.level.id);
+        runtime.save = markLevelCompleted(runtime.save, state.level.id);
+        newlyRestoredLevelId = wasRestored ? undefined : state.level.id;
+        if (state.phase === "level_complete") {
+          const next = nextLevelId(state.level.id);
+          if (next !== undefined && !isLevelUnlocked(next, runtime.save.unlockedLevel)) {
+            runtime.save.unlockedLevel = next;
+          }
         }
-      } else if (!state.recordCommitted) {
+        persist();
+      }
+      if ((state.phase === "game_over" || campaignCompleted) && !state.recordCommitted) {
         const date = new Date().toISOString();
         runtime.save = addRecord(runtime.save, {
           campaign: "expanded",
           score: state.score,
           levelReached: state.level.id,
-          outcome: state.phase === "campaign_complete" ? "completed" : "ended",
+          outcome: campaignCompleted ? "completed" : "ended",
           date,
         });
         const rank = runtime.save.records.findIndex(
@@ -234,7 +322,7 @@ function main(): void {
             record.date === date &&
             record.score === state.score &&
             record.levelReached === state.level.id &&
-            record.outcome === (state.phase === "campaign_complete" ? "completed" : "ended"),
+            record.outcome === (campaignCompleted ? "completed" : "ended"),
         );
         recordRank = rank < 0 ? undefined : rank + 1;
         state.recordCommitted = true;
@@ -251,11 +339,19 @@ function main(): void {
             : "level_result",
     });
     showResult(state, recordRank);
+    element("result_recovery_note").hidden = newlyRestoredLevelId === undefined;
+    celebration = undefined;
   }
   const loop = createFixedLoop(
     (dt): void => {
       const state = runtime.simulation;
-      if (!isActive() || state === undefined) return;
+      if (state === undefined || dialogs.isOpen()) return;
+      if (runtime.screen.kind === "celebration" && celebration !== undefined) {
+        if (celebrationRendered)
+          celebration.elapsed = Math.min(celebration.duration, celebration.elapsed + dt);
+        return;
+      }
+      if (!isActive()) return;
       const controls = input.read();
       const beforeX = state.player.position.x;
       const events = stepSimulation(state, controls, dt);
@@ -267,16 +363,32 @@ function main(): void {
         if (events.some((event) => event.type === "target_hit" && event.split))
           completeTutorial("split");
       }
-      if (["level_complete", "game_over", "campaign_complete"].includes(state.phase)) finish();
+      if (state.phase === "game_over") {
+        renderer?.render(state, 0, runtime.save.settings.surgeonId);
+        finish();
+      } else if (state.phase === "level_complete" || state.phase === "campaign_complete") {
+        celebration = { elapsed: 0, duration: 1.2 };
+        celebrationRendered = false;
+        screen({ kind: "celebration" }, arena);
+      }
     },
     (alpha): void => {
       const state = runtime.simulation;
       if (
         state === undefined ||
-        (runtime.screen.kind !== "gameplay" && runtime.screen.kind !== "pause")
+        (runtime.screen.kind !== "gameplay" &&
+          runtime.screen.kind !== "celebration" &&
+          runtime.screen.kind !== "pause")
       )
         return;
-      renderer?.render(state, alpha);
+      renderer?.render(state, alpha, runtime.save.settings.surgeonId, celebration);
+      if (celebration !== undefined) {
+        celebrationRendered = true;
+        if (runtime.screen.kind === "celebration" && celebration.elapsed >= celebration.duration) {
+          finish();
+          return;
+        }
+      }
       updateHud(state);
       const prompt = (["move", "fire", "split"] as const).find(
         (item) => !runtime.save.settings.completedTutorials.includes(item),
@@ -290,6 +402,12 @@ function main(): void {
   button("play_campaign").addEventListener("click", (): void => briefing(1, "campaign"));
   button("start_level").addEventListener("click", begin);
   button("back_menu").addEventListener("click", quit);
+  button("briefing_surgeon").addEventListener("click", openSurgeonChooser);
+  button("result_surgeon").addEventListener("click", openSurgeonChooser);
+  button("result_recovery").addEventListener("click", (): void => {
+    const state = runtime.simulation;
+    openRecovery(state?.level.id, true);
+  });
   button("pause_button").addEventListener("click", togglePause);
   button("result_menu").addEventListener("click", quit);
   button("continue_button").addEventListener("click", (): void => {
@@ -297,6 +415,7 @@ function main(): void {
     const next = advanceLevel(runtime.simulation);
     if (next === undefined) return;
     runtime.simulation = next;
+    celebration = undefined;
     screen({ kind: "briefing", levelId: next.level.id });
     showBriefing(next.level, false);
   });
@@ -346,7 +465,7 @@ function main(): void {
   element("result_panel").append(action("The real medicine", openMedicine));
   button("instructions_button").addEventListener("click", (): void => {
     runtime.dialog = "instructions";
-    dialogs.open("How to play", (body, close): void => {
+    dialogs.open("How to play", (body, close, footer): void => {
       paragraph(
         body,
         "Move with A/D or the arrow keys. Hold Space to fire upward. Dodge drifting hazards. On touch screens, hold the left or right button while firing. P or Escape pauses and resumes.",
@@ -359,37 +478,79 @@ function main(): void {
         body,
         "Three lives carry through the campaign. Practice unlocked levels with fresh lives and an unranked score. Medicines are an arcade metaphor; they do not remove cholesterol plaque.",
       );
-      body.append(action("Got it", close, true));
+      footer.append(action("Got it", close, true));
     });
   });
   button("settings_button").addEventListener("click", (): void => {
     runtime.dialog = "settings";
-    dialogs.open("Settings", (body, close): void => {
+    dialogs.open("Settings", (body, close, footer): void => {
       settingsPanel(
         body,
         runtime.save.settings,
         settingsChanged,
         storageMessage(runtime.storageStatus),
       );
-      body.append(action("Done", close, true));
+      footer.append(action("Done", close, true));
     });
   });
+  button("surgeon_button").addEventListener("click", openSurgeonChooser);
+  button("recovery_button").addEventListener("click", (): void => openRecovery());
   button("scores_button").addEventListener("click", (): void => {
     runtime.dialog = "scores";
-    dialogs.open("High scores", (body, close): void => {
+    dialogs.open("High scores", (body, close, footer): void => {
       scoresPanel(body, runtime.save.records);
-      body.append(action("Close", close, true));
+      footer.append(action("Close", close, true));
     });
   });
   const freeze = (): void => {
-    if (isActive()) togglePause();
+    if (isActive() || runtime.screen.kind === "celebration") togglePause();
     input.clear();
+    heldAdvanceKeys.clear();
+    pendingAdvance = undefined;
   };
   window.addEventListener("blur", freeze);
   document.addEventListener("visibilitychange", (): void => {
     if (document.hidden) freeze();
   });
+  function advancePrimary(): HTMLButtonElement | undefined {
+    if (dialogs.isOpen()) return undefined;
+    if (runtime.screen.kind === "briefing") return button("start_level");
+    if (
+      runtime.screen.kind === "level_result" ||
+      runtime.screen.kind === "campaign_result" ||
+      runtime.screen.kind === "game_over"
+    )
+      return button(button("continue_button").hidden ? "retry_button" : "continue_button");
+    return undefined;
+  }
+  function acceptsAdvance(target: EventTarget | null, primary: HTMLButtonElement): boolean {
+    if (!(target instanceof Element)) return true;
+    const control = target.closest(
+      "button, input, textarea, select, a, dialog, [role='dialog'], [contenteditable]",
+    );
+    return control === null || control === primary;
+  }
   window.addEventListener("keydown", (event): void => {
+    if (event.code === "Enter" || event.code === "Space") {
+      const fresh = !event.repeat && !heldAdvanceKeys.has(event.code);
+      heldAdvanceKeys.add(event.code);
+      const primary = advancePrimary();
+      if (primary !== undefined && acceptsAdvance(event.target, primary)) {
+        // The matching release activates once, including when the primary button has focus.
+        event.preventDefault();
+        if (fresh && !primary.disabled)
+          pendingAdvance = { code: event.code, screen: runtime.screen, primary };
+      }
+    }
+    if (
+      (event.code === "KeyP" || event.code === "Escape") &&
+      !event.repeat &&
+      event.target instanceof Element &&
+      event.target.closest("#pause_button") !== null
+    ) {
+      event.preventDefault();
+      togglePause();
+    }
     if (
       runtime.screen.kind === "pause" &&
       event.target instanceof Element &&
@@ -400,6 +561,23 @@ function main(): void {
       event.preventDefault();
       dialogs.close();
     }
+  });
+  window.addEventListener("keyup", (event): void => {
+    if (event.code !== "Enter" && event.code !== "Space") return;
+    heldAdvanceKeys.delete(event.code);
+    const primary = advancePrimary();
+    if (primary !== undefined && acceptsAdvance(event.target, primary)) event.preventDefault();
+    const pending = pendingAdvance;
+    if (pending?.code !== event.code) return;
+    pendingAdvance = undefined;
+    event.preventDefault();
+    if (
+      pending.screen === runtime.screen &&
+      pending.primary === advancePrimary() &&
+      !pending.primary.disabled &&
+      acceptsAdvance(event.target, pending.primary)
+    )
+      pending.primary.click();
   });
   const assetStatus = document.createElement("p");
   assetStatus.className = "medical_caption";

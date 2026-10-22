@@ -19,7 +19,8 @@ erode tissue on contact and are deflected by surviving tissue. Tissue is gamepla
 separate from the decorative medical scene and the permanent walkable floor.
 
 Use 24 stages, without changing their stable IDs or replay/save interpretation. Stages 1-3 stay
-flat, uncovered, pocket-free, and merge-free at their existing speeds and workloads. Introduce
+flat, uncovered and pocket-free at their existing speeds and baseline workloads. All lipid stages
+now allow merging, with gentle early probabilities and budgets. Introduce
 new mechanics one at a time from stage 4, then interleave them rather than accumulate every
 mechanic in every stage. Retain platelet-only drug chapters: platelet hazards never merge and
 medicines still do not destroy lipid targets. Tissue carving is an explicit arcade abstraction.
@@ -56,7 +57,7 @@ are proposed API names; once frozen, implementation owners use the actual export
 | `FloorProfile` | Continuous piecewise smooth height function or control points sampled by one geometry owner; no discontinuous steps. |
 | `TissuePatch` | Stable ID plus 12x12 logical-pixel occupied cells; optional pocket association. Cells are authoritative for rendering and collision. |
 | `PocketDefinition` | Stable ID, shell cell references, breach cells, release position and finite compatible `TargetSpawn[]`; unopened contents are optional. |
-| `MergeRule` | Probability as a fraction in [0,1] per eligible contact entry, cooldown seconds, finite integer stage budget. Explicit disabled rule for stages 1-3 and platelet stages. |
+| `MergeRule` | Probability as a fraction in [0,1] per eligible contact entry, cooldown seconds, finite integer stage budget. Increasing probabilities across lipid stages; disabled rule for platelet stages. |
 | Runtime tissue | Mutable occupancy copied from config; immutable start-of-tick collision snapshot; deduplicated pending erosion set; pocket state (`sealed`, `pending`, `released`), release queue and warning timer. Commit erosion once after contacts. No mutation of level configs. |
 | Target motion | Ordered piecewise motion segments with start/end positions and normalized tick intervals in [0,1]. All collision consumers use the same segments, including tissue reflections. |
 | Runtime contacts | Stable sorted target-pair keys, prior contact set and last-attempt tick; tissue contact latches per target/patch. Clear on restart, prune removed IDs. |
@@ -200,56 +201,61 @@ orbit point. The new target activates on tick+1 and cannot merge again until its
 Splits inherit the parent's remaining cooldown, preventing immediate sibling recombination. Prune
 removed IDs from contacts.
 
-Start with probability 0.18 and budgets 1 (introductory stage) or 2 (later plaque stage). These
+Stages 1-6 use probabilities 0.05/0.08/0.12/0.16/0.20/0.25, success budgets 1/1/2/3/4/5,
+and cooldowns 3/3/2.5/2/1.75/1.5 seconds. These
 are tuneable implementation defaults, not permanent test constants. Merging emits no hit points
 or streak increment. Keep the existing scoring implementation: split-tree work is 1/3/7/15
 for tiny/small/medium/large; each successful merge adds exactly one future hit. Therefore total
 hits <= baseline authored/opened-pocket tree work + finite merge budget, and hit score <=750
 times that bound under the current maximum multiplier. This bounds score farming and completion
 work without introducing per-target score-credit bookkeeping. Budget exhaustion leaves ordinary
-fluid contacts. Three first-stage configurations explicitly disable merging.
+fluid contacts. All six lipid stages allow merging, with stage-dependent probabilities and finite budgets.
 
 ## Stage placement matrix
 
 Stage numbers are ordinals; IDs stay `[1,16,2,3,4,5,6,17,7,18,19,20,8,21,9,22,23,10,11,12,13,14,24,15]`.
-`gentle` floor has 16-pixel relief; `wave` has 32; `slope` has 48. Apply smooth slope limits above.
+`gentle` floor has 16-pixel relief; `wave` has 32; `slope`, `basin`, `shelf`, and
+`shoulder` have 48. Basin has a broad low center, shelf a broad high center, and shoulder
+an offset high platform with unequal flanks. All retain the same 0.20 maximum slope.
 `paired` is two tissue patches; `arch` is one broad patch with open flank lanes; `offset` uses
 staggered patches. Pocket contents use the current stage's compatible target kind only.
 
 | Stage / ID | Floor | Cover | Optional pocket | Merge p / budget |
 | --- | --- | --- | --- | --- |
-| 1 / 1 | flat | none | none | off |
-| 2 / 16 | flat | none | none | off |
-| 3 / 2 | flat | none | none | off |
-| 4 / 3 | flat | paired | none | off |
-| 5 / 4 | gentle | none | none | off |
-| 6 / 5 | gentle | offset | none | 0.18 / 1 |
+| 1 / 1 | flat | none | none | 0.05 / 1 |
+| 2 / 16 | flat | none | none | 0.08 / 1 |
+| 3 / 2 | flat | none | none | 0.12 / 2 |
+| 4 / 3 | flat | paired | none | 0.16 / 3 |
+| 5 / 4 | gentle | none | none | 0.2 / 4 |
+| 6 / 5 | gentle | offset | none | 0.25 / 5 |
 | 7 / 6 | flat | none | none | off |
 | 8 / 17 | gentle | paired | none | off |
 | 9 / 7 | flat | arch | 2 tiny platelets | off |
-| 10 / 18 | wave | none | none | off |
+| 10 / 18 | basin | none | none | off |
 | 11 / 19 | gentle | offset | 2 tiny platelets | off |
 | 12 / 20 | wave | paired | none | off |
 | 13 / 8 | flat | none | none | off |
-| 14 / 21 | gentle | arch | none | off |
+| 14 / 21 | shelf | arch | none | off |
 | 15 / 9 | flat | none | none | off |
 | 16 / 22 | wave | offset | 2 tiny platelets | off |
-| 17 / 23 | slope | paired | none | off |
+| 17 / 23 | shoulder | paired | none | off |
 | 18 / 10 | flat | none | none | off |
 | 19 / 11 | gentle | paired | none | off |
 | 20 / 12 | wave | none | 2 tiny platelets | off |
 | 21 / 13 | slope | offset | none | off |
 | 22 / 14 | gentle | arch | 2 tiny platelets | off |
-| 23 / 24 | wave | paired | none | off |
-| 24 / 15 | slope | offset | 2 tiny platelets | off |
+| 23 / 24 | basin | paired | none | off |
+| 24 / 15 | shelf | offset | 2 tiny platelets | off |
 
-Introduce tissue at stage 4, gentle floor at stage 5 with merging off, and merging at stage 6
-with the already introduced floor/cover. Stage 6 retains its original four large plaques
+Introduce tissue at stage 4 and gentle floor at stage 5, while increasing the existing
+lipid merge chance gradually across stages 1-6. Stage 6 retains its original four large plaques
 (32 leaf units) and has no pocket or capacity compensation. The first pocket appears at stage 9.
 These introductions add one new mechanic at a time.
-Stage 4's existing workload jumps to 37 hits; lower its speed from 0.80 toward 0.72 if cover
-makes the ordinary-input replay lose lives repeatedly. Tune cover opening/quantity before
-increasing shot rate. Chapter/tool introductions 7/13/15/18 remain breathing spaces.
+The accepted gentler opening gives stage 4 one large, one medium and one small plaque family
+(25 mandatory hits) at speed 0.75. Stage 5 has two large and one medium family (37 mandatory
+hits) at speed 0.85. [DIFFICULTY_REVIEW.md](DIFFICULTY_REVIEW.md) records the correction and
+ordinary-input evidence. Tune cover opening/quantity before increasing shot rate if later play
+reveals a problem. Chapter/tool introductions 7/13/15/18 remain breathing spaces.
 
 ## Ownership and execution order
 
@@ -287,7 +293,7 @@ Repair inconsistent time composition at its owner before acceptance.
 
 Focused permanent tests protect stable behavior, not the stage probability/patch-count constants:
 
-- Flat stage compatibility and first-three-stage absence of all four mechanics; raised floor
+- Flat stage compatibility and first-three-stage absence of tissue, pockets and raised floors; raised floor
   moves feet, hitbox and muzzle together with left/right/fire only; tiny and large orbits stay
   smooth, within local geometry, and eventually inside the short-range firing area.
 - Stent, aspirin and clopidogrel each visibly erode and stop at first solid cell; target-before-
@@ -320,7 +326,7 @@ hazards, alter lives/time/score, skip objectives or mutate geometry. Controlled 
 exercise rare merges, capacity and collisions separately and are labelled as fixtures.
 
 Against the production build under its project subpath, capture desktop and narrow mobile
-stage 4 before/after carving, stage 5 gentle floor with merging off, stage 6 forced merge,
+stage 4 before/after carving, stage 5 gentle floor with bounded merging, stage 6 forced merge,
 stage 9 pocket before/after release, stage 14 clopidogrel obstruction, and stage 24 combined
 maintenance. Inspect all 24 starts and
 chapter transitions for muzzle placement, readable cell silhouettes, unobscured targets, controls,

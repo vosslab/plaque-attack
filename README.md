@@ -1,12 +1,14 @@
 # plaque-attack
 
-A browser arcade game for gamers and biology enthusiasts: split floating plaque, dodge platelet hazards, and carve firing lanes through tissue across 24 artery-themed stages.
+A browser arcade game for gamers and biology enthusiasts: choose one of six surgeons, split floating plaque, and restore a patient's recovery map across 24 artery-themed stages.
 
 **[Play Plaque Trouble in your browser](https://vosslab.github.io/plaque-attack/)**
 No installation or account required. Bring your arcade reflexes; the biology is optional.
+The link opens the published game; the source changes described here await a separate deployment.
 
 <!-- screenshots:begin (managed by screenshot-docs) -->
-![A tiny surgeon faces a big blockage: the 24-stage Plaque Trouble campaign menu](docs/screenshots/main_menu.png)
+![Choose your surgeon: six teammates with the same abilities and a visible selected portrait](docs/screenshots/surgeon_roster.png)
+![Patient recovery with demonstration progress: eight of 24 coronary routes restored](docs/screenshots/patient_recovery.png)
 ![Repeated stent shots carve a passage through tissue in Stage 4 Practice, with all three lives intact](docs/screenshots/tissue_carving.png)
 <!-- screenshots:end -->
 
@@ -28,18 +30,21 @@ The campaign changes the goal as you progress:
 - Carve tissue shelter with any shot, or use an open lane; hazards also erode cover on contact.
 - Follow the sloping floor automatically, and choose whether to open optional membrane pockets.
 - Carry three lives through the campaign, earning hit, completion, and no-damage bonuses.
-- Practice unlocked levels with fresh lives and an unranked score.
-- Use keyboard or touch controls. Sound starts muted; animation follows your reduced-motion preference.
-- Keep unlocked levels, settings, and high scores in this browser's local storage.
+- Practice unlocked levels with fresh lives and an unranked score; use keyboard or touch controls.
+- Choose among six original surgeon portraits with the same movement, collision, and weapons.
+- Restore coronary routes after campaign clears and watch the patient become more active.
+- Keep selection, recovery, unlocks and scores locally; sound starts muted and motion follows your preference.
 
-The integrated 24-stage campaign has an automated completion trace and independent replay,
-plus separate optional-pocket practice/replay. [docs/MECHANICS_ACCEPTANCE.md](docs/MECHANICS_ACCEPTANCE.md)
-records the browser, responsive, accessibility and performance evidence and its limits.
-Automated reachability and optional human feedback about fun remain distinct.
+The opening six stages now progress through 7, 10, 15, 25, 37, and 60 mandatory plaque hits,
+with slower drift before the chapter finale. The current six-stage assisted run cleared all six
+with three lives and no damage. [docs/RECOVERY_ROSTER_ACCEPTANCE.md](docs/RECOVERY_ROSTER_ACCEPTANCE.md)
+records this delivery's verification and limits. The earlier full-campaign completion/replay in
+[docs/MECHANICS_ACCEPTANCE.md](docs/MECHANICS_ACCEPTANCE.md) predates this tuning. Automated
+reachability does not establish human enjoyment.
 
 The tools are arcade metaphors: real stents support narrowed arteries, and antiplatelet drugs reduce
-platelet activity and clot formation. The game does not model a patient's treatment, and its drugs do
-not remove cholesterol plaque. Tissue carving and plaque merging are arcade abstractions. See [docs/GAME_SPEC.md](docs/GAME_SPEC.md) for the biology framing.
+platelet activity and clot formation. The recovery illustration is an arcade story payoff, not a clinical treatment model. Its drugs
+do not remove cholesterol plaque. Tissue carving and plaque merging are arcade abstractions. See [docs/GAME_SPEC.md](docs/GAME_SPEC.md) for the biology framing.
 
 ## Quick start
 
@@ -57,9 +62,14 @@ source source_me.sh
 ./run_web_server.sh
 ```
 
-Open the localhost address printed by the script. Choose **Play campaign**, then **Start level**.
+Open the localhost address printed by the script. Use **Choose your surgeon** to pick an avatar,
+then choose **Play campaign** and **Start level**.
 After the countdown, move out from beneath a drifting plaque and hold Space to fire. A successful
-hit splits larger plaque; clear the fragments to finish level 1. Use **Continue** to advance.
+hit splits larger plaque; clear the fragments to finish level 1. Watch the last pop and a brief
+surgeon celebration, then press Enter or freshly press Space to continue to the next briefing.
+Use a separate press to start that level. Newly restored routes appear in the result; **Patient
+recovery** opens the map when you want it. Map stage buttons start unranked practice; practice
+never earns recovery.
 
 The preview builds and serves `dist/`, choosing a random port unless `PORT` is set. Stop it with
 Ctrl+C. To produce the static site without starting a server:
@@ -77,9 +87,14 @@ The build type-checks the application and writes HTML, CSS, JavaScript, and orig
 | --- | --- |
 | Left/right arrows or A/D | Move |
 | Space, held if desired | Fire at the equipped tool's allowed rate |
+| Enter or a fresh Space press | Start from a briefing or activate the result's continue/retry action |
 | P or Escape during play | Pause |
 | Tab, then Enter | Focus and activate menu buttons |
 | On-screen left, right, and fire buttons | Touch play |
+
+Release the fire key before using Space to continue. Each screen needs its own deliberate press;
+holding a key through a clear cannot skip results or start the next level. Shortcuts yield to
+dialogs and focused controls; Tab and native button activation remain available.
 
 Pause also provides help, settings, and a return to the menu. Watch the HUD for your current goal:
 early rounds show elapsed time, while maintenance rounds show time remaining and the active-hazard
@@ -91,6 +106,7 @@ limit. An overload warning gives you time to bring the count back down before lo
 - [docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md) explains how the static `dist/` build fits GitHub Pages setup.
 - [docs/PLAYWRIGHT_USAGE.md](docs/PLAYWRIGHT_USAGE.md) explains browser-test setup and execution.
 - [docs/EXPANSION_PLAN.md](docs/EXPANSION_PLAN.md) defines the ordered 24-stage campaign and stable level identities.
+- [docs/RECOVERY_ROSTER_PLAN.md](docs/RECOVERY_ROSTER_PLAN.md) records the roster and recovery contract.
 - [docs/DIFFICULTY_RUBRIC.md](docs/DIFFICULTY_RUBRIC.md) explains the challenge curve and tool-introduction resets.
 - [docs/active_plans/active/organic_expansion.md](docs/active_plans/active/organic_expansion.md) records the completed expansion and acceptance status.
 

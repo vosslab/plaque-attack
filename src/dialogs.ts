@@ -1,11 +1,13 @@
 import { campaignPosition } from "./constants";
+import { SURGEON_IDS, SURGEONS } from "./surgeons";
 import { action, element } from "./ui";
 import type { CampaignRecord, Settings } from "./types/save";
+import type { SurgeonId } from "./types/surgeon";
 
 export function createDialogs(onChange: (open: boolean) => void): {
   open: (
     title: string,
-    fill: (body: HTMLElement, close: () => void) => void,
+    fill: (body: HTMLElement, close: () => void, footer: HTMLElement) => void,
     after?: () => void,
   ) => void;
   close: () => void;
@@ -44,9 +46,12 @@ export function createDialogs(onChange: (open: boolean) => void): {
       heading.id = "dialog_title";
       heading.textContent = title;
       const body = document.createElement("div");
-      dialog.replaceChildren(heading, body);
+      body.className = "dialog_content";
+      const footer = document.createElement("footer");
+      footer.className = "dialog_actions";
+      dialog.replaceChildren(heading, body, footer);
       dialog.setAttribute("aria-labelledby", heading.id);
-      fill(body, close);
+      fill(body, close, footer);
       onChange(true);
       dialog.showModal();
       heading.tabIndex = -1;
@@ -161,7 +166,72 @@ export function settingsPanel(
       paragraph(body, "Tutorial prompts will appear on your next level-one attempt.");
     }),
   );
+  surgeonPanel(body, settings.surgeonId, (surgeonId): void => {
+    settings.surgeonId = surgeonId;
+    changed();
+  });
   paragraph(body, status);
+}
+
+/** Reused in Settings, pause, and the dedicated chooser so all roster controls stay equivalent. */
+export function surgeonPanel(
+  body: HTMLElement,
+  selectedId: SurgeonId,
+  selected: (surgeonId: SurgeonId) => void,
+  showHeading = true,
+): void {
+  let activeId = selectedId;
+  const heading = document.createElement("h3");
+  heading.textContent = "Choose your surgeon";
+  const intro = document.createElement("p");
+  intro.className = "surgeon_roster_intro";
+  intro.textContent =
+    "Same abilities for every surgeon. Choose the teammate you want in the artery.";
+  const roster = document.createElement("div");
+  roster.className = "surgeon_roster";
+  roster.setAttribute("role", "group");
+  roster.setAttribute("aria-label", "Choose your surgeon");
+  for (const id of SURGEON_IDS) {
+    const surgeon = SURGEONS[id];
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "surgeon_card";
+    card.setAttribute("aria-pressed", String(id === activeId));
+    card.setAttribute("aria-label", `Choose ${surgeon.name}; same abilities`);
+    const portrait = document.createElement("img");
+    portrait.className = "surgeon_portrait";
+    portrait.src = `assets/surgeon_${id}.svg`;
+    portrait.alt = "";
+    const name = document.createElement("strong");
+    name.className = "surgeon_name";
+    name.textContent = surgeon.name;
+    const description = document.createElement("span");
+    description.textContent = surgeon.description;
+    card.append(portrait, name, description);
+    card.addEventListener("click", (): void => {
+      if (id === activeId) return;
+      selected(id);
+      activeId = id;
+      for (const candidate of roster.querySelectorAll<HTMLButtonElement>(".surgeon_card"))
+        candidate.setAttribute("aria-pressed", String(candidate === card));
+    });
+    roster.append(card);
+  }
+  if (showHeading) body.append(heading);
+  body.append(intro, roster);
+}
+
+/** Use the common dialog footer so roster scrolling never hides Done. */
+export function surgeonChooser(
+  body: HTMLElement,
+  selectedId: SurgeonId,
+  selected: (surgeonId: SurgeonId) => void,
+  close: () => void,
+  footer: HTMLElement,
+): void {
+  body.classList.add("surgeon_chooser");
+  surgeonPanel(body, selectedId, selected, false);
+  footer.append(action("Done", close, true));
 }
 
 export function scoresPanel(body: HTMLElement, records: readonly CampaignRecord[]): void {

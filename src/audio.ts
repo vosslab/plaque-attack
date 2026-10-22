@@ -1,5 +1,6 @@
 import type { SimulationEvent } from "./types/events";
 import type { Settings } from "./types/save";
+import { streakMilestone } from "./scoring";
 
 /** Original synthesized sounds; constructing the controller never requests audio playback. */
 export function createAudio(): {
@@ -132,7 +133,7 @@ export function createAudio(): {
               210,
             );
             break;
-          case "target_hit":
+          case "target_hit": {
             tone(
               event.split ? 220 : 620,
               0.12,
@@ -142,7 +143,14 @@ export function createAudio(): {
               "sine",
               event.split ? 440 : 880,
             );
+            const milestone = streakMilestone(event.streak);
+            if (milestone !== undefined) {
+              const notes = milestone === 3 ? [659.25, 880, 1318.51] : [523.25, 659.25, 1046.5];
+              for (const [index, note] of notes.entries())
+                tone(note, 0.14, 0.025, now + 0.04 + index * 0.075, effectVoices, "triangle");
+            }
             break;
+          }
           case "damage":
             tone(170, 0.3, 0.05, now, effectVoices, "triangle", 75);
             break;

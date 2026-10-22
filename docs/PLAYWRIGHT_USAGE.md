@@ -153,6 +153,10 @@ Playwright does not dictate where generated files belong. Follow the repository'
 normal conventions. Repositories may override `docs/screenshots/` when they have an established
 location for committed documentation captures.
 
+This repository configures test output in `output/playwright/` in
+[playwright.config.ts](../playwright.config.ts). The `/output*/` rule in
+[.gitignore](../.gitignore) ignores that directory; `test-results/` is only a general example above.
+
 ## Repository helpers
 
 Repositories may provide helper modules or wrappers such as:
@@ -209,7 +213,7 @@ See `E2E_TESTS.md` for repository testing conventions.
 ### Test artifacts
 
 Temporary screenshots, recordings, traces, and similar evidence normally belong
-in an ignored output directory such as `test-results/`.
+in an ignored output directory. This repository uses `output/playwright/` for test-run artifacts.
 
 ## Troubleshooting
 

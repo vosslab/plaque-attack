@@ -33,6 +33,20 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 - Make the cellular floor wavy or sloped, with the surgeon moving up and down automatically while
   moving left and right. Do not add jumping or a jump control.
 - Let colliding lipid balls sometimes merge: tiny into small, small into medium, medium into large.
-  Keep merging off in the first three stages and keep those stages easy.
+  Make merging possible across lipid levels, with probabilities changing by level; keep the opening easy.
 - Finish every milestone through the manager and subagents. Remove visible and hidden human
   approval or playtesting dependencies; optional feedback must not hold up completion.
+- Give players a diverse choice of six surgeon characters. Start them with identical gameplay
+  abilities so character preference never changes the game's difficulty.
+- Make campaign victories visibly heal the patient in a distinct cardiovascular recovery view.
+  Borrow the satisfaction of a body-progress map without copying Bad Cell Day's artwork or rubric.
+- When I ask for work, do it. Queued requests are intended as work to complete, not options that
+  wait for me to notice or choose them.
+- Make the play view 16:10 and keep popups compact enough to fit the viewport.
+- Review all my previous comments and make sure they are implemented. Make the plan ambitious,
+  practical and complete, with no human dependencies.
+- Let me go to the next level with Enter or Space. Keep the final lipid pop visible, then give the
+  surgeon a short celebration before results. Keep movement automatic over the floor without jumping.
+- Explore non-flat floors more deeply and assess whether they add enough to the game.
+- Survey other games in `~/nsh/TYPESCRIPT` for more fun game ideas. The more fun the game,
+  the happier I will be!

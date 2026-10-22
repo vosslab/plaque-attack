@@ -41,6 +41,18 @@ const SLOPE: FloorProfile = Object.freeze({
   controlPoints: Object.freeze([point(0, 540), point(480, 492), point(960, 540)]),
 });
 
+// Broad ramps create different positions to fight from without introducing steps,
+// sliding, or jumps. Every span remains within the existing 0.20 slope limit.
+const BASIN: FloorProfile = Object.freeze({
+  controlPoints: Object.freeze([point(0, 492), point(360, 540), point(600, 540), point(960, 492)]),
+});
+const SHELF: FloorProfile = Object.freeze({
+  controlPoints: Object.freeze([point(0, 540), point(360, 492), point(600, 492), point(960, 540)]),
+});
+const SHOULDER: FloorProfile = Object.freeze({
+  controlPoints: Object.freeze([point(0, 540), point(360, 492), point(540, 492), point(960, 524)]),
+});
+
 // Rows describe actual occupied 12px cells, including the rounded shoulders and
 // hollow arch. Stable row/column IDs also identify each shot's horizontal notch.
 function patch(
@@ -134,38 +146,43 @@ export const ARENA_LAYOUTS: Readonly<Record<LevelId, ArenaLayout>> = Object.free
   16: layout(FLAT), // Stage 2
   2: layout(FLAT), // Stage 3
   3: layout(FLAT, PAIRED), // Stage 4: first tissue
-  4: layout(GENTLE), // Stage 5: first raised floor, merging disabled
-  5: layout(GENTLE, OFFSET), // Stage 6: first merging, original four large plaques
+  4: layout(GENTLE), // Stage 5: first raised floor
+  5: layout(GENTLE, OFFSET), // Stage 6: original four large plaques
   6: layout(FLAT), // Stage 7: aspirin introduction
   17: layout(GENTLE, PAIRED), // Stage 8
   7: layout(FLAT, ARCH, true), // Stage 9: first optional pocket
-  18: layout(WAVE), // Stage 10
+  18: layout(BASIN), // Stage 10: low center, raised outer positions
   19: layout(GENTLE, OFFSET, true), // Stage 11
   20: layout(WAVE, PAIRED), // Stage 12
   8: layout(FLAT), // Stage 13: clopidogrel introduction
-  21: layout(GENTLE, ARCH), // Stage 14
+  21: layout(SHELF, ARCH), // Stage 14: broad central firing platform
   9: layout(FLAT), // Stage 15: dual tool introduction
   22: layout(WAVE, OFFSET, true), // Stage 16
-  23: layout(SLOPE, PAIRED), // Stage 17
+  23: layout(SHOULDER, PAIRED), // Stage 17: offset crest and unequal flanks
   10: layout(FLAT), // Stage 18: maintenance introduction
   11: layout(GENTLE, PAIRED), // Stage 19
   12: layout(WAVE, [], true), // Stage 20
   13: layout(SLOPE, OFFSET), // Stage 21
   14: layout(GENTLE, ARCH, true), // Stage 22
-  24: layout(WAVE, PAIRED), // Stage 23
-  15: layout(SLOPE, OFFSET, true), // Stage 24
+  24: layout(BASIN, PAIRED), // Stage 23: basin with cover
+  15: layout(SHELF, OFFSET, true), // Stage 24: shelf with cover and pocket
 });
 
 const MERGING_OFF: MergeRule = Object.freeze({ probability: 0, cooldown: 0, budget: 0 });
-const LIPID_MERGING: MergeRule = Object.freeze({ probability: 0.18, cooldown: 1.5, budget: 1 });
+
+function lipidMerging(probability: number, cooldown: number, budget: number): MergeRule {
+  return Object.freeze({ probability, cooldown, budget });
+}
 
 export const MERGE_RULES: Readonly<Record<LevelId, MergeRule>> = Object.freeze({
-  1: MERGING_OFF,
-  16: MERGING_OFF,
-  2: MERGING_OFF,
-  3: MERGING_OFF,
-  4: MERGING_OFF,
-  5: LIPID_MERGING,
+  // Every lipid stage can coalesce. Slow opening cooldowns and finite budgets
+  // preserve a forgiving start and bound the extra work from split/merge loops.
+  1: lipidMerging(0.05, 3, 1),
+  16: lipidMerging(0.08, 3, 1),
+  2: lipidMerging(0.12, 2.5, 2),
+  3: lipidMerging(0.16, 2, 3),
+  4: lipidMerging(0.2, 1.75, 4),
+  5: lipidMerging(0.25, 1.5, 5),
   6: MERGING_OFF,
   17: MERGING_OFF,
   7: MERGING_OFF,

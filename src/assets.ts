@@ -3,6 +3,18 @@ import type { AssetId, AssetImages } from "./types/runtime";
 // Keep every required path in one checked manifest, including menu and briefing art.
 export const ASSET_SOURCES = {
   surgeon: "assets/surgeon.svg",
+  "surgeon-maya": "assets/surgeon_maya.svg",
+  "surgeon-jules": "assets/surgeon_jules.svg",
+  "surgeon-imani": "assets/surgeon_imani.svg",
+  "surgeon-leo": "assets/surgeon_leo.svg",
+  "surgeon-samira": "assets/surgeon_samira.svg",
+  "surgeon-alex": "assets/surgeon_alex.svg",
+  "surgeon-maya-victory": "assets/surgeon_maya_victory.svg",
+  "surgeon-jules-victory": "assets/surgeon_jules_victory.svg",
+  "surgeon-imani-victory": "assets/surgeon_imani_victory.svg",
+  "surgeon-leo-victory": "assets/surgeon_leo_victory.svg",
+  "surgeon-samira-victory": "assets/surgeon_samira_victory.svg",
+  "surgeon-alex-victory": "assets/surgeon_alex_victory.svg",
   plaque: "assets/plaque.svg",
   platelet: "assets/platelet.svg",
   stent: "assets/stent.svg",

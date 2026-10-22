@@ -7,6 +7,21 @@ the reasoning a later reader needs. Guidance Neil Voss states belongs in
 `docs/active_plans/decisions/`. [PROPAGATED HEADER - ENTRIES BELOW ARE YOURS]
 <!-- VENDORED HEADER: END -->
 
+### Present earned hit streaks
+
+**Decision.** Present the existing hit count, x2/x3 milestones, and awarded target points through
+compact, bounded feedback. Keep all point awards and streak resets in the existing simulation.
+
+**Why.** The source survey in [FUN_SURVEY.md](FUN_SURVEY.md) favors visible earned momentum as
+a small, coherent improvement that uses the game's existing score rules.
+
+**Consequence.** Keep exact 5/10-hit milestone cues, optional audio, stationary reduced-motion
+feedback, and pause/retry cleanup. Future medals, collectibles, abilities, and environment changes
+remain separate proposals; this decision changes no score balance or saved progress.
+
+**Owner.** [GAME_SPEC.md](GAME_SPEC.md), with verification status in
+[FUN_SURVEY.md](FUN_SURVEY.md).
+
 ### Temporary Graphify Cargo reconciliation
 
 **Decision.** Reconcile exact Cargo aliases with their AST package twins before
@@ -161,8 +176,8 @@ retaining a tiny parent's slower speed.
 
 ### Gradual stage mechanics introductions
 
-**Decision.** Introduce tissue at stage 4, gentle floor with merging off at stage 5, merging
-with existing floor/cover at stage 6, and the first optional pocket at stage 9.
+**Decision.** Introduce tissue at stage 4, gentle floor at stage 5, and the first optional pocket
+at stage 9. Lipid merging is available from stage 1 with a rising probability, as described below.
 
 **Why.** One new mechanic at a time keeps the learning curve legible while retaining existing
 campaign identities and workloads.
@@ -186,3 +201,139 @@ preserve visible waiting/release warnings without changing capacity or safety ad
 
 **Owner.** `src/renderer.ts`, `src/ui.ts` and the pending-release contract in
 [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md).
+
+### Cosmetic surgeon roster
+
+**Decision.** Keep six stable surgeon identities in presentation and saved settings. The roster
+contains names, descriptions and asset references; shared simulation configuration owns every
+movement, collision, muzzle and weapon value.
+
+**Why.** A visual choice supports different player preferences without creating balance branches.
+
+**Consequence.** Select the saved appearance in the renderer and UI. Invalid cosmetic IDs fall
+back to Maya while retaining otherwise valid progress. Roster changes never alter campaign rules.
+
+**Owner.** `src/surgeons.ts`, `src/renderer.ts`, and `src/types/surgeon.ts`.
+
+### Stable recovery progress
+
+**Decision.** Save campaign-clear facts as canonical-order stable `completedLevelIds` in version 3.
+Award them only for successful campaign stages; practice and retries preserve the existing set.
+Use a fixed territory for each stable identity and advance patient presentation by cleared count.
+
+**Why.** Unlocks are navigation permissions and cannot represent every historical completion,
+especially across inserted campaign stages. Explicit IDs keep map restoration idempotent.
+
+**Consequence.** Migrate V1 historical prefixes and completed classic records. Limit ambiguous V2
+unlock prefixes to classic IDs, while expanded records prove their earlier canonical stages.
+Reject malformed V3 completion lists and preserve unsupported saves. Keep active-run resumption
+outside persistence. The recovery illustration is an arcade narrative, not a clinical simulation.
+
+**Owner.** `src/save_load.ts`, `src/recovery.ts`, and
+[RECOVERY_ROSTER_PLAN.md](RECOVERY_ROSTER_PLAN.md).
+
+### Gentler tissue introduction
+
+**Decision.** Keep the opening three stages unchanged; reduce stages 4 and 5 to 25 and 37 mandatory
+hits at speeds 0.75 and 0.85. Retain stage 6's 60-hit bounded-merge capstone.
+
+**Why.** Teach tissue shelter and gentle floor relief before the chapter's full workload.
+
+**Consequence.** Report the opening vector as `7, 10, 15, 25, 37, 60`. Label the earlier full-campaign
+completion evidence historical and the new six-stage assisted simulation separately.
+
+**Owner.** `src/constants.ts` and [DIFFICULTY_REVIEW.md](DIFFICULTY_REVIEW.md).
+
+### Taller play presentation
+
+**Decision.** Present the existing 960x540 simulation in a 16:10 canvas using uniform scale and
+centering. Fill the extra margins with organic artery-wall decoration. Keep dialogs bounded to
+the viewport; use a compact two-column recovery view on wide screens and stack it on narrow ones.
+
+**Why.** The requested taller play view and smaller popups improve presentation without changing
+target shapes, collision coordinates or the authored level geometry.
+
+**Consequence.** Canvas resize affects presentation only. Circles remain circular, and decorative
+margins add no playable space. The recovery header and Close footer stay visible around an internally scrolling map; all 24
+stages need not be visible at once.
+
+**Owner.** `src/renderer.ts` and `src/style.css`.
+
+### Current route and chooser footer
+
+**Decision.** Label the current recovery stage visibly in its stage list and expose aria-current.
+Keep the surgeon chooser title and Done action outside its internally scrolling roster area.
+
+**Why.** A map-only current marker does not identify the current stage in the visible list.
+An internally scrolling roster keeps its dismissal action reachable on short screens.
+
+**Consequence.** Preserve keyboard navigation and the existing stage availability labels.
+Scope chooser layout rules to that dialog so other dialogs retain their own scrolling behavior.
+
+**Owner.** [recovery.ts](../src/recovery.ts), [dialogs.ts](../src/dialogs.ts) and
+[style.css](../src/style.css).
+
+### Successful clear presentation and input
+
+**Decision.** Preserve the final pop for approximately 0.3 seconds, show a short cosmetic surgeon
+victory, then show results at approximately 1.2 seconds total. These are tunable presentation defaults.
+Use contextual Enter and freshly pressed Space for continuation, with one transition per physical
+press. Show newly restored routes inline and open the recovery map by explicit action.
+
+**Why.** A visible outcome gives the last shot closure; carried firing input and repeated keys must
+not dismiss results or start the next stage. Inline restoration preserves the route feedback while
+keeping continuation direct.
+
+**Consequence.** Freeze terminal simulation during celebration, honor reduced motion, preserve
+native control activation and modal focus, and retain distinct campaign/practice completion paths.
+No controllable jump or collision-state change is introduced by celebration.
+
+**Owner.** [CLEAR_FLOW.md](CLEAR_FLOW.md), [src/main.ts](../src/main.ts),
+[src/input.ts](../src/input.ts) and renderer modules.
+
+### Lipid merging throughout intervention
+
+**Decision.** Enable same-size lipid merging in every lipid stage. Stages 1-6 use probabilities
+5%, 8%, 12%, 16%, 20%, 25%; cooldowns 3, 3, 2.5, 2, 1.75, 1.5 seconds; successful-merge
+budgets 1, 1, 2, 3, 4, 5. Platelet-only chapters retain their existing target rules.
+
+**Why.** The user wants merging to be a recurring behavior with level-dependent probability.
+The previous stage-6-only restriction was an agent balancing choice, not human guidance.
+
+**Consequence.** Each merge adds at most one removal hit; maximum opening-stage work is now
+8, 11, 17 hits. Longer early cooldowns limit rapid recombination. Rates are tuning choices,
+not a guarantee that a merge occurs in any run. Persistent contact still rolls only once.
+
+**Owner.** [arena_layouts.ts](../src/arena_layouts.ts).
+
+### Distinct floor silhouettes
+
+**Decision.** Add broad basin, shelf and off-center shoulder profiles at stages 10/14/17,
+then reuse basin and shelf with existing cover at 23/24. Keep the first six stages and tool
+introductions unchanged. Highlight the exact collision surface inside the solid tissue.
+
+**Why.** Repeating a shallow wave does not give enough spatial identity. Broad high and low
+regions vary muzzle height and tissue clearance without steps, jumping or movement penalties.
+
+**Consequence.** Preserve the existing 48-pixel relief ceiling, 0.20 slope bound and common
+floor sampler. Hazard envelopes, feet, muzzle and rendering follow the same geometry. Terrain
+is an arcade tissue abstraction; no claim that high or low ground is always safer.
+
+**Owner.** [arena_layouts.ts](../src/arena_layouts.ts) and [renderer.ts](../src/renderer.ts).
+
+### Shared compact dialog frame
+
+**Decision.** Give every dialog a heading, scrollable content region and persistent action footer.
+Dialog builders explicitly place closing, resume, restart and leave actions in that footer.
+Use a 900px desktop width ceiling and 560px height ceiling with viewport gutters. The recovery
+map keeps its wider specialized layout within viewport bounds. The game arena remains 16:10.
+
+**Why.** Whole-dialog scrolling hid Done and Close below the viewport. A shared layout fixes
+Settings, pause, help and medicine at the owning boundary instead of adding per-panel exceptions.
+
+**Consequence.** Long content scrolls while heading/actions stay visible. Phone dialogs adapt to
+readable width rather than forcing text into a fixed aspect ratio. Surgeon selection reuses the
+same footer and native dialog focus/escape handling.
+
+**Owner.** [dialogs.ts](../src/dialogs.ts), [main.ts](../src/main.ts) and
+[style.css](../src/style.css).

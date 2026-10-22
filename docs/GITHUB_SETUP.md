@@ -4,12 +4,15 @@ This guide covers the repository-side build and the GitHub Pages configuration. 
 
 ## Current status
 
-The 24-level expansion is integrated in source and under local verification. The accepted
-15-level baseline has passing build and acceptance evidence; that evidence does not establish
-acceptance of the expansion. Fresh repository, build, browser, and full-campaign replay gates are
-tracked in [the expansion ledger](active_plans/active/organic_expansion.md).
+The 24-stage expansion and mechanics are locally accepted in
+[MECHANICS_ACCEPTANCE.md](MECHANICS_ACCEPTANCE.md). The surgeon roster, patient recovery map,
+gentler stages 4/5 and presentation work are locally accepted in
+[RECOVERY_ROSTER_ACCEPTANCE.md](RECOVERY_ROSTER_ACCEPTANCE.md), which records the evidence limits.
 
-The repository's SSH remote is `git@github.com:vosslab/plaque-attack.git`. No deployed site URL has been confirmed.
+The repository's SSH remote is `git@github.com:vosslab/plaque-attack.git`. The user confirms the
+[live game](https://vosslab.github.io/plaque-attack/). The deployed revision has not been verified;
+local acceptance does not establish that these changes are deployed. No push or deployment was
+performed during this local work.
 
 ## Build and preview
 
@@ -38,14 +41,14 @@ Ctrl+C. To choose a port explicitly, use `PORT=8728 ./run_web_server.sh`.
 
 ## Configure Pages
 
-The repository contains a workflow definition at `deploy-pages.yml`. GitHub only discovers workflow files under `.github/workflows/`, so install it there from the repository root:
+The repository already contains the discoverable workflow at
+[deploy-pages.yml](../.github/workflows/deploy-pages.yml). A clone includes this workflow; it does
+not need to be copied from the root-level template.
 
-```bash
-mkdir -p .github/workflows
-cp deploy-pages.yml .github/workflows/deploy-pages.yml
-```
-
-Commit that workflow with the game source. In the GitHub repository settings, open **Pages** and set **Build and deployment** source to **GitHub Actions**. The workflow runs on pushes to `main` and manual dispatch. It installs npm dependencies, runs `build_github_pages.sh`, and uploads `dist/` as the Pages artifact; GitHub's deploy action publishes that artifact when the workflow runs successfully.
+For a new fork, open **Pages** in its GitHub repository settings and set **Build and deployment**
+source to **GitHub Actions**. The workflow runs on pushes to `main` and manual dispatch. It
+installs npm dependencies, runs `build_github_pages.sh`, and uploads `dist/` as the Pages artifact;
+GitHub's deploy action publishes that artifact when the workflow runs successfully.
 
 Before relying on publication, confirm the workflow succeeds in the Actions tab, then confirm the published URL in **Settings > Pages** and open it in a browser. Do not infer a live URL from the repository name alone.
 

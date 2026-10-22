@@ -1,4 +1,5 @@
 import { campaignPosition, LEVEL_IDS } from "./constants";
+import { DEFAULT_SURGEON_ID, isSurgeonId } from "./surgeons";
 import type { LevelId } from "./types/level";
 import type {
   CampaignRecord,
@@ -13,10 +14,16 @@ const MAX_SAVE_LENGTH = 8192;
 
 export function defaultSave(): SaveFile {
   return {
-    version: 2,
-    settings: { music: false, effects: false, completedTutorials: [] },
+    version: 3,
+    settings: {
+      music: false,
+      effects: false,
+      completedTutorials: [],
+      surgeonId: DEFAULT_SURGEON_ID,
+    },
     unlockedLevel: 1,
     records: [],
+    completedLevelIds: [],
   };
 }
 
@@ -70,6 +77,41 @@ function recordPosition(record: CampaignRecord): number {
     : campaignPosition(record.levelReached);
 }
 
+function canonicalPrefix(before: LevelId, classicOnly: boolean): LevelId[] {
+  const position = LEVEL_IDS.indexOf(before);
+  if (position < 0) return [];
+  return LEVEL_IDS.slice(0, position).filter((id) => !classicOnly || id <= 15);
+}
+
+function completedIds(entries: readonly LevelId[]): LevelId[] {
+  return LEVEL_IDS.filter((id) => entries.includes(id));
+}
+
+function v1CompletedIds(unlockedLevel: LevelId, records: readonly CampaignRecord[]): LevelId[] {
+  const completeClassic = records.some(
+    (entry) => entry.campaign === "classic" && entry.outcome === "completed",
+  );
+  if (completeClassic) return LEVEL_IDS.filter((id) => id <= 15);
+  // V1 predates the expanded order, so its numeric unlock is a classic ordinal.
+  return LEVEL_IDS.filter((id) => id < unlockedLevel && id <= 15);
+}
+
+function v2CompletedIds(unlockedLevel: LevelId, records: readonly CampaignRecord[]): LevelId[] {
+  const inferred = new Set<LevelId>(canonicalPrefix(unlockedLevel, true));
+  for (const entry of records) {
+    if (entry.campaign === "classic" && entry.outcome === "completed") {
+      for (const id of LEVEL_IDS) if (id <= 15) inferred.add(id);
+      continue;
+    }
+    if (entry.campaign !== "expanded") continue;
+    if (entry.outcome === "completed") return [...LEVEL_IDS];
+    // An expanded record proves the stages before its reached stage, while the
+    // V2 unlock alone is deliberately limited to classic IDs due to ambiguity.
+    for (const id of canonicalPrefix(entry.levelReached, false)) inferred.add(id);
+  }
+  return completedIds([...inferred]);
+}
+
 function rank(records: readonly CampaignRecord[]): CampaignRecord[] {
   return [...records]
     .sort(
@@ -83,7 +125,7 @@ function rank(records: readonly CampaignRecord[]): CampaignRecord[] {
 export function validateSave(value: unknown): SaveFile | undefined {
   if (
     !object(value) ||
-    (value.version !== 1 && value.version !== 2) ||
+    (value.version !== 1 && value.version !== 2 && value.version !== 3) ||
     !level(value.unlockedLevel) ||
     (value.version === 1 && !legacyLevel(value.unlockedLevel)) ||
     !object(value.settings) ||
@@ -110,11 +152,37 @@ export function validateSave(value: unknown): SaveFile | undefined {
     if (parsed === undefined) return undefined;
     records.push(parsed);
   }
+  let restored: LevelId[];
+  if (value.version === 3) {
+    if (
+      !Array.isArray(value.completedLevelIds) ||
+      value.completedLevelIds.length > LEVEL_IDS.length
+    )
+      return undefined;
+    const values: LevelId[] = [];
+    for (const entry of value.completedLevelIds) {
+      if (!level(entry) || values.includes(entry)) return undefined;
+      values.push(entry);
+    }
+    restored = completedIds(values);
+  } else if (value.version === 1) {
+    restored = v1CompletedIds(value.unlockedLevel, records);
+  } else {
+    restored = v2CompletedIds(value.unlockedLevel, records);
+  }
   return {
-    version: 2,
+    version: 3,
     unlockedLevel: value.unlockedLevel,
-    settings: { music: settings.music, effects: settings.effects, completedTutorials },
+    // A cosmetic choice must never discard earned progress. Older and tampered values simply
+    // fall back to the default roster member while the rest of the save remains usable.
+    settings: {
+      music: settings.music,
+      effects: settings.effects,
+      completedTutorials,
+      surgeonId: isSurgeonId(settings.surgeonId) ? settings.surgeonId : DEFAULT_SURGEON_ID,
+    },
     records: rank(records),
+    completedLevelIds: restored,
   };
 }
 
@@ -133,7 +201,13 @@ export function loadSave(): SaveLoadResult {
   } catch {
     return { save: defaultSave(), status: "malformed" };
   }
-  if (object(value) && value.version !== undefined && value.version !== 1 && value.version !== 2)
+  if (
+    object(value) &&
+    value.version !== undefined &&
+    value.version !== 1 &&
+    value.version !== 2 &&
+    value.version !== 3
+  )
     return { save: defaultSave(), status: "unsupported" };
   const save = validateSave(value);
   return save === undefined
@@ -159,6 +233,12 @@ export function addRecord(save: SaveFile, entry: CampaignRecord): SaveFile {
   const validated = record(entry);
   if (validated === undefined) return save;
   return { ...save, records: rank([...save.records, validated]) };
+}
+
+/** Records a real campaign clear. Practice and failed runs never call this boundary. */
+export function markLevelCompleted(save: SaveFile, levelId: LevelId): SaveFile {
+  if (save.completedLevelIds.includes(levelId)) return save;
+  return { ...save, completedLevelIds: completedIds([...save.completedLevelIds, levelId]) };
 }
 
 export function storageMessage(status: StorageStatus): string {

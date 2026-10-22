@@ -16,6 +16,7 @@ export type TargetHitEvent = {
   size: PlaqueSize | PlateletSize;
   position: LogicalPoint;
   points: number;
+  streak: number;
   split: boolean;
 };
 export type DamageEvent = {

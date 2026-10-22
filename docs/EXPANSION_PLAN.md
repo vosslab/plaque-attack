@@ -134,8 +134,8 @@ objectives end after every initial and scheduled hazard is gone, without a time 
 | 1 / 1 | First blockage / stent | 1M; none | 0.55 | Clear / unlimited | One medium family, slow fluid drift | Artery interior / plaque in artery walls |
 | 2 / 16 | Little trouble / stent | 1M+1S; none | 0.60 | Clear / unlimited | Medium and small families on slow crossing currents | Lipid pools / mixed plaque components |
 | 3 / 2 | Crossing currents / stent | 1L; none | 0.65 | Clear / unlimited | One large family with slow fluid descendants | Endothelial folds / crossing trajectories |
-| 4 / 3 | Three-way squeeze / stent | 2L+1M; none | 0.80 | Clear / unlimited | Medium center with opposing outer families | Wall cross-section / wall-associated plaque |
-| 5 / 4 | Lesion junction / stent | 3L; none | 0.90 | Clear / unlimited | Alternating directions across three lanes | Fibrous ridges / fibrous plaque components |
+| 4 / 3 | Three-way squeeze / stent | 1L+1M+1S; none | 0.75 | Clear / unlimited | Mixed sizes crossing three lanes | Wall cross-section / wall-associated plaque |
+| 5 / 4 | Lesion junction / stent | 2L+1M; none | 0.85 | Clear / unlimited | Medium center between two large families | Fibrous ridges / fibrous plaque components |
 | 6 / 5 | Plaque crescendo / stent | 4L; none | 1.00 | Clear / unlimited | Four families, staggered upper heights | Textured lesion / arcade stent abstraction |
 | 7 / 6 | Aspirin arcade / aspirin | 4S; none | 0.85 | Clear / unlimited | Broad separated currents; tool lesson | Installed stent / platelet activity |
 | 8 / 17 | Pocket-sized panic / aspirin | 3S+3T; none | 0.90 | Clear / unlimited | Alternate small and tiny targets | Stent struts / short-range shot timing |
@@ -175,7 +175,11 @@ paths. This is a predictable arcade circulation model, not a fluid solver.
 The first three rounds remain ordinary clear objectives, with no forced lesson or extra duration.
 
 Later chapter-two and chapter-three configurations combine authored arrivals with interleaved
-cover, floor and optional-pocket decisions; browser tuning must inspect their combined effect. Stage 4 deliberately raises work to 37 hits, fixing the old 29-vs-30 inversion.
+cover, floor and optional-pocket decisions; browser tuning must inspect their combined effect.
+The accepted gentler opening requires 7, 10, 15, 25, 37 and 60 mandatory plaque hits across
+stages 1-6, at speeds 0.55, 0.60, 0.65, 0.75, 0.85 and 1.00. Stage 4 uses one large, one medium
+and one small family; stage 5 uses two large and one medium. See
+[DIFFICULTY_REVIEW.md](DIFFICULTY_REVIEW.md) for the correction and evidence.
 Chapter introductions explicitly reset difficulty to teach the tool. Stage 15 introduces dual
 rhythm; stage 18 introduces maintenance. The rubric labels these transitions rather than claiming
 a single globally increasing difficulty score.

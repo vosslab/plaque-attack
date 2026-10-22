@@ -7,8 +7,10 @@ the sustained control of small platelet hazards.
 
 Status: current source contract, 2026-10-22. The expanded game has 24 stages in four chapters,
 with deterministic fluid motion, original organic SVG art, tissue shelter, automatic floor
-following, optional membrane pockets, and bounded plaque merging. Mechanics acceptance is in
-progress; the earlier 24-stage completion/replay predates these additions.
+following, optional membrane pockets, and bounded plaque merging. Six cosmetic surgeons and a
+persistent patient recovery map extend that baseline. Current delivery evidence is in
+[RECOVERY_ROSTER_ACCEPTANCE.md](RECOVERY_ROSTER_ACCEPTANCE.md); historical mechanics evidence
+is in [MECHANICS_ACCEPTANCE.md](MECHANICS_ACCEPTANCE.md).
 [EXPANSION_PLAN.md](EXPANSION_PLAN.md) owns the exact stage matrix, stable IDs, chapter metadata,
 and migration contract; [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md) owns challenge measurements.
 [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md#stage-placement-matrix) owns the single
@@ -27,7 +29,7 @@ mechanics placement matrix. Numerical balance values remain tunable.
 | Campaign | 24 stages in four six-stage chapters; three mechanical acts |
 | Visual direction | Colorful vector art, readable silhouettes, polished browser-arcade presentation |
 | Delivery | Static TypeScript application, HTML5 Canvas arena, HTML menus and HUD |
-| Persistence | Local settings, unlocks, and five best campaign scores |
+| Persistence | Local surgeon selection, recovery IDs, settings, unlocks, and five best campaign scores |
 
 The first release includes the whole campaign, tutorial prompts, pause, practice, local scores,
 sound controls, and the three weapon modes. Multiplayer, accounts, online leaderboards, a shop,
@@ -46,10 +48,29 @@ Maintenance asks the player to sustain control rather than chase a permanently e
 2. Move left or right and fire upward while reading the fluid drift patterns.
 3. Split plaque or suppress platelet hazards, gaining points and creating breathing room.
 4. Clear the arena or satisfy the timed control objective.
-5. Review the result, optionally read one medical fact, and continue immediately.
+5. See the last pop and brief surgeon celebration, then review the result and continue.
 
 Learning stays in brief captions and optional explanation panels. There are no quizzes, required
 reading screens, treatment choices, or memorization gates.
+
+## Surgeon and recovery
+
+Choose Dr. Maya Chen, Dr. Jules Okafor, Dr. Imani Patel, Dr. Leo Rivera, Dr. Samira Haddad,
+or Dr. Alex Morgan from the menu, briefing, result, or settings. The roster controls say that all
+surgeons have the same abilities. The selected appearance persists locally and is used in the
+arena and chooser previews. The same full chooser is accessible from briefing and results. Movement, hitbox, muzzle, fire cadence, weapon behavior, scoring,
+and progression belong to shared gameplay configuration; roster entries contain presentation only.
+
+A campaign clear adds its stable level ID once to the patient's recovery map and names the newly
+restored route inline in the result. The map opens through its explicit button. Replayed clears,
+failed runs, and practice cannot duplicate or remove recovery. The menu and results open the map.
+Its available stage buttons launch unranked
+practice, with normal leave-campaign handling when a run is active. Recovery persists across
+reload; an active campaign still does not resume.
+
+The editable heart illustration has 24 fixed territories, restored-route text and patient
+portrait tiers. Patient tiers advance at 6, 12, 18, and 24 cleared routes. This is an arcade
+progress illustration, never a clinical model or a treatment outcome claim.
 
 ## Medical framing
 
@@ -92,14 +113,30 @@ strength are game balance choices, not comparisons of real medication efficacy.
 | Right arrow / D | Move right |
 | Space | Fire; holding repeats at the tool's allowed rate |
 | P / Escape | Pause or resume active play |
-| Enter | Activate the focused menu or result button |
+| Enter / fresh Space press | Start from a briefing or activate the result's primary action |
+| Tab, then Enter / Space | Focus and activate native buttons |
 | Touch controls | Separate left, right, and fire buttons; simultaneous movement and fire |
 
 Movement starts and stops immediately. There is no jumping, aiming, momentum, or weapon selection
 during a round. Each level equips its tool; dual therapy alternates shots automatically. Opposite
 movement inputs cancel. Firing never captures Space when a menu button or other control has focus.
 
-Use a 960 by 540 logical arena, separate from the HTML HUD and touch bar. The surgeon's feet sit at
+Continuation requires a fresh physical press after release. Ignore auto-repeat and presses carried
+through the clear or another screen transition. One press advances results to briefing; a separate
+press starts play. Contextual shortcuts yield to dialogs, editable fields and focused controls.
+Final campaign, game-over and practice results use their own play-again/retry actions rather than
+a next-level action. The shortcut activates on release of the fresh press.
+
+Successful clears freeze terminal gameplay state while rendering the final pop for approximately
+0.3 seconds, followed by a brief cosmetic surgeon celebration; results appear at approximately
+1.2 seconds total. The celebration changes presentation only, with no gameplay jump, collider,
+hazard, timer, health or score change. Reduced motion shows static victory feedback. Game over
+keeps its immediate result path. These durations are tunable presentation defaults. Task rationale
+and acceptance evidence belong to [CLEAR_FLOW.md](CLEAR_FLOW.md).
+
+Use a 960 by 540 logical arena, separate from the HTML HUD and touch bar. Present it inside a
+16:10 canvas with uniform scale and centered organic wall margins; circular targets retain their
+shape and the simulation bounds stay fixed. The surgeon's feet sit at
 the sampled floor, following slopes automatically without jumping. One geometry owner samples
 the highest support across the 44-unit footprint, and the muzzle and hitbox follow the feet.
 The visual character is approximately 44 by 60 units; its body hitbox is a centered
@@ -121,7 +158,7 @@ Use steady lateral drift and smooth sinusoidal vertical circulation. There is no
 ballistic launch, or floor impact. Walls reflect lateral travel while retaining overshoot.
 Size-based lateral speeds are 72/84/94/104 units/s from large to tiny, with a shared angular
 rate of 0.6 radians/s; both scale by the level speed multiplier. Targets normally pass through
-each other; stage 6 permits occasional equal-size plaque coalescence. Decorative particles do not collide.
+each other; all lipid stages permit occasional equal-size plaque coalescence. Decorative particles do not collide.
 
 On flat floors, the orbit is centered at half the arena height with amplitude
 `H/2 - radius - FLUID_WALL_INSET`. On raised floors, its center and amplitude follow the local
@@ -156,12 +193,24 @@ Platelet hazards use the small and tiny movement presets but have a separate tar
 They become inactive on one eligible drug hit and never split. Inactive particles immediately leave
 the objective count and collision system, even while their fade animation finishes.
 
+## Floor variety
+
+The first three stages retain flat footing. Later stages mix gentle folds and central rises
+with three distinct profiles: a low central basin at stages 10/23, a broad raised shelf at
+14/24, and an off-center shoulder at 17. All slopes remain smooth, with at most 48 pixels
+of relief and a 0.20 maximum gradient. Horizontal speed stays constant; feet and muzzle
+follow the floor automatically. There is no jump control. A pale cellular surface follows
+the collision contour, with darker tissue below it. Cover and floor heights jointly affect
+firing lanes; terrain height alone does not guarantee safety.
+
 ## Tissue, pockets, and coalescence
 
 Stages 1-3 keep their flat arena, slow fluid drift and original workload. Tissue first appears at
 stage 4, a gentle floor at stage 5, merging at stage 6, and an optional pocket at stage 9. Later
 stages interleave mechanics with breathing spaces at tool/objective introductions. The complete
-placement matrix lives only in [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md#stage-placement-matrix).
+opening workload is 7, 10, 15, 25, 37, and 60 mandatory hits; speeds are 0.55, 0.60, 0.65,
+0.75, 0.85, and 1.00. [DIFFICULTY_REVIEW.md](DIFFICULTY_REVIEW.md) records the stage-4/5
+correction and its evidence. The placement matrix lives only in [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md#stage-placement-matrix).
 
 Tissue consists of visible 12x12 solid cells, separate from decorative scenery and the permanent
 floor. Every projectile, including stents and piercing clopidogrel, ends at its first tissue
@@ -179,8 +228,9 @@ wait for capacity and a safe player clearance without dropping hazards or allowi
 contact damage. Only active hazards count toward overload; unopened contents remain optional.
 
 Only same-size plaque below large can merge into the next preset size; platelets never merge.
-Stage 6 retains four large initial plaques and 32 leaf units. Its current merge rule is a 0.18
-chance per eligible new contact entry, a 1.5-second cooldown and one successful merge per stage.
+Stages 1-6 use a 5%, 8%, 12%, 16%, 20%, and 25% chance per eligible new contact entry.
+Their cooldowns are 3, 3, 2.5, 2, 1.75, and 1.5 seconds; successful-merge budgets are
+1, 1, 2, 3, 4, and 5. Stage 6 retains four large initial plaques and 32 leaf units.
 Persistent overlap does not reroll. Merged direction follows averaged parent horizontal velocity,
 with lower-ID direction breaking a near-zero tie; speed comes from the new size preset times level
 speed. Splits inherit remaining cooldown, and new merged targets activate next tick. Merges
@@ -337,6 +387,13 @@ hit 10 onward uses x3. Contact or overload damage resets the streak before later
 Misses do not reset it. Reset the streak at each level boundary. Multiply target-hit points only;
 completion, no-damage, and survival bonuses are not multiplied.
 
+Present the current hit streak in the compact HUD. Announce the transitions at exactly five
+and ten successful hits with a brief cue and optional effects sound. Bounded point feedback
+shows the actual awarded target points, including the existing multiplier; it never awards points
+itself. Keep reduced-motion feedback stationary. Pause freezes feedback lifetime; retry and level
+transitions clear stale cues. These presentation rules add no scoring or balance changes. The
+source-grounded rationale and future candidates are in [FUN_SURVEY.md](FUN_SURVEY.md).
+
 A piercing shot awards each target once. Target IDs and resolved events prevent duplicate rewards.
 Level completion awards its bonuses once even if the Continue button is pressed repeatedly.
 For reference, one large plaque is 3,200 base target points before multipliers and level bonuses.
@@ -356,11 +413,12 @@ explains that progress cannot be saved. Keep existing unsupported save data inta
 
 | Screen | Main content | Primary actions |
 | --- | --- | --- |
-| Main menu | Title, artery illustration, short premise, best score if present | Play campaign, Practice, How to play, High scores, Settings |
+| Main menu | Title, artery illustration, short premise, best score if present | Play campaign, Practice, Choose your surgeon, Patient recovery, How to play, High scores, Settings |
 | Level briefing | Level name, objective, equipped tool, one target example | Start |
 | Gameplay | Arena, level, score, lives, elapsed/remaining time | Movement, fire, pause |
+| Successful clear | Last pop, then brief surgeon victory; frozen terminal gameplay state | Wait briefly for result |
 | Pause | Frozen arena, objective and controls | Resume, restart practice when applicable, main menu |
-| Level result | Objective achieved, points earned, lives left, optional fact | Continue, read the real medicine |
+| Level result | Objective achieved, points earned, lives left, restored-route feedback, keyboard hint, optional fact | Continue, patient recovery, choose surgeon, read the real medicine |
 | Game over | Run ended, score, level reached, record placement if earned | Retry campaign, practice level, main menu |
 | Campaign result | Maintenance complete, score, final lives, record | Play again, main menu |
 
@@ -372,7 +430,11 @@ Use "Plaque cleared!" after Act I rounds, "Platelet activity controlled!" after 
 rounds, and "Maintenance complete!" after timed rounds. Avoid "artery cured" and medical-emergency
 language as a judgment of player performance.
 
-Pause, settings, instructions, and results use real HTML buttons and headings. Focus enters a
+Pause, settings, instructions, and results use real HTML buttons and headings. Keep dialogs
+compact and bounded to the viewport, with internal vertical scrolling when necessary. The recovery
+dialog places art and the chapter/stage ledger side by side on wide screens and stacks them on
+narrow screens. The recovery header and Close footer remain visible while its map scrolls.
+Focus enters a
 modal when opened and returns to its triggering control when closed. Escape closes help or
 settings before affecting the underlying pause state. Returning to the menu from an active
 campaign confirms that the current run will end; ordinary retries and setting changes are direct.
@@ -385,7 +447,8 @@ colors and geometry. Avoid external fonts, embedded scripts, and externally fetc
 
 | Asset family | Source | Construction and states |
 | --- | --- | --- |
-| Surgeon | `src/assets/surgeon.svg` | 96 by 128 viewBox; cap, mask, torso, hands, legs, and tool in named groups |
+| Surgeons | Six base `src/assets/surgeon_*.svg` sources and six `surgeon_*_victory.svg` variants | Shared 96 by 128 viewBox and anchors; distinct identities with raised-arm victory poses |
+| Recovery | `src/assets/cardiac_recovery.svg` | Editable heart, vessels and patient-tier symbols; stable-ID territory overlays |
 | Plaque | `src/assets/plaque.svg` | 128 by 128 viewBox; irregular yellow contour, orange center, restrained highlights |
 | Platelet hazard | `src/assets/platelet.svg` | 64 by 64 viewBox; cluster of violet disks with a scalloped outline |
 | Stent | `src/assets/stent.svg` | 32 by 128 viewBox; cylindrical silver mesh with clear diagonal struts |
@@ -394,7 +457,7 @@ colors and geometry. Avoid external fonts, embedded scripts, and externally fetc
 | Organic scenes | Six `src/assets/scene-*.svg` assets | Editable wall, lining, lesion, stent, and healing motifs; manifest in [ART_DIRECTION.md](ART_DIRECTION.md) |
 | Lipid variants | Six `src/assets/lipid-*.svg` assets | Distinct playful forms, visual-only selection; retain collision-readable silhouettes |
 
-The surgeon's silhouette is readable at actual play size: oversized cap and mask, teal scrubs,
+Each surgeon's silhouette is readable at actual play size: oversized cap and mask, distinct scrubs,
 short legs, gloved hands, and an upward-facing tool. Create idle, run, fire, hit, and victory poses
 from the same proportions. Idle breathing is subtle; the run cycle is short; firing emphasizes the
 tool. Skin tone is a visual choice, not a gameplay attribute.
@@ -420,8 +483,7 @@ and the concise learning feedback in [PLAYFUL_TRAINING_GAME_STYLE.md](PLAYFUL_TR
 This is a colorful arcade game; a coin shop, daily tasks, and competency certification are not
 requirements. Score is the single arcade reward measure.
 
-The repository currently has no game stylesheet or `src/` application. Proposed `src/style.css`
-owns the HTML shell; Canvas owns the arena drawing. Share a small documented palette, and keep
+`src/style.css` owns the HTML shell; Canvas owns the arena drawing. Share a small documented palette, and keep
 CSS from controlling collision geometry or simulation timing.
 
 | Color role | Starting value | Use |
@@ -551,8 +613,14 @@ spawning, invulnerability, overload, and survival scoring together.
 ### Persistence and delivery
 
 Use one versioned local-storage key, `plaque_trouble_save`, with explicit validation and bounded
-record counts. Version-2 saves preserve legacy version-1 settings, tutorial flags, and stable
-unlocked IDs. Tag historical records as `classic` and current records as `expanded`; a legacy
+record counts. Version-3 saves include `settings.surgeonId` and a canonical-order
+`completedLevelIds` set. Missing or invalid cosmetic IDs use Maya without losing earned progress.
+Version-1 migration restores known classic IDs before its historical unlocked level; a completed
+classic record restores all 15 classic IDs. Version-2 migration conservatively restores only
+classic IDs before its canonical unlocked identity, plus any expanded prefix proved by an
+expanded record. A completed expanded record restores all 24 IDs; a completed classic record restores classic IDs only. No unlock-only inference
+awards inserted stages. Duplicate or unknown V3 completion IDs make the save malformed. Preserve
+legacy settings, tutorial flags, stable unlocked IDs, and records. Tag historical records as `classic` and current records as `expanded`; a legacy
 completed record is not a 24-stage completion. Invalid or newer unknown versions retain their
 original bytes under read-only failure behavior. Use text rendering for stored/displayed values. Store no patient information,
 credentials, analytics identifiers, or personal player details. Storage failures affect saving,
@@ -575,13 +643,16 @@ performance. Prioritize input and collision stability over effects if frame time
 
 Historical 15-level evidence remains in
 [game_implementation.md](active_plans/active/game_implementation.md). The accepted earlier
-24-stage expansion predates the current mechanics. Follow
+24-stage expansion and mechanics records predate the current roster/recovery delivery. Follow
 [organic_expansion.md](active_plans/active/organic_expansion.md) and
 [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md) for current implementation and evidence status.
 
 Each source owner reports focused compilation and meaningful behavior checks. Final acceptance
-requires repository checks, a production build, browser journeys and rendered review, plus actual
-24-stage ordinary-input completion and replay evidence. A failed gate returns to its source owner.
+requires repository checks, a production build, browser journeys and rendered review. The current
+roster/recovery delivery additionally verifies map transitions and migration, with ordinary-input
+simulation scoped to the opening six stages. The earlier 24-stage completion/replay belongs to
+the mechanics baseline and is not a fresh full-campaign run of this tuning. A failed gate returns
+to its source owner.
 Keep isolated art rendering, fixture enumeration, automated completion, and human playtesting
 separate when describing what passed.
 
@@ -640,4 +711,6 @@ The following choices make the supplied concept executable while keeping its cen
 
 All balance values remain subject to playtesting. This specification and the canonical expansion
 contracts define current behavior. Fresh integrated browser review, repository gates, and the
-new-mechanics 24-stage completion/replay remain acceptance work; historical evidence does not satisfy them.
+current roster/recovery evidence belong to [RECOVERY_ROSTER_ACCEPTANCE.md](RECOVERY_ROSTER_ACCEPTANCE.md).
+The earlier 24-stage mechanics completion/replay predates the stage-4/5 tuning and does not
+constitute a fresh full-campaign run of this delivery.

@@ -7,9 +7,17 @@ import {
 import type { SimulationEvent } from "./types/events";
 import type { SimulationState, Target } from "./types/simulation";
 
+export function hitMultiplier(streak: number): 1 | 2 | 3 {
+  return streak >= 10 ? 3 : streak >= 5 ? 2 : 1;
+}
+
+export function streakMilestone(streak: number): 2 | 3 | undefined {
+  return streak === 10 ? 3 : streak === 5 ? 2 : undefined;
+}
+
 export function awardHit(state: SimulationState, target: Target): number {
   state.streak += 1;
-  const multiplier = state.streak >= 10 ? 3 : state.streak >= 5 ? 2 : 1;
+  const multiplier = hitMultiplier(state.streak);
   const points = TARGET_PRESETS[target.size].points * multiplier;
   state.score += points;
   return points;

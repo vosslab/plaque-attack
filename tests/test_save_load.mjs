@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { addRecord, defaultSave, loadSave, SAVE_KEY, saveSave } from "../src/save_load.ts";
+import { DEFAULT_SURGEON_ID } from "../src/surgeons.ts";
 
 function storageFixture(context, storage) {
   const descriptor = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
@@ -80,7 +81,13 @@ test("version one migration preserves classic results, settings and stable unloc
   const loaded = loadSave();
   assert.deepEqual(loaded, {
     status: "available",
-    save: { ...legacy, version: 2, records: [{ ...legacyRecord, campaign: "classic" }] },
+    save: {
+      ...legacy,
+      version: 3,
+      settings: { ...legacy.settings, surgeonId: DEFAULT_SURGEON_ID },
+      records: [{ ...legacyRecord, campaign: "classic" }],
+      completedLevelIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    },
   });
   assert.equal(stored, JSON.stringify(legacy), "loading alone does not rewrite storage");
   assert.equal(saveSave(loaded.save, loaded.status), "available");
@@ -120,7 +127,12 @@ test("top five ranks by score, progress and earlier date and survives a settings
     record(0, 1, 7),
   ];
   let save = defaultSave();
-  save.settings = { music: true, effects: false, completedTutorials: ["move", "fire"] };
+  save.settings = {
+    music: true,
+    effects: false,
+    completedTutorials: ["move", "fire"],
+    surgeonId: "samira",
+  };
   save.unlockedLevel = 7;
   for (const entry of entries) save = addRecord(save, entry);
   assert.deepEqual(save.records, [entries[4], entries[3], entries[2], entries[1], entries[5]]);
@@ -137,4 +149,39 @@ test("top five ranks by score, progress and earlier date and survives a settings
   });
   assert.equal(saveSave(save, "available"), "available");
   assert.deepEqual(loadSave(), { save, status: "available" });
+});
+
+test("missing or unknown cosmetic surgeon defaults without discarding valid progress", () => {
+  const base = defaultSave();
+  const withMissing = {
+    ...base,
+    settings: { music: true, effects: false, completedTutorials: ["move"] },
+    unlockedLevel: 7,
+  };
+  const withUnknown = {
+    ...base,
+    settings: { ...base.settings, surgeonId: "unknown", completedTutorials: ["fire"] },
+    unlockedLevel: 8,
+  };
+  const validate = (value) => {
+    let stored = JSON.stringify(value);
+    const original = globalThis.localStorage;
+    Object.defineProperty(globalThis, "localStorage", {
+      configurable: true,
+      value: { getItem: () => stored, setItem: (_key, value) => (stored = value) },
+    });
+    const loaded = loadSave();
+    if (original === undefined) delete globalThis.localStorage;
+    else Object.defineProperty(globalThis, "localStorage", { configurable: true, value: original });
+    return loaded;
+  };
+  for (const [input, unlockedLevel] of [
+    [withMissing, 7],
+    [withUnknown, 8],
+  ]) {
+    const loaded = validate(input);
+    assert.equal(loaded.status, "available");
+    assert.equal(loaded.save.unlockedLevel, unlockedLevel);
+    assert.equal(loaded.save.settings.surgeonId, DEFAULT_SURGEON_ID);
+  }
 });

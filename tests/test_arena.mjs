@@ -25,7 +25,13 @@ const point = (x, y) => ({ x, y });
 function playing(overrides = {}) {
   const base = getLevel(1);
   const state = createSimulation(
-    { ...base, speedMultiplier: 0, initialTargets: [], ...overrides },
+    {
+      ...base,
+      speedMultiplier: 0,
+      initialTargets: [],
+      merge: { probability: 0, cooldown: 0, budget: 0 },
+      ...overrides,
+    },
     "practice",
   );
   state.phase = "playing";
@@ -290,7 +296,6 @@ test("first three stages keep their baseline arena; floor support and firing sha
     const state = createSimulation(getLevel(id), "practice");
     assert.equal(state.arena.tissue.length, 0);
     assert.equal(state.arena.pockets.length, 0);
-    assert.equal(state.level.merge.probability, 0);
     assert.ok(state.level.arena.floor.controlPoints.every((p) => p.y === 540));
   }
   const state = playing({
