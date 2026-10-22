@@ -2,6 +2,13 @@
 
 ### Additions and New Features
 
+- Refresh all thirteen documentation screenshots from the current game as quality-90 WebP.
+  Correct the README's stale surgeon chooser image and links across the documentation; remove
+  replaced PNGs. Add a repeatable capture command and provenance manifest, including explicit
+  staged recovery/unlock labels. Verify the live site's core build and sampled artwork match
+  the local build, and remove the stale README deployment notice. Capture-tool fixes remain
+  separate from game behavior; no production gameplay changes are required.
+
 - Restore **Plaque Attack**, the user's intended rhyming title, in the menu, browser title,
   metadata, Canvas fallback and current product documentation. Preserve historical old-name
   records, repository URLs and saved-data keys.

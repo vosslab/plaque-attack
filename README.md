@@ -4,13 +4,17 @@ A browser arcade game for gamers and biology enthusiasts: choose one of six surg
 
 **[Play Plaque Attack in your browser](https://vosslab.github.io/plaque-attack/)**
 No installation or account required. Bring your arcade reflexes; the biology is optional.
-The link opens the published game; the source changes described here await a separate deployment.
+The screenshots below show the current game, including the redesigned surgeon cast.
 
 <!-- screenshots:begin (managed by screenshot-docs) -->
-![Choose your surgeon: six teammates with the same abilities and a visible selected portrait](docs/screenshots/surgeon_roster.png)
-![Patient recovery with demonstration progress: eight of 24 coronary routes restored](docs/screenshots/patient_recovery.png)
-![Repeated stent shots carve a passage through tissue in Stage 4 Practice, with all three lives intact](docs/screenshots/tissue_carving.png)
+![Choose your surgeon: six teammates with the same abilities and a visible selected portrait](docs/screenshots/surgeon_roster.webp)
+![Patient recovery with demonstration progress: eight of 24 coronary routes restored](docs/screenshots/patient_recovery.webp)
+![Repeated stent shots carve a passage through tissue in Stage 4 Practice, with all three lives intact](docs/screenshots/tissue_carving.webp)
 <!-- screenshots:end -->
+
+Recovery progress in the screenshot is a demonstration save. See the
+[gameplay-size surgeon lineup](docs/screenshots/art_identity_roster.webp) for movement,
+celebration, grayscale and silhouette views of all six characters.
 
 ## The game
 
@@ -49,7 +53,7 @@ do not remove cholesterol plaque. Tissue carving and plaque merging are arcade a
 ## Quick start
 
 Open [the live game](https://vosslab.github.io/plaque-attack/), choose **Play campaign**, then
-**Start level**. Move with the arrow keys or A/D and hold Space to fire; touch controls are also
+**Start stage**. Move with the arrow keys or A/D and hold Space to fire; touch controls are also
 available. Split the floating plaque and clear its fragments to finish the first stage.
 
 ### Run locally
@@ -62,8 +66,8 @@ source source_me.sh
 ./run_web_server.sh
 ```
 
-Open the localhost address printed by the script. Use **Choose your surgeon** to pick an avatar,
-then choose **Play campaign** and **Start level**.
+Open the localhost address printed by the script. Use **Choose surgeon** to pick an avatar,
+then choose **Play campaign** and **Start stage**.
 After the countdown, move out from beneath a drifting plaque and hold Space to fire. A successful
 hit splits larger plaque; clear the fragments to finish level 1. Watch the last pop and a brief
 surgeon celebration, then press Enter or freshly press Space to continue to the next briefing.
@@ -105,6 +109,7 @@ limit. An overload warning gives you time to bring the count back down before lo
 - [docs/GAME_SPEC.md](docs/GAME_SPEC.md) describes the campaign, controls, educational framing, accessibility, and acceptance criteria.
 - [docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md) explains how the static `dist/` build fits GitHub Pages setup.
 - [docs/PLAYWRIGHT_USAGE.md](docs/PLAYWRIGHT_USAGE.md) explains browser-test setup and execution.
+- [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md) explains the repeatable WebP screenshot refresh and demonstration states.
 - [docs/EXPANSION_PLAN.md](docs/EXPANSION_PLAN.md) defines the ordered 24-stage campaign and stable level identities.
 - [docs/RECOVERY_ROSTER_PLAN.md](docs/RECOVERY_ROSTER_PLAN.md) records the roster and recovery contract.
 - [docs/DIFFICULTY_RUBRIC.md](docs/DIFFICULTY_RUBRIC.md) explains the challenge curve and tool-introduction resets.

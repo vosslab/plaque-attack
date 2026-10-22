@@ -208,12 +208,16 @@ build hashes, receipts and harness-failure provenance.
 
 The durable images show the final consumers:
 
-- [art_identity_roster.png](screenshots/art_identity_roster.png): six production-renderer
+- [art_identity_roster.webp](screenshots/art_identity_roster.webp): six production-renderer
   figures at native 44x60, including grayscale and silhouette rows. Poses are staged fixtures.
-- [art_identity_recovery.png](screenshots/art_identity_recovery.png): actual recovery UI with
+- [art_identity_recovery.webp](screenshots/art_identity_recovery.webp): actual recovery UI with
   staged 0/12/24-route saves, decoded patient/heart art and route overlays; progress is not earned.
-- [art_identity_game.png](screenshots/art_identity_game.png): before/after actual first-stage
-  campaign gameplay from an empty progress save, using ordinary menu input.
+- [art_identity_game.webp](screenshots/art_identity_game.webp): current first-stage campaign
+  gameplay from an empty progress save, using ordinary menu input. The earlier before/after
+  comparison remains historical evidence under `output/art_identity/verification/`.
+
+All thirteen documentation screenshots are refreshed together with quality-90 WebP encoding.
+[SCREENSHOTS.md](SCREENSHOTS.md) describes the capture command and current provenance manifest.
 
 The final probe verifies six selections surviving reload, title/Done visibility at three
 viewports, reachable final choice, a 1.6 canvas aspect ratio, and frozen paused gameplay pixels.
@@ -239,7 +243,7 @@ actually read, XML/reference validation, preserved geometry and inspected contac
 48 by 64, 72 by 96 and 288 by 384. It includes Drawing Mentor lines 640-662 on simplified
 silhouettes and Mastering SVG lines 635-675 on viewBox coordinates. These are asset-level checks;
 [CLEAR_FLOW.md](CLEAR_FLOW.md) owns integrated sequencing, motion and continuation acceptance.
-Its [clear_celebration.png](screenshots/clear_celebration.png) montage shows the actual final hit,
+Its [clear_celebration.webp](screenshots/clear_celebration.webp) montage shows the actual final hit,
 selected victory pose and result; final normal/reduced-motion capture evidence is retained in
 `output/clear_flow/visual/acceptance.md`.
 

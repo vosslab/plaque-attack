@@ -17,6 +17,8 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 - Use the TypeScript engineer, SVG creator expert, CSS creative expert, and
   HTML game parallel builder skills for this work.
 - After the game work, refresh the README and prepare the GitHub setup.
+- Update all screenshots to WebP and keep the README's surgeon screenshot current with the
+  delivered character designs; the old roster image made the redesign look unchanged.
 - The GitHub Pages game is live at https://vosslab.github.io/plaque-attack/. Link it in the README
   and write for gamers and biology enthusiasts.
 - The root `test-results` directory is not ignored; account for that in the project setup.

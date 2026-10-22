@@ -23,15 +23,15 @@ strategy or that each shape is more enjoyable.
 
 ## Actual game captures
 
-These captures use the built app at 1280x900, a synthetic unlock solely to access Practice,
+These refreshed captures use the built app at 1280x800, a synthetic unlock solely to access Practice,
 and normal keyboard movement. Canvas screenshots preserve the 16:10 presentation. They do not
 alter terrain, artwork, hazard state or player position directly.
 
-![Basin with raised flanks](screenshots/floor_basin.png)
+![Basin with raised flanks](screenshots/floor_basin.webp)
 
-![Shelf with a broad central platform](screenshots/floor_shelf.png)
+![Shelf with a broad central platform](screenshots/floor_shelf.webp)
 
-![Shoulder with unequal flanks](screenshots/floor_shoulder.png)
+![Shoulder with unequal flanks](screenshots/floor_shoulder.webp)
 
 Inspection confirms distinct contours, a visible cellular surface, readable hazards and the
 surgeon's feet supported at the edge of the slope. Background and floor remain visually distinct.

@@ -7,6 +7,20 @@ the reasoning a later reader needs. Guidance Neil Voss states belongs in
 `docs/active_plans/decisions/`. [PROPAGATED HEADER - ENTRIES BELOW ARE YOURS]
 <!-- VENDORED HEADER: END -->
 
+### Current documentation screenshots
+
+**Decision.** Refresh the thirteen managed screenshots together through one capture command,
+using quality-90 WebP and a manifest of build hashes, image hashes and scene provenance.
+
+**Why.** Publishing new artwork under a separate review filename left the README showing the
+old cast. A complete refresh keeps the existing reader-facing names and embeds current.
+
+**Consequence.** Reject stale build inputs, keep intermediate PNG buffers in memory, inspect
+encoded WebPs, and label staged recovery/unlock saves. Historical ignored proof remains separate.
+
+**Owner.** [SCREENSHOTS.md](SCREENSHOTS.md) and
+[capture_docs_screenshots.mjs](../tests/playwright/capture_docs_screenshots.mjs).
+
 ### Plaque Attack identity
 
 **Decision.** Use **Plaque Attack** as the current display name in the game, metadata and

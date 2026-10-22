@@ -1,0 +1,132 @@
+{
+  "capturedAt": "2026-10-22T21:37:16.004Z",
+  "command": "node tests/playwright/capture_docs_screenshots.mjs",
+  "browser": "156.0.8078.4",
+  "format": "WebP",
+  "quality": 90,
+  "buildHashes": {
+    "main.js": "95d3a8e9761f5681cc65d8b5897ae294e774c75df0374f94e6d6ebd4dd727cdb",
+    "index.html": "5a292275879f45a7b33ad5bab7f801326f11881e8b8cd0e7fffb13ebc61c5b5c",
+    "style.css": "050e665782d2dc9f5301e3896baf1eed6566ad53bde256ce323d1a99ae649a5e"
+  },
+  "errors": [],
+  "screenshots": [
+    {
+      "name": "main_menu",
+      "path": "main_menu.webp",
+      "width": 1280,
+      "height": 961,
+      "bytes": 65114,
+      "sha256": "cb6caea391cbb992edc3e63fe7f339635975b067b5f93d4dc41e4b41506dc9d1",
+      "provenance": "Current production menu; empty device progress."
+    },
+    {
+      "name": "surgeon_roster",
+      "path": "surgeon_roster.webp",
+      "width": 960,
+      "height": 598,
+      "bytes": 42710,
+      "sha256": "56b88d5ca9e656a9169c99c605025023e5726c4233209935d60fbcd49f153d99",
+      "provenance": "Actual chooser opened from menu; six cosmetic surgeons; default Maya selected."
+    },
+    {
+      "name": "compact_settings",
+      "path": "compact_settings.webp",
+      "width": 900,
+      "height": 560,
+      "bytes": 19868,
+      "sha256": "ee233ce86c011e261ae9a181def740951d5e1e2cedcf26fb78d2912d6bf24ee4",
+      "provenance": "Actual Settings dialog; fixed heading and Done, scrollable contents."
+    },
+    {
+      "name": "patient_recovery",
+      "path": "patient_recovery.webp",
+      "width": 1040,
+      "height": 620,
+      "bytes": 50336,
+      "sha256": "c4c38332052212dc1d0e70a69af56fbb61f6f5403867a5d3c072cf74572af459",
+      "provenance": "Actual recovery UI with staged demonstration save: eight of 24 routes restored; not earned gameplay."
+    },
+    {
+      "name": "art_identity_recovery",
+      "path": "art_identity_recovery.webp",
+      "width": 1280,
+      "height": 332,
+      "bytes": 46912,
+      "sha256": "fcc10dd37be6957c14c8c38946c2c68c266b8d33743a26cea5c3da6d9c8eb885",
+      "provenance": "Current recovery UI artwork at staged 0/12/24 route saves; same patient, decoded heart and overlays. Progress is not earned."
+    },
+    {
+      "name": "floor_basin",
+      "path": "floor_basin.webp",
+      "width": 816,
+      "height": 510,
+      "bytes": 31300,
+      "sha256": "a2c383982d194623a36c0335df1c6eaef26b97fb34ae2a4c8851612843439761",
+      "provenance": "Basin with raised flanks; actual Practice stage entered through the visible stage picker. The only staged state is the normal local unlock save; geometry, hazards, and physics are the production build."
+    },
+    {
+      "name": "floor_shelf",
+      "path": "floor_shelf.webp",
+      "width": 816,
+      "height": 510,
+      "bytes": 37540,
+      "sha256": "92e3fe48304f493e6e1030045bd411a12880f439d57f1187e78f5addba219fee",
+      "provenance": "Shelf with a broad central platform; actual Practice stage entered through the visible stage picker. The only staged state is the normal local unlock save; geometry, hazards, and physics are the production build."
+    },
+    {
+      "name": "floor_shoulder",
+      "path": "floor_shoulder.webp",
+      "width": 816,
+      "height": 510,
+      "bytes": 38398,
+      "sha256": "e944f0efcd38a55918d5a4abf43170528f576157cd4cd80011aa67b877351bf1",
+      "provenance": "Shoulder with unequal flanks; actual Practice stage entered through the visible stage picker. The only staged state is the normal local unlock save; geometry, hazards, and physics are the production build."
+    },
+    {
+      "name": "tissue_carving",
+      "path": "tissue_carving.webp",
+      "width": 1280,
+      "height": 800,
+      "bytes": 54010,
+      "sha256": "f975e0617d934ff8e092ad2120cfa1a41fad8496e9ae4158922af112df2efd17",
+      "provenance": "Actual Stage 4 Practice: normal keyboard movement and stent shots repeatedly carve the real tissue obstacle. The local unlock save only exposes Practice; no targets, tissue, or physics are altered."
+    },
+    {
+      "name": "streak_feedback",
+      "path": "streak_feedback.webp",
+      "width": 1280,
+      "height": 800,
+      "bytes": 45866,
+      "sha256": "e56351590959f308f6f737398fb57d6d564072d390b0366a777c959333113cd8",
+      "provenance": "Actual first campaign stage entered through Play campaign and Start stage. Held Space is ordinary player input; the capture waits for the game to award its visible five-hit streak multiplier."
+    },
+    {
+      "name": "clear_celebration",
+      "path": "clear_celebration.webp",
+      "width": 1280,
+      "height": 1221,
+      "bytes": 58672,
+      "sha256": "8049667f7fe399def60b633b6741547d632ec42ff21f69afbd663f69f820a741",
+      "provenance": "Actual first campaign stage played from visible controls with ordinary held-Space input. The three panels are chronological captures of the final pop, the surgeon's celebration, and the resulting completion screen."
+    },
+    {
+      "name": "art_identity_game",
+      "path": "art_identity_game.webp",
+      "width": 1280,
+      "height": 800,
+      "bytes": 44658,
+      "sha256": "6bc707a5b5cbdc5680d9450aff9c0288abdc51260ed68a271b3891ac24acc925",
+      "provenance": "Current first-stage campaign gameplay entered from Play campaign and Start stage. This is a single current production scene, not a historical before/after comparison."
+    },
+    {
+      "name": "art_identity_roster",
+      "path": "art_identity_roster.webp",
+      "width": 1200,
+      "height": 831,
+      "bytes": 67200,
+      "sha256": "3714361ec2f588d9f3fa2a98d4674adf0c89027550067b5d116b53413baf916d",
+      "provenance": "Current source production renderer: six native 44x60 figures in staged idle/walk/victory, grayscale and silhouette rows; not earned gameplay."
+    }
+  ]
+}

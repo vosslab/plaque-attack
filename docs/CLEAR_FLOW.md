@@ -70,10 +70,10 @@ The carried-key rule is a project interaction requirement, not a claim that WCAG
 requires a given shortcut. Passing these targeted checks does not establish whole-game WCAG
 conformance or participant comprehension.
 
-![Actual first-stage final pop, arms-raised victory and result from the rebuilt game](screenshots/clear_celebration.png)
+![Actual first-stage final pop, arms-raised victory and result from the rebuilt game](screenshots/clear_celebration.webp)
 
-The montage uses ordinary held-fire play through the actual final collision. Insets enlarge
-captured pixels; times show active presentation time and exclude the deliberate pause check.
+The refreshed montage uses ordinary held-fire play through the actual final collision. Detail
+views show the final pop and surgeon celebration before the real result screen.
 At 844 by 390, result/briefing primary actions and complete hints fit before optional details.
 The medicine action and inline restoration can require scrolling on that short viewport.
 

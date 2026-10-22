@@ -12,7 +12,7 @@ At 1280x800, Settings previously measured 560x760, with the bottom of Done at y=
 panel also measured 560x760, with Close ending at y=1379.0. Both now measure 900x560, with their
 footer action ending at y=651.0. Long content remains available by scrolling inside the frame.
 
-![Compact settings with a persistent Done action](screenshots/compact_settings.png)
+![Compact settings with a persistent Done action](screenshots/compact_settings.webp)
 
 The screenshot intentionally shows content continuing below the scrolling region; the heading
 and Done remain outside that region. Settings, pause, instructions, medicine, high scores,

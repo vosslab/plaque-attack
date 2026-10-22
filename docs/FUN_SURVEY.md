@@ -91,8 +91,9 @@ Fresh final integration review accepts the complete delivery with no blocking fi
 verifies current source, tests, build, screenshot, and probe identity. All 227 focused
 documentation checks pass.
 
-[screenshots/streak_feedback.png](screenshots/streak_feedback.png) shows actual gameplay with
-the 5-hit x2 milestone, compact streak HUD, and awarded-point feedback. The image is 166,500 bytes.
+[screenshots/streak_feedback.webp](screenshots/streak_feedback.webp) shows actual gameplay with
+the 5-hit x2 milestone, compact streak HUD, and awarded-point feedback. Current WebP dimensions,
+byte size and capture provenance are recorded in [screenshots/manifest.json](screenshots/manifest.json).
 The capture demonstrates rendered feedback; it does not establish increased enjoyment.
 
 A mock Web Audio probe verifies distinct four-voice milestone schedules at 5 and 10 hits versus

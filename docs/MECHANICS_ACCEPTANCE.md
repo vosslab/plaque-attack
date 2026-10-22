@@ -116,8 +116,10 @@ Browser reproduction uses `node output/mechanics_visual/accept.mjs`, then the si
 `PLAYWRIGHT_BROWSERS_PATH=/private/tmp/plaque-attack-playwright-browsers`. The production
 browser-suite result is preserved in `/private/tmp/plaque_mechanics_browser_final.log`.
 
-The refreshed README images are [screenshots/main_menu.png](screenshots/main_menu.png) and
-[screenshots/tissue_carving.png](screenshots/tissue_carving.png), both 1536x960. The latter is
+The refreshed README images are [screenshots/main_menu.webp](screenshots/main_menu.webp) and
+[screenshots/tissue_carving.webp](screenshots/tissue_carving.webp), refreshed from a 1280x800 viewport.
+The menu includes its complete page; exact image sizes are in
+[screenshots/manifest.json](screenshots/manifest.json). The latter is
 actual Stage 4 practice using the screenshot harness, with readable carved tissue and three
 lives. The managed README screenshot block remains owned by its capture workflow.
 
