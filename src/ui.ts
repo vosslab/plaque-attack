@@ -1,4 +1,4 @@
-import { campaignPosition, getLevel, LEVEL_IDS, OVERLOAD_DURATION } from "./constants";
+import { campaignPosition, getLevel, LEVEL_IDS, nextLevelId, OVERLOAD_DURATION } from "./constants";
 import { hitMultiplier } from "./scoring";
 import type { LevelConfig, WeaponMode } from "./types/level";
 import type { AppScreen } from "./types/runtime";
@@ -169,6 +169,11 @@ export function showResult(state: Readonly<SimulationState>, recordRank?: number
     getLevel(state.level.act === 1 ? 3 : state.level.act === 2 ? 6 : 11).fact ??
     "";
   button("continue_button").hidden = lost || final || state.mode === "practice";
+  const next = nextLevelId(state.level.id);
+  button("continue_button").textContent =
+    next === undefined
+      ? "Continue"
+      : `Next: Stage ${campaignPosition(next)} - ${getLevel(next).name} \u2192`;
   button("retry_button").hidden = !lost && !final && state.mode !== "practice";
   button("retry_button").textContent =
     state.mode === "practice" ? "Retry practice" : final ? "Play again" : "Retry campaign";

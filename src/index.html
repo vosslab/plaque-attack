@@ -195,9 +195,8 @@
       >
         <p class="eyebrow" id="result_eyebrow">A little more breathing room</p>
         <h2 id="result_title" tabindex="-1">Plaque cleared!</h2>
-        <div id="result_summary" class="panel_intro"></div>
-        <p id="result_fact" class="medical_caption"></p>
-        <p id="result_recovery_note" class="medical_caption" hidden>Route restored. View Patient recovery to see your progress.</p>
+        <p id="result_recovery_note" class="recovery_outcome" hidden></p>
+        <div id="result_recovery" hidden></div>
         <p id="result_keyboard_hint" class="control_hint">Press Enter or Space to continue.</p>
         <div class="panel_actions">
           <button id="continue_button" class="action_button" type="button">
@@ -207,9 +206,11 @@
           ><button id="practice_current" class="quiet_button" type="button">
             Practice this stage</button
           ><button id="result_surgeon" class="quiet_button" type="button">Choose surgeon</button
-          ><button id="result_recovery" class="quiet_button" type="button">Patient recovery</button
+          ><button id="result_recovery_details" class="quiet_button" type="button">Patient recovery</button
           ><button id="result_menu" class="quiet_button" type="button">Main menu</button>
         </div>
+        <div id="result_summary" class="panel_intro"></div>
+        <p id="result_fact" class="medical_caption"></p>
       </section>
 
       <footer class="game_footer">

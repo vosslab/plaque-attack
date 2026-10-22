@@ -49,15 +49,17 @@ capture runs retain their original provenance; they are not the current document
 The 2026-10-22 refresh captured all thirteen views without browser errors. The encoded images
 were visually inspected, and all decoded dimensions, file hashes and build hashes match the
 manifest. No PNGs remain in the documentation screenshot directory. The thirteen WebPs total
-609,258 bytes. The revised cast, first-run chooser, curved stents and surgeon celebration
+609,634 bytes. The revised cast, first-run chooser, curved stents, lower tissue shields and surgeon celebration
 close-up are included. The latest capture uses a bundled equivalent with an explicit workspace
 root to respect the user's no-Git-command scope; the manifest records this execution detail.
-Focused Markdown-link and ASCII checks pass (269 tests); the changed capture scripts pass
-ESLint and Prettier. The final camera build passes both real-clear browser journeys and 50
-source tests. Independent source-renderer checks cover all six surgeons at center and edges,
+Focused Markdown-link and ASCII checks pass (271 tests); the changed capture scripts pass
+ESLint and Prettier. The lower-shield build passes all 19 browser tests and 51 source tests.
+Independent source-renderer checks cover all six surgeons at center and edges,
 small viewports, reduced motion, paused pixels and normal-camera reset.
-The landing illustration has explicit local layers. Separate Chromium/WebKit desktop, Retina
-and mobile captures retain the intended appearance, but did not reproduce the user's original
-clipping defect; confirmation in that browser remains outstanding.
+The landing illustration has explicit local layers and one container rotation, with no child
+rotations or drop-shadow filters. Native Firefox 158.0.1 and Chromium desktop/mobile captures
+show the simplified composition intact. Clean-profile Firefox also rendered the previous CSS
+correctly, while the user's session remained broken. These captures verify the mitigation's
+appearance, not a reproduced root cause; confirmation in the affected session remains outstanding.
 [ART_DIRECTION.md](ART_DIRECTION.md#scientist-cast-verification) records the accompanying game
 verification and evidence limits.

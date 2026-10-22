@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-10-22T22:23:48.348Z",
+  "capturedAt": "2026-10-22T22:35:03.852Z",
   "command": "node tests/playwright/capture_docs_screenshots.mjs",
   "browser": "156.0.8078.4",
   "format": "WebP",
@@ -7,7 +7,7 @@
   "buildHashes": {
     "main.js": "c41b613fc5f5ae85763318d576410e1f51643dedf9e8d29443a6f2630501bde2",
     "index.html": "5a292275879f45a7b33ad5bab7f801326f11881e8b8cd0e7fffb13ebc61c5b5c",
-    "style.css": "6e0e6864a1f53cca7e1c27d376080680ece8e4a4c4103c04f39ba0702d1b8d9d"
+    "style.css": "fc0c9e51ac8f5ce5be366545330b315d8b239de30d801a4d57d39bffa7a02be4"
   },
   "errors": [],
   "screenshots": [
@@ -25,8 +25,8 @@
       "path": "main_menu.webp",
       "width": 1280,
       "height": 961,
-      "bytes": 65156,
-      "sha256": "cc2ec5b550c061f454d880cd0c9a2e3920255df7390c560efdab7a751203be86",
+      "bytes": 66570,
+      "sha256": "39d99f63454939e4969c19ecf522552a0d8bf09b072b0e24dd2c170bdd70f174",
       "provenance": "Current production menu after choosing Maya; empty device progress."
     },
     {
@@ -61,8 +61,8 @@
       "path": "floor_basin.webp",
       "width": 816,
       "height": 510,
-      "bytes": 31384,
-      "sha256": "2473ad3e26cc91c03bb940adc73cbd55b9963c76299fe7107fe226b5acb89e85",
+      "bytes": 31374,
+      "sha256": "f62947f5b60d0ce7b1040a4c1df157284955f09f60c5d0eefad2267572a357c0",
       "provenance": "Basin with raised flanks; actual Practice stage entered through the visible stage picker. The only staged state is the normal local unlock save; geometry, hazards, and physics are the production build."
     },
     {
@@ -70,8 +70,8 @@
       "path": "floor_shelf.webp",
       "width": 816,
       "height": 510,
-      "bytes": 36822,
-      "sha256": "44dfff10863894b627c12c70f6cf752576dbcdb03f374c7b6b170e71976cae87",
+      "bytes": 36778,
+      "sha256": "d8cffbb67fe5d1f7ac50f1371662251d320b59062f0ac16d3df0bed1574c1e51",
       "provenance": "Shelf with a broad central platform; actual Practice stage entered through the visible stage picker. The only staged state is the normal local unlock save; geometry, hazards, and physics are the production build."
     },
     {
@@ -79,8 +79,8 @@
       "path": "floor_shoulder.webp",
       "width": 816,
       "height": 510,
-      "bytes": 38384,
-      "sha256": "d866b01671a73c22e72d139d6112208d1897d4c9865c546779ecf2d10e6a8787",
+      "bytes": 38228,
+      "sha256": "c4b80fbc3023a3ea977c1320c23ea7dbdfc552be5e578013045acfa5e9bc1da4",
       "provenance": "Shoulder with unequal flanks; actual Practice stage entered through the visible stage picker. The only staged state is the normal local unlock save; geometry, hazards, and physics are the production build."
     },
     {
@@ -88,8 +88,8 @@
       "path": "tissue_carving.webp",
       "width": 1280,
       "height": 800,
-      "bytes": 53466,
-      "sha256": "8609183142b5afcd28b3ba0a2af5c9499df3d2fb0889b14e5514974ed1c20f27",
+      "bytes": 53426,
+      "sha256": "5c1b0629e9d877a9bf547b3ec670b93653e60b7488e5239e1f3350c21766c89a",
       "provenance": "Actual Stage 4 Practice: normal keyboard movement and stent shots repeatedly carve the real tissue obstacle. The local unlock save only exposes Practice; no targets, tissue, or physics are altered."
     },
     {
@@ -115,8 +115,8 @@
       "path": "art_identity_game.webp",
       "width": 1280,
       "height": 800,
-      "bytes": 44642,
-      "sha256": "c5fa76b73394b5f306707fcab6248b6b7a551dc4860757754a5afc5f480b6aab",
+      "bytes": 44612,
+      "sha256": "946849b1b60f5ba4d23df1c69b6ca09ed01006933c0839fbeb787e6a9b81350b",
       "provenance": "Current first-stage campaign gameplay entered from Play campaign and Start stage. This is a single current production scene, not a historical before/after comparison."
     },
     {
@@ -128,5 +128,6 @@
       "sha256": "77132c627397415b0d7f738498b3c0687d20155f638b55a26f8913b451e1b046",
       "provenance": "Current source production renderer: six native 44x60 figures in staged idle/walk/victory, grayscale and silhouette rows; not earned gameplay."
     }
-  ]
+  ],
+  "execution": "Bundled equivalent with explicit workspace root; no Git commands. Entry: output/celebration_zoom/capture_docs_no_git.mjs"
 }

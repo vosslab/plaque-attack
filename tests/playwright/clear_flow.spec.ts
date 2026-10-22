@@ -140,6 +140,10 @@ for (const advanceKey of ["Enter", "Space"]) {
     await expect(briefing).toBeHidden();
     await expect(page.locator("#result_keyboard_hint")).toContainText("Enter or Space");
     await expect(page.locator("#result_recovery_note")).toContainText("Route restored");
+    await expect(page.locator("#result_recovery .recovery_map_art")).toBeVisible();
+    await expect(
+      page.locator('#result_recovery .recovery_territory[data-highlighted="true"]'),
+    ).toHaveAttribute("data-stage", "1");
     const recovery = page.getByRole("dialog", { name: "Patient recovery", exact: true });
     await expect(recovery).toBeHidden();
 
@@ -153,7 +157,7 @@ for (const advanceKey of ["Enter", "Space"]) {
       await expect(briefing).toBeHidden();
       await page.keyboard.press("Escape");
       await expect(recovery).toBeHidden();
-      await tabTo(page, page.getByRole("button", { name: "Continue", exact: true }), true);
+      await tabTo(page, page.getByRole("button", { name: /^Next: Stage / }), true);
     }
 
     await page.keyboard.down(advanceKey);

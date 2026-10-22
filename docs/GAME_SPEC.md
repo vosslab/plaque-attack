@@ -48,7 +48,7 @@ Maintenance asks the player to sustain control rather than chase a permanently e
 2. Move left or right and fire upward while reading the fluid drift patterns.
 3. Split plaque or suppress platelet hazards, gaining points and creating breathing room.
 4. Clear the arena or satisfy the timed control objective.
-5. See the last pop and brief surgeon celebration, then review the result and continue.
+5. See the last pop and surgeon celebration, then see the patient recovery and continue.
 
 Learning stays in brief captions and optional explanation panels. There are no quizzes, required
 reading screens, treatment choices, or memorization gates.
@@ -61,9 +61,11 @@ surgeons have the same abilities. The selected appearance persists locally and i
 arena and chooser previews. The same full chooser is accessible from briefing and results. Movement, hitbox, muzzle, fire cadence, weapon behavior, scoring,
 and progression belong to shared gameplay configuration; roster entries contain presentation only.
 
-A campaign clear adds its stable level ID once to the patient's recovery map and names the newly
-restored route inline in the result. The map opens through its explicit button. Replayed clears,
-failed runs, and practice cannot duplicate or remove recovery. The menu and results open the map.
+A campaign clear adds its stable level ID once to the patient's recovery map. Every successful
+result displays the patient and coronary recovery artwork directly, emphasizing the cleared
+route before the player continues. The detailed browsing map remains available by button.
+Replayed clears, failed runs, and practice cannot duplicate or remove recovery; practice results
+show saved progress with an explicit unchanged-recovery label.
 Its available stage buttons launch unranked
 practice, with normal leave-campaign handling when a run is active. Recovery persists across
 reload; an active campaign still does not resume.
@@ -418,9 +420,9 @@ explains that progress cannot be saved. Keep existing unsupported save data inta
 | Gameplay | Arena, level, score, lives, elapsed/remaining time | Movement, fire, pause |
 | Successful clear | Last pop, then brief surgeon victory; frozen terminal gameplay state | Wait briefly for result |
 | Pause | Frozen arena, objective and controls | Resume, restart practice when applicable, main menu |
-| Level result | Objective achieved, points earned, lives left, restored-route feedback, keyboard hint, optional fact | Continue, patient recovery, choose surgeon, read the real medicine |
+| Level result | Patient recovery art, cleared route, objective achieved, points, lives, keyboard hint, optional fact | Continue, patient recovery, choose surgeon, read the real medicine |
 | Game over | Run ended, score, level reached, record placement if earned | Retry campaign, practice level, main menu |
-| Campaign result | Maintenance complete, score, final lives, record | Play again, main menu |
+| Campaign result | Patient recovery art, maintenance complete, score, final lives, record | Play again, main menu |
 
 Gameplay HUD priority is lives and objective, then tool, then score. Intervention levels show
 "Elapsed 01:25"; maintenance shows "Remaining 01:25" and `Active hazards: 4 / 6`. Finite waves show

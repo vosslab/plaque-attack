@@ -105,6 +105,8 @@ function slotFor(levelId: LevelId): MapSlot {
 export function createRecoveryMap(options: Readonly<RecoveryMapOptions>): HTMLElement {
   const completed = new Set<LevelId>(options.completedLevelIds);
   const section = html("section", "recovery_map");
+  const result = options.presentation === "result";
+  if (result) section.classList.add("recovery_result");
   section.setAttribute("aria-label", "Coronary recovery map");
   section.dataset.recoveryTier = String(recoveryTier(completed.size));
 
@@ -112,7 +114,7 @@ export function createRecoveryMap(options: Readonly<RecoveryMapOptions>): HTMLEl
   const eyebrow = html("p", "eyebrow");
   eyebrow.textContent = "Restore the rhythm";
   const title = html("h2");
-  title.textContent = "Restore the coronary routes.";
+  title.textContent = result ? "Patient recovery" : "Restore the coronary routes.";
   const vitality = html("p", "recovery_vitality");
   vitality.setAttribute("role", "status");
   vitality.textContent = completionText(completed.size);
@@ -125,7 +127,8 @@ export function createRecoveryMap(options: Readonly<RecoveryMapOptions>): HTMLEl
     item.textContent = `Chapter ${chapter}: ${restored} / 6 ${CHAPTER_NAMES[chapter - 1]} routes`;
     ledger.append(item);
   }
-  intro.append(eyebrow, title, vitality, ledger);
+  intro.append(eyebrow, title, vitality);
+  if (!result) intro.append(ledger);
 
   const art = html("div", "recovery_map_art");
   const illustration = document.createElement("img");
@@ -166,11 +169,13 @@ export function createRecoveryMap(options: Readonly<RecoveryMapOptions>): HTMLEl
     const territory = svg("path", "recovery_territory");
     territory.dataset.stage = String(levelId);
     territory.dataset.completed = String(completed.has(levelId));
+    territory.dataset.highlighted = String(result && options.selectedLevelId === levelId);
     territory.setAttribute("d", territoryPath(slot, index));
     overlay.append(territory);
     const vessel = svg("path", "recovery_territory_vessel");
     vessel.dataset.stage = String(levelId);
     vessel.dataset.completed = String(completed.has(levelId));
+    vessel.dataset.highlighted = String(result && options.selectedLevelId === levelId);
     vessel.setAttribute("d", territoryVesselPath(slot, index));
     overlay.append(vessel);
     const marker = svg("circle", "recovery_marker");
@@ -186,6 +191,12 @@ export function createRecoveryMap(options: Readonly<RecoveryMapOptions>): HTMLEl
     lesion.setAttribute("cy", String(slot.y - 0.7));
     lesion.setAttribute("r", "1.65");
     overlay.append(lesion);
+  }
+
+  if (result) {
+    art.append(illustration, patient, overlay);
+    section.append(art, intro);
+    return section;
   }
 
   const buttons = html("div", "recovery_stage_buttons");

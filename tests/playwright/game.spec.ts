@@ -139,7 +139,7 @@ test("movement and held fire split plaque, and P and Escape freeze and resume th
   await expect(recovery).toBeVisible();
   await recovery.getByRole("button", { name: "Close", exact: true }).click();
   await expect(recovery).toBeHidden();
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("button", { name: /^Next: Stage / }).click();
   await expect(
     page.getByRole("heading", { name: "Stage 2: Little trouble", exact: true }),
   ).toBeVisible();
@@ -169,7 +169,9 @@ test("a campaign ends once, records its score, and offers a fresh retry", async 
   await expect(result).toBeVisible();
   await expect(result.getByRole("heading", { name: "Run ended" })).toBeFocused();
   await expect(result).toContainText("High-score rank: 1 / 5");
-  await expect(result.getByRole("button", { name: "Continue", exact: true })).toBeHidden();
+  await expect(page.locator("#result_recovery")).toBeHidden();
+  await expect(page.locator("#result_recovery_note")).toBeHidden();
+  await expect(result.getByRole("button", { name: /^Next: Stage / })).toBeHidden();
   const saved = await page.evaluate((key) => localStorage.getItem(key), save_key);
   expect(saved).not.toBeNull();
   const data = JSON.parse(saved ?? "null") as {

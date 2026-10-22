@@ -2,14 +2,28 @@
 
 ### Additions and New Features
 
+- Show patient recovery directly after each successful stage, following Bad Cell Day's
+  inline completion presentation. Preserve the surgeon close-up, emphasize the cleared route,
+  and keep the next-stage action direct. Practice shows saved recovery without changing it.
+  Verify 51 source tests and all 19 browser tests across two runs, inspect desktop/mobile real-clear
+  captures, and probe the first five result states plus replay, practice, defeat and final
+  completion. Add the current result image to [CLEAR_FLOW.md](CLEAR_FLOW.md).
+  Tighten landscape spacing so recovery and Next both fit at 844 by 390.
+
 - Lower tissue shields to a small clearance above the surgeon's head, following the local
   floor height. Make the arch underside shallow to reduce the space where lipids can circulate
   beneath cover. Preserve the central firing lane and separate optional membrane encounters.
+  Verify all 51 source tests, 19 browser tests, and rendered flat/sloped cover with actual
+  firing and erosion probes; refresh the thirteen managed documentation screenshots.
 
 - Give the landing illustration explicit, isolated background and foreground layers in response
   to a report of clipped lipid artwork. Preserve the composition and SVGs; verify Chromium and
   WebKit at desktop, mobile and Retina sizes. The exact reported clipping was not reproduced
   locally, so confirmation in the affected browser remains outstanding.
+- Follow up on the persistent Firefox 158.0.1 clipping report by simplifying the hero to a
+  single container rotation. Remove decorative child rotations and drop-shadow filters,
+  preserving artwork positions and sizes. Clean-profile Firefox renders both versions, so
+  this is a targeted mitigation rather than a demonstrated reproduction-and-fix.
 
 - Zoom in on the selected surgeon after a successful stage. Preserve the final pop, frame the
   whole figure, then play the victory gesture at close range before results. Use a static

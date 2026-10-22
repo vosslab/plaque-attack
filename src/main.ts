@@ -359,7 +359,29 @@ function main(): void {
             : "level_result",
     });
     showResult(state, recordRank);
-    element("result_recovery_note").hidden = newlyRestoredLevelId === undefined;
+    const successful = state.phase !== "game_over";
+    const recovery = element("result_recovery");
+    recovery.replaceChildren();
+    recovery.hidden = !successful;
+    if (successful) {
+      recovery.append(
+        createRecoveryMap({
+          completedLevelIds: runtime.save.completedLevelIds,
+          unlockedLevel: runtime.save.unlockedLevel,
+          selectedLevelId: state.mode === "campaign" ? state.level.id : undefined,
+          presentation: "result",
+          onStageSelected: (): void => {},
+        }),
+      );
+    }
+    const note = element("result_recovery_note");
+    note.hidden = !successful;
+    note.textContent =
+      state.mode === "practice"
+        ? "Practice complete. Patient recovery is unchanged."
+        : newlyRestoredLevelId === undefined
+          ? `Stage ${campaignPosition(state.level.id)} cleared again. This route was already restored.`
+          : `Route restored: Stage ${campaignPosition(state.level.id)}, ${state.level.name}.`;
     celebration = undefined;
   }
   const loop = createFixedLoop(
@@ -427,7 +449,7 @@ function main(): void {
   button("back_menu").addEventListener("click", quit);
   button("briefing_surgeon").addEventListener("click", openSurgeonChooser);
   button("result_surgeon").addEventListener("click", openSurgeonChooser);
-  button("result_recovery").addEventListener("click", (): void => {
+  button("result_recovery_details").addEventListener("click", (): void => {
     const state = runtime.simulation;
     openRecovery(state?.level.id, true);
   });

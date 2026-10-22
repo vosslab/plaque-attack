@@ -53,18 +53,19 @@ h1 span { display: block; color: var(--gold); }
 .art_orbit { position: absolute; border: 1px solid #ab667526; border-radius: 50%; width: 470px; height: 470px; }
 .orbit_two { width: 365px; height: 365px; }
 .hero_arena { position: relative; isolation: isolate; width: 112%; min-width: 460px; aspect-ratio: 1.18; transform: rotate(-10deg); overflow: hidden; border: 2px solid #cb617d; border-radius: 46% 24% 35% 27%; background: #461d32; box-shadow: 0 24px 45px #0c0d2270, 0 0 0 12px #b8446012; }
-/* Keep the translucent artery behind the shot and filtered foreground art. */
+/* Keep the translucent artery behind the shot and foreground art. */
 .hero_artery { position: absolute; z-index: 0; width: 150%; height: 100%; max-width: none; left: -25%; object-fit: cover; opacity: .82; }
 .hero_shot { z-index: 1; }
 .hero_plaque, .hero_surgeon, .hit_spark { z-index: 2; }
-.hero_plaque { position: absolute; filter: drop-shadow(0 8px 3px #180d2050); }
-.plaque_one { width: 32%; left: 24%; top: 11%; transform: rotate(15deg); }
-.plaque_two { width: 18%; right: 9%; top: 40%; transform: rotate(-25deg); }
-.plaque_three { width: 12%; left: 12%; top: 57%; transform: rotate(50deg); }
-.hero_surgeon { position: absolute; width: 21%; bottom: 8%; left: 45%; transform: rotate(10deg); filter: drop-shadow(0 7px 3px #180d2050); }
-.hero_shot { position: absolute; left: 60%; bottom: 22%; width: 8px; height: 40%; border: 1px solid #fff5e8; background: repeating-linear-gradient(45deg, #d7edf4 0 2px, #6e9baf 2px 6px); box-shadow: 0 0 17px #a9ece74d; transform: rotate(10deg); transform-origin: bottom; }
+/* Rotate the scene once; keep its clipped foreground in the same paint space. */
+.hero_plaque { position: absolute; }
+.plaque_one { width: 32%; left: 24%; top: 11%; }
+.plaque_two { width: 18%; right: 9%; top: 40%; }
+.plaque_three { width: 12%; left: 12%; top: 57%; }
+.hero_surgeon { position: absolute; width: 21%; bottom: 8%; left: 45%; }
+.hero_shot { position: absolute; left: 60%; bottom: 22%; width: 8px; height: 40%; border: 1px solid #fff5e8; background: repeating-linear-gradient(45deg, #d7edf4 0 2px, #6e9baf 2px 6px); box-shadow: 0 0 17px #a9ece74d; }
 .hit_spark { position: absolute; color: var(--gold); font-size: 35px; font-weight: 500; }
-.spark_one { top: 22%; right: 15%; transform: rotate(15deg); }
+.spark_one { top: 22%; right: 15%; }
 .spark_two { bottom: 25%; left: 29%; font-size: 24px; }
 .art_annotation { position: absolute; bottom: 73px; right: 45px; display: flex; align-items: center; gap: 10px; color: #d1afb9; font-size: .59rem; font-weight: 800; letter-spacing: .16em; transform: rotate(-5deg); }
 .annotation_line { width: 34px; height: 1px; background: #a27687; }
@@ -643,6 +644,52 @@ h2 { margin: 0 0 24px; max-width: 750px; font-size: clamp(2rem, 4.5vw, 3.7rem); 
   color: #baf8ea;
   font-size: .86rem;
   font-weight: 700;
+}
+/* A clear ends with its visible patient consequence, followed by one next-stage action. */
+.result_panel:has(.recovery_result) { padding: clamp(18px, 3vw, 36px); }
+.result_panel:has(.recovery_result) > h2 { margin-bottom: 12px; font-size: clamp(1.6rem, 3.6vw, 2.6rem); }
+.recovery_outcome { margin: 0 0 14px; color: var(--teal); font-weight: 700; line-height: 1.45; }
+.recovery_result {
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(14px, 3vw, 32px);
+  padding: 16px;
+  border-radius: 18px;
+}
+.recovery_result .recovery_map_art { width: 100%; max-width: 480px; }
+.recovery_result .eyebrow { margin-bottom: 10px; }
+.recovery_result .recovery_map_intro h2 { font-size: clamp(1.25rem, 2.4vw, 1.8rem); }
+.recovery_result .recovery_territory[data-highlighted="true"],
+.recovery_result .recovery_territory_vessel[data-highlighted="true"] {
+  opacity: 1;
+  stroke: #baf8ea;
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 5px #85f1df);
+  animation: restored_route 1.2s ease-in-out 2;
+}
+.result_panel:has(.recovery_result) .panel_actions { margin-top: 10px; }
+.result_panel:has(.recovery_result) #result_summary { margin-top: 24px; font-size: .9rem; }
+@keyframes restored_route {
+  50% { opacity: .5; }
+}
+@media (max-width: 620px) {
+  .recovery_result { grid-template-columns: 1fr; gap: 12px; padding: 12px; }
+  .recovery_result .recovery_map_art { max-width: 340px; }
+  .recovery_result .recovery_map_intro h2 { margin-bottom: 6px; font-size: 1.15rem; }
+  .recovery_result .eyebrow { display: none; }
+  .recovery_result .recovery_vitality { font-size: .8rem; line-height: 1.4; }
+  .result_panel:has(.recovery_result) .panel_actions > #continue_button,
+  .result_panel:has(.recovery_result) .panel_actions > #retry_button { flex-basis: 100%; }
+}
+@media (min-width: 621px) and (max-height: 500px) {
+  .result_panel:has(.recovery_result) { padding: 12px; gap: 4px; }
+  .result_panel:has(.recovery_result) > h2 { margin-bottom: 4px; font-size: 1.6rem; }
+  .result_panel:has(.recovery_result) .panel_actions { margin-top: 0; }
+  .recovery_result { grid-template-columns: minmax(0, 180px) minmax(0, 1fr); padding: 10px; }
+  .recovery_outcome { margin-bottom: 0; font-size: .85rem; }
+  .recovery_result .recovery_map_intro h2 { margin-bottom: 6px; font-size: 1.1rem; }
+  .recovery_result .eyebrow { display: none; }
+  .recovery_result .recovery_vitality { font-size: .8rem; }
 }
 @keyframes roster_steady {
   50% { transform: translateY(-2px) rotate(-1deg); }

@@ -1,10 +1,32 @@
 # Clear feedback and continuation
 
-Status: implemented; integrated acceptance passed on 2026-10-22. Owner: runtime transition and renderer
+Status: implemented; recovery visibility revision on 2026-10-22. Owner: runtime transition and renderer
 contracts below. Scope: keyboard continuation and visible successful-clear feedback in the
 existing game.
 
 ## Decision and evidence scope
+
+### Recovery after every success
+
+The current result embeds patient recovery directly after the surgeon celebration. This borrows
+Bad Cell Day's completion-panel cadence: visible recovery, then a deliberate next-stage action.
+The old optional-only recovery presentation below is historical. Detailed route browsing remains
+available, while the inline view contains no stage-selection buttons. Practice labels saved
+recovery as unchanged; defeat keeps its immediate retry result.
+
+![Patient recovery shown directly after an actual first-stage clear](screenshots/level_recovery.webp)
+
+The current capture uses ordinary held-fire input. Focused browser checks cover fresh-key
+continuation and save boundaries; temporary fixtures cover consecutive first-five recovery
+states, replay, practice, defeat and final completion. Fixtures establish presentation behavior,
+not a five-level human playthrough. Evidence is retained in `output/recovery_flow/`.
+All 51 source tests and 19 browser tests pass (16 affected journeys plus three dialog checks).
+Independent inspection accepts the result presentation and mode boundaries. A landscape finding
+was corrected: Next ends at y=369 in an 844 by 390 viewport; portrait Next ends at y=576
+in a 390 by 844 viewport. The manager inspected both final captures. These results supersede
+the older optional-recovery acceptance below; no deployment or human enjoyment claim is made.
+
+### Earlier transition baseline
 
 Use task analysis and a cognitive walkthrough to inspect the experienced keyboard player's
 clear-to-next-stage journey, including a player already holding Space to fire. The requested
@@ -25,10 +47,10 @@ been released. The implementation contracts below address this baseline.
 | --- | --- | --- | --- |
 | 1 | Keep firing until the final lipid clears, possibly holding Space. | Last hit and pop remain visible in the arena. | A held shot must never count as a continuation command. |
 | 2 | Recognize success and stop reacting to hazards. | A brief surgeon victory response follows the pop; simulation freezes. | No timer, health, position or score changes during celebration. |
-| 3 | Understand the result and choose the next stage. | Compact result, explicit keyboard hint and inline restoration feedback appear. | Releasing held Space or repeated Enter cannot skip results or briefing. |
+| 3 | Understand the result and choose the next stage. | Patient recovery art, the cleared route, result and explicit continuation appear. | Releasing held Space or repeated Enter cannot skip results or briefing. |
 | 4 | Press Enter, or release then freshly press Space. | One activation moves to the next briefing; its start action remains distinct. | A held key cannot auto-start the next stage. |
 | 5 | Read briefing, then deliberately start. | Another deliberate activation enters play. | Tab and native button activation still reach every alternative. |
-| 6 | Inspect recovery or finish the campaign. | Optional recovery button opens the map; campaign completion has its own result. | No next-stage shortcut on final campaign or practice results. |
+| 6 | Inspect recovery or finish the campaign. | Recovery is visible on every success; optional route browsing and final results remain available. | No next-stage shortcut on final campaign or practice results. |
 
 At each step inspect whether the player can identify the goal, find the action, associate the
 label with its outcome, and recognize that the action succeeded. A result shortcut is contextual:
@@ -48,8 +70,10 @@ native button Enter/Space behavior and dialog focus restoration.
 - Runtime owns contextual continuation and physical press/release tracking across screen changes.
   Enter is the primary hint; Space is supported after a fresh press. Ignore auto-repeat and
   carried presses. One physical activation causes at most one screen transition.
-- Results own inline newly restored route feedback and a deliberately opened recovery map.
-  Campaign restoration is still persisted once; practice stays unranked and does not restore routes.
+- Results show patient recovery after every successful stage, following Bad Cell Day's inline
+  completion-panel pattern. Highlight the cleared route and offer direct continuation without
+  requiring a map-dialog dismissal. Keep detailed route browsing optional.
+  Campaign restoration is persisted once; practice shows saved recovery without changing it.
 - Interface and art owners preserve compact 16:10 presentation, readable hints, visible focus,
   existing controls and editable source assets. The test owner checks actual browser event order.
 
@@ -63,7 +87,7 @@ The ledger distinguishes real browser journeys, renderer fixtures and source ins
 | 2 | Separate presentation from game state. | Positions, elapsed time, lives, hazards and score remain fixed across the clear interval. | Source review confirms simulation bypass; browser HUD/pause checks pass. Retained renderer fixture preserves complete deep-frozen state, 36 cases by 79 frames. |
 | 3-5 | Keyboard access and platform button conventions, W3C SC 2.1.1. | Enter/fresh Space advance once; native Tab/button actions and modal focus remain usable. | Both real-input clear journeys pass in final 14-test browser run; visual receipt records focus and Tab behavior. |
 | 3-5 | Error prevention: one deliberate action has one contextual effect. | Hold Space through clear and release: result stays. Fresh Space: briefing only. Hold/repeat Enter: no second transition. | Retained clear_flow.spec.ts Enter/Space event-order journeys pass. |
-| 3 | Recognition and player control: keep success and available actions together. | Result names restored route inline; map opens only by its button. | Both clear journeys verify inline recovery and explicitly opened map. |
+| 3 | Recognition and player control: keep success and available actions together. | Successful results display patient artwork and highlight the cleared route without opening a dialog. | Revised recovery acceptance is recorded below; the earlier optional-only view is superseded. |
 | 2 | Motion preference, W3C SC 2.3.3 (AAA guidance). | Reduced-motion capture shows static victory without cosmetic motion or flashing. | Passed: normal transforms change; reduced-motion transforms remain identical, confirmed in final capture/report. |
 | 6 | Consistent mode boundaries. | Final campaign, replayed route and practice preserve appropriate result actions and save behavior. | Source tests/browser regressions pass for restore-once, defeat/retry and practice persistence. Final-campaign clear action inspected in source and synthetic renderer fixture; no newly completed campaign browser journey claimed. |
 

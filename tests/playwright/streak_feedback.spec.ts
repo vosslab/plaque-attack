@@ -75,7 +75,7 @@ test("real hits show both streak milestones and starting the next stage resets t
   expect((await feedback(page)).rewards.length).toBeGreaterThan(0);
   const cleared = page.getByRole("heading", { name: "Plaque cleared!", exact: true });
   await holdFireUntil(page, () => cleared.isVisible());
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("button", { name: /^Next: Stage / }).click();
   await page.getByRole("button", { name: "Start stage", exact: true }).click();
   await page.clock.runFor(100);
   await expect(page.locator("#hud_streak")).toHaveText("0-hit streak");

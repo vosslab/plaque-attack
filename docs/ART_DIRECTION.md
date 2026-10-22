@@ -168,6 +168,15 @@ The ruffled sprite was tightened by three percent after the first measurement. R
 recorded in `output/expansion_art/collision_visual_bounds.json`; the existing 64-unit image
 square leaves a small antialiasing margin around the silhouette.
 
+## Cover placement
+
+Tissue cover now follows local floor height with a small head clearance and a shallow arch
+underside. This reduces the open chamber beneath a shield while preserving movement and firing.
+The fixture below uses the actual renderer and source targets for scale; the surgeon is staged
+beneath the first shield. It is a layout illustration, not a recorded playthrough.
+
+![Lower tissue shields above the surgeon](screenshots/lowered_shields.webp)
+
 ## Surgeon and recovery art
 
 Six editable `surgeon_*.svg` figures and their six victory variants share a `96 128` viewBox,

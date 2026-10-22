@@ -331,6 +331,11 @@ test("an ordinary campaign clear restores its route exactly once", async ({ page
   const recovery = page.getByRole("dialog", { name: "Patient recovery", exact: true });
   await expect(recovery).toBeHidden();
   await expect(page.locator("#result_recovery_note")).toContainText("Route restored");
+  await expect(page.locator("#result_recovery .recovery_map_art")).toBeVisible();
+  await expect(page.locator("#result_recovery .recovery_vitality")).toContainText(
+    "1 of 24 routes restored",
+  );
+  await expect(page.locator("#result_recovery button")).toHaveCount(0);
   await page.getByRole("button", { name: "Patient recovery", exact: true }).click();
   await expect(recovery).toBeVisible();
   await expect(recovery).toContainText("Route restored: Stage 1");
@@ -354,7 +359,11 @@ test("ordinary practice preserves earned recovery", async ({ page }) => {
   await startFirstStage(page, "practice");
   await clearFirstStage(page);
   expect(await savedRecovery(page)).toEqual([1]);
-  await expect(page.locator("#result_recovery_note")).toBeHidden();
+  await expect(page.locator("#result_recovery_note")).toContainText(
+    "Patient recovery is unchanged",
+  );
+  await expect(page.locator("#result_recovery .recovery_map_art")).toBeVisible();
+  await expect(page.locator('#result_recovery [data-highlighted="true"]')).toHaveCount(0);
   const recovery = page.getByRole("dialog", { name: "Patient recovery", exact: true });
   await expect(recovery).toBeHidden();
 });

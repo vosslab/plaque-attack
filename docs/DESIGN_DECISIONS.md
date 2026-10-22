@@ -358,11 +358,13 @@ close-up, then play the victory gesture and hold before results at approximately
 Start the gesture after the camera settles so its action is visible at the enlarged scale.
 Reduced motion cuts to a static close-up. These are tunable presentation defaults.
 Use contextual Enter and freshly pressed Space for continuation, with one transition per physical
-press. Show newly restored routes inline and open the recovery map by explicit action.
+press. Show the patient recovery illustration directly in every successful result, with the
+cleared route emphasized and an explicit continuation action. Keep route browsing optional.
 
 **Why.** A visible outcome gives the last shot closure; carried firing input and repeated keys must
-not dismiss results or start the next stage. Inline restoration preserves the route feedback while
-keeping continuation direct.
+not dismiss results or start the next stage. The former optional-map button hid the visual payoff
+from players who continued normally. Following Bad Cell Day's completion-panel pattern makes
+recovery visible without adding a mandatory dialog dismissal.
 
 **Consequence.** Freeze terminal simulation during celebration, honor reduced motion, preserve
 native control activation and modal focus, and retain distinct campaign/practice completion paths.
@@ -469,13 +471,17 @@ stented/healed scene SVGs, and [src/renderer.ts](../src/renderer.ts).
 ### Landing illustration layers
 
 **Decision.** Isolate the hero artwork and assign explicit local layers: artery background,
-shot, then lipid targets, surgeon and sparks.
+shot, then lipid targets, surgeon and sparks. Rotate the scene once at its container; keep
+foreground elements free of individual CSS transforms and drop-shadow filters.
 
-**Why.** The illustration combines a rotated clipping container with opacity, filters and
-transformed children. Explicit layer ownership makes its intended paint order clear.
+**Why.** The reported Firefox image loses transformed children while retaining an untransformed
+spark. A single scene transform reduces nested clipping/compositing work; explicit layer ownership
+makes the intended paint order clear. The screenshot supports this mitigation, not a proven
+browser-engine diagnosis.
 
-**Consequence.** Preserve the existing composition and SVGs. Cross-browser captures validate
-the intended appearance; they do not establish reproduction of the reported clipping defect.
+**Consequence.** Preserve positions, dimensions and SVGs; foreground artwork leans with the
+scene instead of counter-rotating. Cross-browser captures validate the intended appearance;
+they do not establish reproduction of the reported clipping defect.
 
 **Owner.** [src/style.css](../src/style.css).
 

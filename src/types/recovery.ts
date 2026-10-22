@@ -9,5 +9,6 @@ export type RecoveryMapOptions = {
   readonly unlockedLevel: LevelId;
   readonly selectedLevelId?: LevelId;
   readonly newlyCompletedLevelId?: LevelId;
+  readonly presentation?: "result";
   readonly onStageSelected: (levelId: LevelId) => void;
 };
