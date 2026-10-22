@@ -178,7 +178,7 @@ statement. `src/surgeon_motion.ts` owns cosmetic timing, `src/renderer.ts` owns 
 and `src/artery_art.ts` owns the organic procedural frame/floor presentation. The underlying
 floor and tissue geometry remain authoritative for collision and carved openings.
 
-Current working evidence is in `output/art_identity/`: `roster_refine/recognition.png` contains
+Owner evidence is in `output/art_identity/`: `roster_refine/recognition.png` contains
 the native 44x60 color, grayscale and silhouette lineups; `chooser/REPORT.md` covers chooser
 fixtures, superseded for layout by `chooser_compact/REPORT.md` and its three viewport captures;
 `scenes/REPORT.md` covers six settings and target readability; `recovery/REPORT.md`
@@ -187,14 +187,39 @@ of Maya/Jules stature and Imani/Samira silhouette separation; `roster_refine/SPE
 accepts the corrected native-size recognition, crop and stride evidence. These refined images
 supersede the initial `roster/` delivery for the current cast.
 `runtime/REPORT.md` records source-renderer checks, motion fixtures and geometry boundaries.
-Final integrated acceptance remains
-open in [active_plans/active/art_identity.md](active_plans/active/art_identity.md).
+The final combined build, independent visual quality and final integration are accepted in
+[active_plans/active/art_identity.md](active_plans/active/art_identity.md). The complete review
+chain and evidence limits are recorded in `output/art_identity/INTEGRATION_REVIEW.md`.
 
 Recovery retains one person through seated rest, upright reaching, first steps, walking with
 a seedling and a broad final stride/greeting. The chair and limb negative spaces change with
 pose; the face, forelock/silver lock, teal jacket and coral shirt preserve identity. The existing
 heart/map overlay remains the owner of restored coronary territories. These fictional milestones
 show a return to activity without a new claim about disease cure.
+
+## Current rendered evidence
+
+The local production rebuild and final capture probe pass. The final source check passes all
+49 Node tests; all 32 SVGs pass structural validation and source/build byte parity. The full
+browser run has 16 passes and two outdated copy assertions; after correction, the affected
+rerun passes 2/2. This is a full-suite execution plus focused confirmation, rather than a new
+all-green full-suite run. `output/art_identity/verification/REPORT.md` retains exact commands,
+build hashes, receipts and harness-failure provenance.
+
+The durable images show the final consumers:
+
+- [art_identity_roster.png](screenshots/art_identity_roster.png): six production-renderer
+  figures at native 44x60, including grayscale and silhouette rows. Poses are staged fixtures.
+- [art_identity_recovery.png](screenshots/art_identity_recovery.png): actual recovery UI with
+  staged 0/12/24-route saves, decoded patient/heart art and route overlays; progress is not earned.
+- [art_identity_game.png](screenshots/art_identity_game.png): before/after actual first-stage
+  campaign gameplay from an empty progress save, using ordinary menu input.
+
+The final probe verifies six selections surviving reload, title/Done visibility at three
+viewports, reachable final choice, a 1.6 canvas aspect ratio, and frozen paused gameplay pixels.
+All six renderer identities animate with changing play time and stay static for unchanged
+state and reduced motion. The later organic practice view uses a staged unlock save. No
+remote deployment is claimed.
 
 ## Historical roster evidence
 

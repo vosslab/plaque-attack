@@ -7,8 +7,8 @@
   records, repository URLs and saved-data keys.
 - Establish the lean [ART_DIRECTION.md](ART_DIRECTION.md) identity brief and
   [active_plans/active/art_identity.md](active_plans/active/art_identity.md) delivery ledger for
-  twelve surgeon SVGs, six artery scenes and cardiac recovery art. Integrated art acceptance
-  remains pending until actual captures and fresh reviews are recorded.
+  twelve surgeon SVGs, six artery scenes and cardiac recovery art. Source/specification review
+  accepts the corrected artwork; independent quality and final integration reviews also ACCEPT.
 - Give the six cosmetic surgeons distinct character concepts, larger chooser portraits and
   personality copy; add individual idle/victory cadences with static reduced motion. Revise
   six artery illustrations and the renderer's organic frame/floor presentation, retaining
@@ -19,6 +19,11 @@
 - Replace near-identical recovery busts with five poses from seated rest to purposeful activity;
   retain the heart/map alignment, route IDs and existing restored-territory overlays. Record
   actual user guidance separately from the forwarded art commentary used as design input.
+- Record fresh art-pass verification: 49 source tests, local production rebuild, 32 SVG
+  source/build parity checks and the final integrated capture probe pass. The full browser run
+  has 16 passes and two stale-copy assertion failures; the corrected affected rerun passes 2/2.
+  Publish durable local roster, staged recovery and real-game before/after images in
+  [ART_DIRECTION.md](ART_DIRECTION.md); retain failed harness proof separately. No deployment.
 
 - Add [FUN_SURVEY.md](FUN_SURVEY.md), a source-grounded survey of eleven neighboring games,
   with ranked future ideas and explicit evidence limits. Present the existing hit streak,
