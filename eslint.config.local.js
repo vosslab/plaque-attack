@@ -17,10 +17,12 @@
 //     },
 //   ];
 //
-// Generated evidence under output/ is gitignored and is not source code. Ignore
-// it explicitly because ESLint's file enumeration does not follow .gitignore.
+// Generated evidence under root-level output*/ directories is gitignored and
+// not source code. Ignore it explicitly because ESLint's file enumeration does
+// not follow .gitignore. This root-relative pattern leaves nested source paths
+// such as src/output_balance/ eligible for linting.
 export default [
   {
-    ignores: ["output/**"],
+    ignores: ["output*/**"],
   },
 ];

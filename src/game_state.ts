@@ -34,7 +34,7 @@ export function createSimulation(
       contactInvulnerabilityRemaining: 0,
     },
     targets: level.initialTargets.map((spawn, index) =>
-      createTarget(spawn, targetId(index + 1), level.speedMultiplier),
+      createTarget(spawn, targetId(index + 1), level.speedMultiplier, 0, level.bounceMultiplier),
     ),
     projectiles: [],
     tick: 0,

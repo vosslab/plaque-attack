@@ -6,7 +6,7 @@ export type Settings = {
   effects: boolean;
   completedTutorials: TutorialPrompt[];
 };
-export type CampaignRecord = {
+export type LegacyCampaignRecord = {
   score: number;
   levelReached: LevelId;
   outcome: "completed" | "ended";
@@ -17,9 +17,16 @@ export type SaveFileV1 = {
   version: 1;
   settings: Settings;
   unlockedLevel: LevelId;
+  records: LegacyCampaignRecord[];
+};
+export type CampaignRecord = LegacyCampaignRecord & { campaign: "classic" | "expanded" };
+export type SaveFileV2 = {
+  version: 2;
+  settings: Settings;
+  unlockedLevel: LevelId;
   records: CampaignRecord[];
 };
-export type SaveFile = SaveFileV1;
+export type SaveFile = SaveFileV2;
 export type StorageStatus = "available" | "unavailable" | "malformed" | "unsupported";
 export type SaveLoadResult = { save: SaveFile; status: StorageStatus };
 // Validation consumes unknown; unsupported data must remain intact.

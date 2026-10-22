@@ -19,3 +19,8 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 - After the game work, refresh the README and prepare the GitHub setup.
 - The root `test-results` directory is not ignored; account for that in the project setup.
 - Use the UI/UX engineer review skill for runtime flows and the final interface audit.
+- Expand Plaque Trouble with more levels and an ordered challenge curve; keep the game fun, since
+  learning does not need to be boring.
+- The first three levels are pretty easy; low, fast, small balls are hard. Put fun first.
+- Give the expansion more organic medical-inspired scenes and a broader variety of lipid art, with
+  editable SVGs. Use Barnsy Ink as artistic inspiration.

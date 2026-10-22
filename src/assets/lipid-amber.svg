@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="lipid-amber-title lipid-amber-desc">
+  <title id="lipid-amber-title">Amber lipid globule</title>
+  <desc id="lipid-amber-desc">Original stylized golden lipid target with a rounded irregular contour. Fictional arcade object, not a molecular structure.</desc>
+  <defs><linearGradient id="lipid-amber-gold" x1=".15" y1="0" x2=".85" y2="1"><stop stop-color="#ffe993"/><stop offset=".48" stop-color="#ffca46"/><stop offset="1" stop-color="#e98c28"/></linearGradient></defs>
+  <g id="lipid-amber-silhouette" stroke-linejoin="round"><path d="M67 8C87 10 99 23 111 43C124 66 109 91 93 106C77 121 47 120 28 103C10 89 5 62 16 39C24 20 42 5 67 8Z" fill="url(#lipid-amber-gold)" stroke="#fff0ac" stroke-width="5"/><path d="M67 8C87 10 99 23 111 43C124 66 109 91 93 106C77 121 47 120 28 103C10 89 5 62 16 39C24 20 42 5 67 8Z" fill="none" stroke="#7b381f" stroke-width="2.8"/></g>
+  <g id="lipid-amber-folds" fill="none" stroke="#ad5c22" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M46 52C63 40 89 46 92 66C95 86 75 99 58 91"/><ellipse cx="43" cy="79" rx="7" ry="10"/></g>
+  <g id="lipid-amber-light" fill="none" stroke="#fff7c7" stroke-width="6" stroke-linecap="round"><path d="M30 43Q37 26 53 23"/><path d="M25 55L24 59"/></g>
+  <g id="lipid-amber-pores" fill="#a35a24"><ellipse cx="73" cy="25" rx="2.3" ry="1.8"/><ellipse cx="101" cy="61" rx="2" ry="3"/><ellipse cx="49" cy="104" rx="3" ry="1.7"/></g>
+</svg>

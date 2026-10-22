@@ -8,6 +8,8 @@ import type { SimulationState } from "./types/simulation";
 function nextEntry(state: SimulationState): TargetSpawn | undefined {
   const objective = state.level.objective;
   if (objective.kind === "clear") return objective.reinforcements[state.waves.spawned]?.target;
+  if (objective.entryOrder === "cycle")
+    return objective.entries[state.waves.spawned % objective.entries.length];
   state.seed = randomSeed((Math.imul(state.seed, 1664525) + 1013904223) >>> 0);
   return objective.entries[state.seed % objective.entries.length];
 }
@@ -28,6 +30,7 @@ export function advanceWaves(state: SimulationState, dt: number, events: Simulat
       targetId(state.nextTargetId++),
       state.level.speedMultiplier,
       state.tick + 1,
+      state.level.bounceMultiplier,
     );
     state.targets.push(target);
     state.waves.spawned += 1;

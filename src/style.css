@@ -228,3 +228,15 @@ h2 { margin: 0 0 24px; max-width: 750px; font-size: clamp(2rem, 4.5vw, 3.7rem); 
   *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
   .action_button:hover, .action_button:active { transform: none; }
 }
+
+/* Campaign browsing stays separate from the viewport-fitted arena. */
+.stage_feel { margin: 0 0 14px; color: var(--teal); font-size: .9rem; font-weight: 700; }
+.practice_levels { grid-template-columns: 1fr; gap: 28px; }
+.practice_chapter h3 { margin: 0 0 12px; color: var(--teal); font-size: 1rem; }
+.practice_stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 12px; }
+.practice_levels button:disabled { opacity: 1; color: #b7a9c1; border-color: #594763; background: #211c30; cursor: not-allowed; }
+.briefing_art .briefing_scene { width: 100%; max-width: 350px; border: 1px solid #665476; border-radius: 14px; filter: none; }
+@media (max-width: 620px) {
+  .briefing_art .briefing_scene { width: 100%; max-width: none; height: 82px; object-fit: cover; }
+  .briefing_art { grid-template-columns: 1fr 90px; gap: 14px; }
+}

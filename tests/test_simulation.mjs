@@ -5,6 +5,7 @@ import { createTarget } from "../src/characters.ts";
 import {
   FIXED_STEP,
   getLevel,
+  nextLevelId,
   OVERLOAD_DURATION,
   SPAWN_WARNING_DURATION,
   SURVIVAL_POINTS_PER_SECOND,
@@ -254,7 +255,7 @@ test("campaign advancement carries score and lives; practice cannot advance or c
     assert.equal(state.score, score);
     const next = advanceLevel(state);
     if (mode === "campaign") {
-      assert.equal(next.level.id, 2);
+      assert.equal(next.level.id, nextLevelId(state.level.id));
       assert.equal(next.player.lives, 2);
       assert.equal(next.score, score);
     } else {

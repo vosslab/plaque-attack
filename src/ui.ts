@@ -1,4 +1,4 @@
-import { getLevel, OVERLOAD_DURATION } from "./constants";
+import { campaignPosition, getLevel, LEVEL_IDS, OVERLOAD_DURATION } from "./constants";
 import type { LevelConfig, WeaponMode } from "./types/level";
 import type { AppScreen } from "./types/runtime";
 import type { SimulationState } from "./types/simulation";
@@ -36,12 +36,12 @@ const TOOL_DETAILS: Record<WeaponMode, string> = {
   clopidogrel: "Slower, persistent shots. Each can inactivate three different hazards.",
   dual: "Shots alternate automatically between aspirin and clopidogrel. Hold fire to keep going.",
 };
-const ACT_NAMES = [
-  "",
-  "Coronary intervention",
-  "Pharmaceutical treatment",
-  "Long-term maintenance",
-];
+export const CHAPTER_NAMES = {
+  1: "Plaque Patrol",
+  2: "Platelet Pop",
+  3: "Pulse Partners",
+  4: "Flow State",
+} as const;
 
 export function showScreen(screen: AppScreen): void {
   const kind = screen.kind;
@@ -54,9 +54,20 @@ export function showScreen(screen: AppScreen): void {
 
 export function showBriefing(level: LevelConfig, practice: boolean): void {
   element("briefing_act").textContent =
-    `Act ${level.act} / ${ACT_NAMES[level.act]}${practice ? " / Practice" : ""}`;
-  element("briefing_title").textContent = `Level ${level.id}: ${level.name}`;
+    `Chapter ${level.chapter} / ${CHAPTER_NAMES[level.chapter]}${practice ? " / Practice" : ""}`;
+  element("briefing_title").textContent = `Stage ${campaignPosition(level.id)}: ${level.name}`;
   element("briefing_objective").textContent = level.briefing;
+  const position = campaignPosition(level.id);
+  element("briefing_feel").textContent =
+    position <= 3
+      ? "Gentle warm-up / take your time"
+      : position === 7 || position === 13 || position === 15 || position === 18
+        ? "Fresh rhythm / settle into your new tool"
+        : level.objective.kind === "maintenance"
+          ? "Keep the rhythm / stay below the safe count"
+          : "Find your opening / keep moving";
+  const scene = element("briefing_scene");
+  if (scene instanceof HTMLImageElement) scene.src = `assets/${level.scene}.svg`;
   element("briefing_weapon").textContent = TOOL_NAMES[level.weapon];
   element("briefing_tool_description").textContent = TOOL_DETAILS[level.weapon];
   element("briefing_caption").textContent =
@@ -68,7 +79,7 @@ export function showBriefing(level: LevelConfig, practice: boolean): void {
   if (tool instanceof HTMLImageElement)
     tool.src = `assets/${level.weapon === "dual" ? "aspirin" : level.weapon}.svg`;
   if (target instanceof HTMLImageElement)
-    target.src = `assets/${level.act === 1 ? "plaque" : "platelet"}.svg`;
+    target.src = `assets/${level.act === 1 ? level.lipidVariants[0] : "platelet"}.svg`;
   element("briefing_title").focus();
 }
 
@@ -80,7 +91,7 @@ function clock(seconds: number): string {
 export function updateHud(state: Readonly<SimulationState>): void {
   const { level } = state;
   element("hud_level").textContent =
-    `Level ${level.id}: ${level.name}${state.mode === "practice" ? " / Practice" : ""}`;
+    `Stage ${campaignPosition(level.id)}: ${level.name}${state.mode === "practice" ? " / Practice" : ""}`;
   element("hud_lives").textContent =
     `${"\u2665".repeat(state.player.lives)}${"\u2661".repeat(3 - state.player.lives)} ${state.player.lives} / 3`;
   element("hud_score").textContent = String(state.score).padStart(6, "0");
@@ -114,7 +125,7 @@ export function showResult(state: Readonly<SimulationState>, recordRank?: number
     state.mode === "practice"
       ? "Practice / Unranked"
       : final
-        ? "All 15 levels complete"
+        ? `All ${LEVEL_IDS.length} stages complete`
         : "Your shift continues";
   element("result_title").textContent = lost
     ? "Run ended"
@@ -126,7 +137,7 @@ export function showResult(state: Readonly<SimulationState>, recordRank?: number
           ? "Platelet activity controlled!"
           : "Maintenance complete!";
   element("result_summary").textContent =
-    `Level ${state.level.id}: ${state.level.name}. Points earned this level: ${(state.score - state.levelStartScore).toLocaleString()}. Total score: ${state.score.toLocaleString()}. Lives remaining: ${state.player.lives} / 3.${recordRank === undefined ? "" : ` High-score rank: ${recordRank} / 5.`}`;
+    `Stage ${campaignPosition(state.level.id)}: ${state.level.name}. Points earned this level: ${(state.score - state.levelStartScore).toLocaleString()}. Total score: ${state.score.toLocaleString()}. Lives remaining: ${state.player.lives} / 3.${recordRank === undefined ? "" : ` High-score rank: ${recordRank} / 5.`}`;
   element("result_fact").textContent =
     state.level.fact ??
     getLevel(state.level.act === 1 ? 3 : state.level.act === 2 ? 6 : 11).fact ??

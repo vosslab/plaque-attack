@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="lipid-swirl-title lipid-swirl-desc">
+  <title id="lipid-swirl-title">Swirl lipid globule</title>
+  <desc id="lipid-swirl-desc">Original stylized golden lipid target with a rounded irregular contour. Fictional arcade object, not a molecular structure.</desc>
+  <defs><linearGradient id="lipid-swirl-gold" x1=".15" y1="0" x2=".85" y2="1"><stop stop-color="#ffe993"/><stop offset=".48" stop-color="#ffca46"/><stop offset="1" stop-color="#e98c28"/></linearGradient></defs>
+  <g id="lipid-swirl-silhouette" stroke-linejoin="round"><path d="M72 10C94 15 113 31 117 55C122 81 104 103 82 113C56 123 31 109 19 89C5 69 10 43 25 26C36 13 54 5 72 10Z" fill="url(#lipid-swirl-gold)" stroke="#fff0ac" stroke-width="5"/><path d="M72 10C94 15 113 31 117 55C122 81 104 103 82 113C56 123 31 109 19 89C5 69 10 43 25 26C36 13 54 5 72 10Z" fill="none" stroke="#7b381f" stroke-width="2.8"/></g>
+  <g id="lipid-swirl-folds" fill="none" stroke="#ad5c22" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M37 57C45 30 84 30 96 55C111 88 64 108 45 83C30 63 64 45 77 62C87 78 64 83 60 72"/></g>
+  <g id="lipid-swirl-light" fill="none" stroke="#fff7c7" stroke-width="6" stroke-linecap="round"><path d="M30 43Q37 26 53 23"/><path d="M25 55L24 59"/></g>
+  <g id="lipid-swirl-pores" fill="#a35a24"><ellipse cx="73" cy="25" rx="2.3" ry="1.8"/><ellipse cx="101" cy="61" rx="2" ry="3"/><ellipse cx="49" cy="104" rx="3" ry="1.7"/></g>
+</svg>

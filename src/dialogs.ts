@@ -1,3 +1,4 @@
+import { campaignPosition } from "./constants";
 import { action, element } from "./ui";
 import type { CampaignRecord, Settings } from "./types/save";
 
@@ -125,7 +126,7 @@ export function scoresPanel(body: HTMLElement, records: readonly CampaignRecord[
   const list = document.createElement("ol");
   for (const record of records) {
     const item = document.createElement("li");
-    item.textContent = `${record.score.toLocaleString()} points / Level ${record.levelReached} / ${record.outcome === "completed" ? "Completed" : "Run ended"} / ${new Date(record.date).toLocaleDateString()}`;
+    item.textContent = `${record.score.toLocaleString()} points / ${record.campaign === "classic" ? "Classic 15" : "Expanded 24"} / Stage ${record.campaign === "classic" ? record.levelReached : campaignPosition(record.levelReached)} / ${record.outcome === "completed" ? "Completed" : "Run ended"} / ${new Date(record.date).toLocaleDateString()}`;
     list.append(item);
   }
   body.append(list);

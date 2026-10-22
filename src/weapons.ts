@@ -93,6 +93,7 @@ function splitTarget(state: SimulationState, target: Target): void {
         targetId(state.nextTargetId++),
         state.level.speedMultiplier,
         state.tick + 1,
+        state.level.bounceMultiplier,
       ),
     );
   }

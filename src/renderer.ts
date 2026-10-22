@@ -204,8 +204,10 @@ export function createRenderer(
     damageRemaining = Math.max(0, damageRemaining - dt);
     ctx.setTransform(canvas.width / ARENA_WIDTH, 0, 0, canvas.height / ARENA_HEIGHT, 0, 0);
     ctx.clearRect(0, 0, ARENA_WIDTH, ARENA_HEIGHT);
-    ctx.drawImage(images.artery, 0, 0, ARENA_WIDTH, ARENA_HEIGHT);
-    if (state.level.act >= 2) {
+    ctx.drawImage(images[state.level.scene], 0, 0, ARENA_WIDTH, ARENA_HEIGHT);
+    const sceneHasImplant =
+      state.level.scene === "scene-stented-lumen" || state.level.scene === "scene-healed-flow";
+    if (state.level.act >= 2 && !sceneHasImplant) {
       // The installed implant follows the upper artery wall behind every gameplay object.
       // Its horizontal mesh is distinct from the bright vertical fired stent trail.
       ctx.save();
@@ -273,8 +275,15 @@ export function createRenderer(
       ctx.save();
       ctx.translate(x, y);
       if (!reducedMotion) ctx.rotate(Math.sin(state.elapsed * 1.2 + target.id) * 0.1);
+      // Identity fixes each appearance for its lifetime without consuming simulation randomness.
+      // Consecutive split children can introduce new silhouettes from the same level palette.
+      const palette = state.level.lipidVariants;
+      const appearance =
+        target.kind === "plaque"
+          ? (palette[(target.id - 1) % palette.length] ?? palette[0])
+          : "platelet";
       ctx.drawImage(
-        images[target.kind],
+        images[appearance],
         -target.radius,
         -target.radius,
         target.radius * 2,
@@ -330,7 +339,13 @@ export function createRenderer(
       ctx.stroke();
       ctx.setLineDash([]);
       ctx.globalAlpha = 0.55;
-      ctx.drawImage(images[warning.target.kind], x - 23, y - 23, 46, 46);
+      const appearance =
+        warning.target.kind === "plaque"
+          ? (state.level.lipidVariants[
+              (state.nextTargetId - 1) % state.level.lipidVariants.length
+            ] ?? state.level.lipidVariants[0])
+          : "platelet";
+      ctx.drawImage(images[appearance], x - 23, y - 23, 46, 46);
       ctx.globalAlpha = 1;
       // A fixed arrow remains legible with reduced motion and at the upper wall.
       ctx.beginPath();

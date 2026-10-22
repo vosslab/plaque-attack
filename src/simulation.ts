@@ -16,7 +16,7 @@ import type { SimulationState, SimulationStep, Target } from "./types/simulation
 import { advanceWaves, clearObjectiveSatisfied } from "./waves";
 import { fireWeapon, resolveProjectileHits } from "./weapons";
 
-function advanceTarget(target: Target, dt: number): void {
+function advanceTarget(target: Target, dt: number, bounceMultiplier: number): void {
   target.previousPosition = { ...target.position };
   let x = target.position.x + target.velocity.x * dt;
   let y = target.position.y + target.velocity.y * dt + (GRAVITY * dt * dt) / 2;
@@ -33,7 +33,7 @@ function advanceTarget(target: Target, dt: number): void {
     target.velocity.y = Math.abs(target.velocity.y);
   } else if (y > ARENA_HEIGHT - target.radius) {
     y = ARENA_HEIGHT - target.radius;
-    target.velocity.y = bounceVelocity(target.size);
+    target.velocity.y = bounceVelocity(target.size, bounceMultiplier);
   }
   target.position.x = logicalCoordinate(
     Math.max(target.radius, Math.min(ARENA_WIDTH - target.radius, x)),
@@ -122,7 +122,7 @@ export const stepSimulation: SimulationStep = (state, input, dt) => {
     state.player.contactInvulnerabilityRemaining - dt,
   );
   if (input.fire) fireWeapon(state, events);
-  for (const target of state.targets) advanceTarget(target, dt);
+  for (const target of state.targets) advanceTarget(target, dt, state.level.bounceMultiplier);
   resolveProjectileHits(state, dt, events);
   const contact =
     state.player.contactInvulnerabilityRemaining <= 1e-9 &&

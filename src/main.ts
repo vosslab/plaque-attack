@@ -1,6 +1,6 @@
 import { loadAssets } from "./assets";
 import { createAudio } from "./audio";
-import { getLevel, LEVEL_IDS, nextLevelId } from "./constants";
+import { getLevel, isLevelUnlocked, LEVEL_IDS, nextLevelId } from "./constants";
 import { createDialogs, medicine, paragraph, scoresPanel, settingsPanel } from "./dialogs";
 import { advanceLevel, createSimulation, pauseSimulation, resumeSimulation } from "./game_state";
 import { createInputController } from "./input";
@@ -8,7 +8,16 @@ import { createRenderer } from "./renderer";
 import { addRecord, loadSave, saveSave, storageMessage } from "./save_load";
 import { stepSimulation } from "./simulation";
 import { createFixedLoop } from "./timer";
-import { action, button, element, showBriefing, showResult, showScreen, updateHud } from "./ui";
+import {
+  action,
+  button,
+  CHAPTER_NAMES,
+  element,
+  showBriefing,
+  showResult,
+  showScreen,
+  updateHud,
+} from "./ui";
 import type { LevelId } from "./types/level";
 import type { ArenaRenderer, AppScreen, AssetLoadState, RuntimeState } from "./types/runtime";
 import type { TutorialPrompt } from "./types/save";
@@ -206,13 +215,14 @@ function main(): void {
     if (state.mode === "campaign") {
       if (state.phase === "level_complete") {
         const next = nextLevelId(state.level.id);
-        if (next !== undefined && next > runtime.save.unlockedLevel) {
+        if (next !== undefined && !isLevelUnlocked(next, runtime.save.unlockedLevel)) {
           runtime.save.unlockedLevel = next;
           persist();
         }
       } else if (!state.recordCommitted) {
         const date = new Date().toISOString();
         runtime.save = addRecord(runtime.save, {
+          campaign: "expanded",
           score: state.score,
           levelReached: state.level.id,
           outcome: state.phase === "campaign_complete" ? "completed" : "ended",
@@ -220,6 +230,7 @@ function main(): void {
         });
         const rank = runtime.save.records.findIndex(
           (record) =>
+            record.campaign === "expanded" &&
             record.date === date &&
             record.score === state.score &&
             record.levelReached === state.level.id &&
@@ -296,7 +307,7 @@ function main(): void {
   });
   button("practice_current").addEventListener("click", (): void => {
     const state = runtime.simulation;
-    if (state === undefined || state.level.id > runtime.save.unlockedLevel) return;
+    if (state === undefined || !isLevelUnlocked(state.level.id, runtime.save.unlockedLevel)) return;
     leaveCampaign((): void => {
       campaignStarted = false;
       briefing(state.level.id, "practice");
@@ -305,13 +316,28 @@ function main(): void {
   button("practice_button").addEventListener("click", (): void => {
     const list = element("practice_levels");
     list.replaceChildren();
-    for (const id of LEVEL_IDS) {
-      const entry = action(
-        `Level ${id}: ${getLevel(id).name}${id > runtime.save.unlockedLevel ? " / Locked" : ""}`,
-        (): void => briefing(id, "practice"),
-      );
-      entry.disabled = id > runtime.save.unlockedLevel;
-      list.append(entry);
+    for (const chapter of [1, 2, 3, 4] as const) {
+      const group = document.createElement("section");
+      group.className = "practice_chapter";
+      const heading = document.createElement("h3");
+      heading.textContent = `Chapter ${chapter} / ${CHAPTER_NAMES[chapter]}`;
+      group.append(heading);
+      const stages = document.createElement("div");
+      stages.className = "practice_stages";
+      for (const id of LEVEL_IDS.filter((id) => getLevel(id).chapter === chapter)) {
+        const unlocked = isLevelUnlocked(id, runtime.save.unlockedLevel);
+        const position = LEVEL_IDS.indexOf(id) + 1;
+        const entry = action(
+          `Stage ${position}: ${getLevel(id).name}${unlocked ? "" : " / Locked"}`,
+          (): void => {
+            if (isLevelUnlocked(id, runtime.save.unlockedLevel)) briefing(id, "practice");
+          },
+        );
+        entry.disabled = !unlocked;
+        stages.append(entry);
+      }
+      group.append(stages);
+      list.append(group);
     }
     screen({ kind: "practice_select" }, element("practice_title"));
   });

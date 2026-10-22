@@ -1,5 +1,5 @@
 import type { SimulationEvent } from "./events";
-import type { LevelId } from "./level";
+import type { LevelId, LipidVariant, SceneId } from "./level";
 import type { DisplayPoint, LogicalPoint } from "./player";
 import type { SaveFile, StorageStatus } from "./save";
 import type { SimulationState } from "./simulation";
@@ -15,7 +15,15 @@ export type AppScreen =
   | { kind: "campaign_result" };
 export type DialogKind = "instructions" | "settings" | "scores" | "medicine" | "confirm_quit";
 export type AssetId =
-  "surgeon" | "plaque" | "platelet" | "stent" | "aspirin" | "clopidogrel" | "artery";
+  | "surgeon"
+  | "plaque"
+  | "platelet"
+  | "stent"
+  | "aspirin"
+  | "clopidogrel"
+  | "artery"
+  | SceneId
+  | LipidVariant;
 export type AssetImages = Readonly<Record<AssetId, HTMLImageElement>>;
 export type AssetLoadState =
   { kind: "loading" } | { kind: "ready"; images: AssetImages } | { kind: "error"; message: string };

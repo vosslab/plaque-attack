@@ -2,6 +2,19 @@
 
 ### Additions and New Features
 
+- Set the expanded campaign at 24 levels across four chapters, with stable IDs in the canonical
+  order recorded in the expansion contracts. Preserve Act III mechanics and add Chapter 4
+  presentation; legacy version-1 save migration is planned and not yet verified.
+- Accept the expansion plan, difficulty rubric, and art direction contracts. Record the beginner
+  tuning evidence: the first three levels are pretty easy, while low, fast, small balls are hard.
+  Campaign pacing is being adjusted; 12 new SVG assets passed art specification and quality review,
+  but renderer integration remains pending. No complete expansion acceptance is claimed.
+- Record the requested additive campaign expansion in
+  [active_plans/active/organic_expansion.md](active_plans/active/organic_expansion.md). The design
+  contracts are accepted; campaign metadata/order and wave pacing are landed, beginner tuning is
+  active, and reviewed SVG assets still need renderer integration.
+- Record new human guidance for a fun, progressively challenging campaign and organic
+  medical-inspired scenes with varied editable lipid SVG art.
 - Complete A0 shared contracts and Batch 1 foundation for the 15-level Plaque Trouble campaign.
   Batch 1 passed TypeScript, repository checks, GitHub Pages build, and one Playwright smoke test.
 - Start Batch 2 presentation and utility work with separate renderer/assets, shell/style, and

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="lipid-pear-title lipid-pear-desc">
+  <title id="lipid-pear-title">Pear lipid globule</title>
+  <desc id="lipid-pear-desc">Original stylized golden lipid target with a rounded irregular contour. Fictional arcade object, not a molecular structure.</desc>
+  <defs><linearGradient id="lipid-pear-gold" x1=".15" y1="0" x2=".85" y2="1"><stop stop-color="#ffe993"/><stop offset=".48" stop-color="#ffca46"/><stop offset="1" stop-color="#e98c28"/></linearGradient></defs>
+  <g id="lipid-pear-silhouette" stroke-linejoin="round"><path d="M56 9C78 3 87 24 94 39C103 47 117 59 116 77C115 98 94 116 68 118C42 121 16 100 12 76C8 57 23 47 30 35C37 21 40 13 56 9Z" fill="url(#lipid-pear-gold)" stroke="#fff0ac" stroke-width="5"/><path d="M56 9C78 3 87 24 94 39C103 47 117 59 116 77C115 98 94 116 68 118C42 121 16 100 12 76C8 57 23 47 30 35C37 21 40 13 56 9Z" fill="none" stroke="#7b381f" stroke-width="2.8"/></g>
+  <g id="lipid-pear-folds" fill="none" stroke="#ad5c22" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><path d="M61 38C54 53 80 53 83 73C87 89 72 101 55 96"/><path d="M35 67Q28 82 40 90"/></g>
+  <g id="lipid-pear-light" fill="none" stroke="#fff7c7" stroke-width="6" stroke-linecap="round"><path d="M30 43Q37 26 53 23"/><path d="M25 55L24 59"/></g>
+  <g id="lipid-pear-pores" fill="#a35a24"><ellipse cx="73" cy="25" rx="2.3" ry="1.8"/><ellipse cx="101" cy="61" rx="2" ry="3"/><ellipse cx="49" cy="104" rx="3" ry="1.7"/></g>
+</svg>

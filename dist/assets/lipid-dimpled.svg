@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="lipid-dimpled-title lipid-dimpled-desc">
+  <title id="lipid-dimpled-title">Dimpled lipid globule</title>
+  <desc id="lipid-dimpled-desc">Original stylized golden lipid target with a rounded irregular contour. Fictional arcade object, not a molecular structure.</desc>
+  <defs><linearGradient id="lipid-dimpled-gold" x1=".15" y1="0" x2=".85" y2="1"><stop stop-color="#ffe993"/><stop offset=".48" stop-color="#ffca46"/><stop offset="1" stop-color="#e98c28"/></linearGradient></defs>
+  <g id="lipid-dimpled-silhouette" stroke-linejoin="round"><path d="M60 8C86 7 110 26 116 51C123 79 104 104 81 114C63 121 35 112 22 94C11 80 9 63 13 49C17 40 29 46 32 37C34 26 43 10 60 8Z" fill="url(#lipid-dimpled-gold)" stroke="#fff0ac" stroke-width="5"/><path d="M60 8C86 7 110 26 116 51C123 79 104 104 81 114C63 121 35 112 22 94C11 80 9 63 13 49C17 40 29 46 32 37C34 26 43 10 60 8Z" fill="none" stroke="#7b381f" stroke-width="2.8"/></g>
+  <g id="lipid-dimpled-folds" fill="none" stroke="#ad5c22" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="59" cy="50" rx="11" ry="8"/><ellipse cx="84" cy="76" rx="9" ry="13"/><path d="M35 75Q32 91 51 94"/></g>
+  <g id="lipid-dimpled-light" fill="none" stroke="#fff7c7" stroke-width="6" stroke-linecap="round"><path d="M30 43Q37 26 53 23"/><path d="M25 55L24 59"/></g>
+  <g id="lipid-dimpled-pores" fill="#a35a24"><ellipse cx="73" cy="25" rx="2.3" ry="1.8"/><ellipse cx="101" cy="61" rx="2" ry="3"/><ellipse cx="49" cy="104" rx="3" ry="1.7"/></g>
+</svg>

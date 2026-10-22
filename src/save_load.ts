@@ -1,4 +1,4 @@
-import { LEVEL_IDS } from "./constants";
+import { campaignPosition, LEVEL_IDS } from "./constants";
 import type { LevelId } from "./types/level";
 import type {
   CampaignRecord,
@@ -13,7 +13,7 @@ const MAX_SAVE_LENGTH = 8192;
 
 export function defaultSave(): SaveFile {
   return {
-    version: 1,
+    version: 2,
     settings: { music: false, effects: false, completedTutorials: [] },
     unlockedLevel: 1,
     records: [],
@@ -32,13 +32,20 @@ function tutorial(value: unknown): value is TutorialPrompt {
   return value === "move" || value === "fire" || value === "split";
 }
 
-function record(value: unknown): CampaignRecord | undefined {
+function legacyLevel(value: unknown): value is LevelId {
+  return typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= 15;
+}
+
+function record(value: unknown, legacy = false): CampaignRecord | undefined {
   if (
     !object(value) ||
     !Number.isSafeInteger(value.score) ||
     typeof value.score !== "number" ||
     value.score < 0 ||
     !level(value.levelReached) ||
+    (legacy && !legacyLevel(value.levelReached)) ||
+    (!legacy && value.campaign !== "classic" && value.campaign !== "expanded") ||
+    (!legacy && value.campaign === "classic" && !legacyLevel(value.levelReached)) ||
     (value.outcome !== "completed" && value.outcome !== "ended") ||
     (value.outcome === "completed" && value.levelReached !== 15) ||
     typeof value.date !== "string" ||
@@ -49,6 +56,7 @@ function record(value: unknown): CampaignRecord | undefined {
   if (!Number.isFinite(timestamp) || new Date(timestamp).toISOString() !== value.date)
     return undefined;
   return {
+    campaign: legacy ? "classic" : value.campaign === "classic" ? "classic" : "expanded",
     score: value.score,
     levelReached: value.levelReached,
     outcome: value.outcome,
@@ -56,11 +64,17 @@ function record(value: unknown): CampaignRecord | undefined {
   };
 }
 
+function recordPosition(record: CampaignRecord): number {
+  return record.campaign === "classic"
+    ? record.levelReached
+    : campaignPosition(record.levelReached);
+}
+
 function rank(records: readonly CampaignRecord[]): CampaignRecord[] {
   return [...records]
     .sort(
       (a, b) =>
-        b.score - a.score || b.levelReached - a.levelReached || a.date.localeCompare(b.date),
+        b.score - a.score || recordPosition(b) - recordPosition(a) || a.date.localeCompare(b.date),
     )
     .slice(0, 5);
 }
@@ -69,8 +83,9 @@ function rank(records: readonly CampaignRecord[]): CampaignRecord[] {
 export function validateSave(value: unknown): SaveFile | undefined {
   if (
     !object(value) ||
-    value.version !== 1 ||
+    (value.version !== 1 && value.version !== 2) ||
     !level(value.unlockedLevel) ||
+    (value.version === 1 && !legacyLevel(value.unlockedLevel)) ||
     !object(value.settings) ||
     !Array.isArray(value.records) ||
     value.records.length > 5
@@ -91,12 +106,12 @@ export function validateSave(value: unknown): SaveFile | undefined {
   }
   const records: CampaignRecord[] = [];
   for (const entry of value.records) {
-    const parsed = record(entry);
+    const parsed = record(entry, value.version === 1);
     if (parsed === undefined) return undefined;
     records.push(parsed);
   }
   return {
-    version: 1,
+    version: 2,
     unlockedLevel: value.unlockedLevel,
     settings: { music: settings.music, effects: settings.effects, completedTutorials },
     records: rank(records),
@@ -118,7 +133,7 @@ export function loadSave(): SaveLoadResult {
   } catch {
     return { save: defaultSave(), status: "malformed" };
   }
-  if (object(value) && value.version !== undefined && value.version !== 1)
+  if (object(value) && value.version !== undefined && value.version !== 1 && value.version !== 2)
     return { save: defaultSave(), status: "unsupported" };
   const save = validateSave(value);
   return save === undefined

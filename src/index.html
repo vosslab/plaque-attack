@@ -17,7 +17,7 @@
 
     <section id="main_menu" class="menu_panel" aria-labelledby="game_title">
       <div class="menu_copy">
-        <p class="eyebrow"><span aria-hidden="true">01 / 15</span> Your shift starts here</p>
+        <p class="eyebrow"><span aria-hidden="true">01 / 24</span> Your shift starts here</p>
         <h1 id="game_title">Plaque <span>Trouble</span></h1>
         <p class="menu_intro">A tiny surgeon.<br>A big blockage.<br><strong>Make some breathing room.</strong></p>
         <button id="play_campaign" class="action_button campaign_button" type="button">Play campaign <span aria-hidden="true">&#8599;</span></button>
@@ -33,14 +33,14 @@
         <div class="hero_arena">
           <img class="hero_artery" src="assets/artery.svg" alt="">
           <span class="hero_shot"></span>
-          <img class="hero_plaque plaque_one" src="assets/plaque.svg" alt="">
+          <img class="hero_plaque plaque_one" src="assets/lipid-amber.svg" alt="">
           <img class="hero_plaque plaque_two" src="assets/plaque.svg" alt="">
           <img class="hero_plaque plaque_three" src="assets/plaque.svg" alt="">
           <img class="hero_surgeon" src="assets/surgeon.svg" alt="">
           <span class="hit_spark spark_one">+</span><span class="hit_spark spark_two">+</span>
         </div>
         <div class="art_annotation"><span class="annotation_line"></span> ONE STEADY HAND.</div>
-        <p class="art_caption"><span>15 LEVELS</span><span>3 TOOLS</span><span>YOU GOT THIS.</span></p>
+        <p class="art_caption"><span>24 STAGES</span><span>4 CHAPTERS</span><span>YOU GOT THIS.</span></p>
       </div>
       <div class="menu_bottom">
         <p class="control_hint"><kbd>A</kbd> <kbd>D</kbd> move <span class="hint_divider">/</span> <kbd>SPACE</kbd> fire <span class="hint_divider">/</span> dodge the trouble</p>
@@ -50,25 +50,26 @@
 
     <section id="level_briefing" class="briefing_panel" aria-labelledby="briefing_title" hidden>
       <div class="briefing_copy">
-        <p class="eyebrow" id="briefing_act">Act I / Coronary intervention</p>
-        <h2 id="briefing_title" tabindex="-1">Level 1: First blockage</h2>
+        <p class="eyebrow" id="briefing_act">Chapter 1 / Plaque Patrol</p>
+        <h2 id="briefing_title" tabindex="-1">Stage 1: First blockage</h2>
+        <p id="briefing_feel" class="stage_feel"></p>
         <p id="briefing_objective" class="panel_intro"></p>
         <div class="tool_card"><img id="briefing_tool_art" src="assets/stent.svg" alt=""><div><span class="small_label">Equipped tool</span><strong id="briefing_weapon">Coronary stent</strong><p id="briefing_tool_description">Fire upward. Split the plaque. Keep moving.</p></div></div>
         <p id="briefing_caption" class="medical_caption">Arcade model: real stents hold arteries open.</p>
-        <div class="panel_actions"><button id="start_level" class="action_button" type="button">Start level <span aria-hidden="true">&#8594;</span></button><button id="back_menu" class="quiet_button" type="button">Back to menu</button></div>
+        <div class="panel_actions"><button id="start_level" class="action_button" type="button">Start stage <span aria-hidden="true">&#8594;</span></button><button id="back_menu" class="quiet_button" type="button">Back to menu</button></div>
       </div>
-      <div class="briefing_art" aria-hidden="true"><span class="target_ring"></span><img id="briefing_target_art" src="assets/plaque.svg" alt=""><span class="small_label">Meet your first challenge</span></div>
+      <div class="briefing_art" aria-hidden="true"><img id="briefing_scene" class="briefing_scene" src="assets/scene-endothelium.svg" alt=""><span class="target_ring"></span><img id="briefing_target_art" src="assets/plaque.svg" alt=""><span class="small_label">Meet your first challenge</span></div>
     </section>
 
     <section id="practice_select" class="content_panel" aria-labelledby="practice_title" hidden>
       <p class="eyebrow">Find your rhythm</p><h2 id="practice_title" tabindex="-1">Practice makes steady.</h2>
-      <p class="panel_intro">Replay an unlocked level. All the action, with an unranked score.</p>
+      <p class="panel_intro">Replay an unlocked stage with fresh lives and an unranked score. The first three stages are a gentle warm-up.</p>
       <div id="practice_levels" class="practice_levels"></div>
     </section>
 
     <section id="gameplay" class="gameplay" aria-label="Arcade arena" hidden>
       <div class="game_hud">
-        <div class="hud_level"><span class="small_label">On the clock</span><strong id="hud_level">Level 1: First blockage</strong></div>
+        <div class="hud_level"><span class="small_label">On the clock</span><strong id="hud_level">Stage 1: First blockage</strong></div>
         <div class="hud_lives"><span class="small_label">Lives</span><strong id="hud_lives">3 / 3</strong></div>
         <div class="hud_score"><span class="small_label">Score</span><strong id="hud_score">000000</strong></div>
         <div class="hud_time"><span class="small_label" id="hud_time_label">Elapsed</span><strong id="hud_time">00:00</strong></div>
@@ -91,7 +92,7 @@
       <p class="eyebrow" id="result_eyebrow">A little more breathing room</p><h2 id="result_title" tabindex="-1">Plaque cleared!</h2>
       <div id="result_summary" class="panel_intro"></div>
       <p id="result_fact" class="medical_caption"></p>
-      <div class="panel_actions"><button id="continue_button" class="action_button" type="button">Continue <span aria-hidden="true">&#8594;</span></button><button id="retry_button" class="action_button" type="button" hidden>Retry campaign</button><button id="practice_current" class="quiet_button" type="button">Practice this level</button><button id="result_menu" class="quiet_button" type="button">Main menu</button></div>
+      <div class="panel_actions"><button id="continue_button" class="action_button" type="button">Continue <span aria-hidden="true">&#8594;</span></button><button id="retry_button" class="action_button" type="button" hidden>Retry campaign</button><button id="practice_current" class="quiet_button" type="button">Practice this stage</button><button id="result_menu" class="quiet_button" type="button">Main menu</button></div>
     </section>
 
     <footer class="game_footer"><span>An arcade metaphor for cardiovascular care.</span><span>Original arcade science <span aria-hidden="true">/</span> Sound starts muted</span></footer>
