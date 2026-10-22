@@ -1,12 +1,45 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="128" viewBox="0 0 96 128" role="img" aria-labelledby="alex-title alex-desc">
   <title id="alex-title">Dr. Alex Morgan, artery surgeon</title>
-  <desc id="alex-desc">sawtooth hair silhouette, large round glasses, tucked elbow and sideways lean. Masked and gloved, holding an upward delivery applicator. Fictional Plaque Attack character.</desc>
-  <defs><linearGradient id="alex-scrubs" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6dbd59"/><stop offset="1" stop-color="#2d8a54"/></linearGradient></defs>
+  <desc id="alex-desc">A stocky early-career surgeon with a low soft cap, broad freckled face and relaxed shoulders. A balcony gardener whose prize tomato is named Gerald. Masked and gloved, with an upward delivery applicator. Fictional Plaque Attack character.</desc>
+  <defs>
+    <linearGradient id="alex-scrubs" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#6dbd59"/>
+      <stop offset="1" stop-color="#2d8a54"/>
+    </linearGradient>
+  </defs>
   <g stroke="#162b40" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
-    <g id="alex-legs" ><path d="M29 98H44L41 117H27ZM51 98H66L68 117H53Z" fill="#2d8a54" /><path d="M27 115H42V123H20Q18 119 27 115ZM53 115H68L75 120V123H53Z" fill="#263852" /></g>
-    <g id="alex-torso" ><path d="M29 64L57 61L66 73L70 98H25L20 81Z" fill="url(#alex-scrubs)" /><path d="M33 65L43 75L55 63" fill="none" stroke="#e4f5f2" stroke-width="2.5"/><path d="M48 82H62V94H48Z" fill="#2d8a54" stroke-width="2"/><path d="M53 86h5m-2.5-2.5v5" stroke="#e4f5f2" stroke-width="1.8"/></g>
-    <g id="alex-tool" ><path d="M77 69V29" stroke="#e0f4fc" stroke-width="8"/><path d="M77 61V30" stroke="#638aa2" stroke-width="2"/><path d="M71 29h12l-3-15h-6z" fill="#e8f8ff"/><path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5"/><rect x="70" y="60" width="14" height="19" rx="4" fill="#f9c869"/></g>
-    <g id="alex-hands" ><path d="M26 69Q17 68 15 78L22 91Q26 96 32 91L42 82L36 76L27 81L24 76Z" fill="#effff9" /><path d="M64 69Q67 61 74 65L81 68Q85 72 81 78L75 85Q69 90 64 84L60 77Z" fill="#effff9"/><path d="M68 72l8 3" stroke="#78aab5" stroke-width="2"/></g>
-    <g id="alex-head" ><path d="M22 31Q24 16 41 15Q60 14 64 31L64 46Q58 61 42 60Q25 59 22 44Z" fill="#e0ab83" /><path d="M20 33L18 24L25 21L23 13L36 14L44 6L49 13L59 12L59 19Q69 22 66 33L57 29L49 32L39 25L31 32Z" fill="#273847" /><path d="M22 33L29 32M56 31L65 33" fill="none" stroke="#75b55e" stroke-width="2.5"/><path d="M25 46Q44 40 63 45L58 57Q43 65 28 57Z" fill="#e3fff8" /><path d="M32 50Q44 53 56 49" fill="none" stroke="#82bcb7" stroke-width="1.8"/><path d="M31 39h4m16-2h4" fill="none" stroke-width="3"/><g fill="none" stroke="#263852" stroke-width="2.7"><circle cx="33" cy="38" r="8"/><circle cx="54" cy="36" r="8"/><path d="M41 37h5M23 36l3 1m36-3 3-1"/></g><path d="M29 34l2-1m19-2 2-1" stroke="#f7ffff" stroke-width="1.7"/></g>
+    <g id="alex-legs" >
+      <path d="M29 98H44L41 117H27ZM51 98H66L68 117H53Z" fill="#2d8a54" />
+      <path d="M27 115H42V123H20Q18 119 27 115ZM53 115H68L75 120V123H53Z" fill="#263852" />
+    </g>
+    <g id="alex-torso" >
+      <path d="M22 65L58 64L71 76L74 98H16L14 79Z" fill="url(#alex-scrubs)" />
+      <path d="M33 65L43 75L55 63" fill="none" stroke="#e4f5f2" stroke-width="2.5"/>
+      <path d="M48 82H62V94H48Z" fill="#2d8a54" stroke-width="2"/>
+      <path d="M53 86h5m-2.5-2.5v5" stroke="#e4f5f2" stroke-width="1.8"/>
+    </g>
+    <g id="alex-tool" >
+      <path d="M77 69V29" stroke="#e0f4fc" stroke-width="8"/>
+      <path d="M77 61V30" stroke="#638aa2" stroke-width="2"/>
+      <path d="M71 29h12l-3-15h-6z" fill="#e8f8ff"/>
+      <path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5"/>
+      <path d="M68 62Q76 57 84 62V80H68Z" fill="#e5d68e"/>
+    </g>
+    <g id="alex-hands" >
+      <path d="M26 69Q17 68 15 78L22 91Q26 96 32 91L42 82L36 76L27 81L24 76Z" fill="#effff9" />
+      <path d="M64 69Q67 61 74 65L81 68Q85 72 81 78L75 85Q69 90 64 84L60 77Z" fill="#effff9"/>
+      <path d="M68 72l8 3" stroke="#78aab5" stroke-width="2"/>
+    </g>
+    <g id="alex-head" transform="translate(-2 0)">
+      <path d="M20 37Q21 21 41 22Q60 21 64 37L63 54L55 64Q41 70 28 63L21 53Z" fill="#e0ab83"/>
+      <path d="M18 35Q16 20 28 18L53 18Q66 20 65 37L56 32L26 35Z" fill="#b0d886"/>
+      <path d="M22 33L60 32" stroke="#f2f6c8" stroke-width="3"/>
+      <path d="M23 36L28 35L27 43L23 45M60 35L63 39L61 46L58 42" fill="#835137"/>
+      <path d="M24 48L61 46L57 60Q41 68 27 59Z" fill="#e3fff8"/>
+      <path d="M32 54l18 1" stroke="#82bcb7" stroke-width="1.6"/>
+      <path d="M29 39l7-1m13 0 7 2" fill="none" stroke-width="2"/>
+      <path d="M33 42v2m19-1v2" stroke-width="3"/>
+      <path d="M28 46h1m6-1h1m16-1h1m5 1h1" stroke="#a16543" stroke-width="1.8"/>
+    </g>
   </g>
 </svg>

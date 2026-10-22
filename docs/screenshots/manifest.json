@@ -1,41 +1,41 @@
 {
-  "capturedAt": "2026-10-22T21:37:16.004Z",
+  "capturedAt": "2026-10-22T21:58:44.000Z",
   "command": "node tests/playwright/capture_docs_screenshots.mjs",
   "browser": "156.0.8078.4",
   "format": "WebP",
   "quality": 90,
   "buildHashes": {
-    "main.js": "95d3a8e9761f5681cc65d8b5897ae294e774c75df0374f94e6d6ebd4dd727cdb",
+    "main.js": "b0c9d4b20a8969947e13647176384f29ffdd7f61c00069d87603684676268d6d",
     "index.html": "5a292275879f45a7b33ad5bab7f801326f11881e8b8cd0e7fffb13ebc61c5b5c",
     "style.css": "050e665782d2dc9f5301e3896baf1eed6566ad53bde256ce323d1a99ae649a5e"
   },
   "errors": [],
   "screenshots": [
     {
-      "name": "main_menu",
-      "path": "main_menu.webp",
-      "width": 1280,
-      "height": 961,
-      "bytes": 65114,
-      "sha256": "cb6caea391cbb992edc3e63fe7f339635975b067b5f93d4dc41e4b41506dc9d1",
-      "provenance": "Current production menu; empty device progress."
-    },
-    {
       "name": "surgeon_roster",
       "path": "surgeon_roster.webp",
       "width": 960,
       "height": 598,
-      "bytes": 42710,
-      "sha256": "56b88d5ca9e656a9169c99c605025023e5726c4233209935d60fbcd49f153d99",
-      "provenance": "Actual chooser opened from menu; six cosmetic surgeons; default Maya selected."
+      "bytes": 45646,
+      "sha256": "448dd3814f0e632e684c3f38a20942a3fabd4931fcbc3dd75e41363043ac70ee",
+      "provenance": "Automatic first-run chooser; six cosmetic surgeons; explicit selection still required."
+    },
+    {
+      "name": "main_menu",
+      "path": "main_menu.webp",
+      "width": 1280,
+      "height": 961,
+      "bytes": 65156,
+      "sha256": "cc2ec5b550c061f454d880cd0c9a2e3920255df7390c560efdab7a751203be86",
+      "provenance": "Current production menu after choosing Maya; empty device progress."
     },
     {
       "name": "compact_settings",
       "path": "compact_settings.webp",
       "width": 900,
       "height": 560,
-      "bytes": 19868,
-      "sha256": "ee233ce86c011e261ae9a181def740951d5e1e2cedcf26fb78d2912d6bf24ee4",
+      "bytes": 19884,
+      "sha256": "c139cd4a59d843b883a05df07cc88ccab3ed03175f9943c3e5d95a74a400983d",
       "provenance": "Actual Settings dialog; fixed heading and Done, scrollable contents."
     },
     {
@@ -61,8 +61,8 @@
       "path": "floor_basin.webp",
       "width": 816,
       "height": 510,
-      "bytes": 31300,
-      "sha256": "a2c383982d194623a36c0335df1c6eaef26b97fb34ae2a4c8851612843439761",
+      "bytes": 31328,
+      "sha256": "6329073f88b16aa937c662193c772cd674252252ff888a17739abd4064889313",
       "provenance": "Basin with raised flanks; actual Practice stage entered through the visible stage picker. The only staged state is the normal local unlock save; geometry, hazards, and physics are the production build."
     },
     {
@@ -70,8 +70,8 @@
       "path": "floor_shelf.webp",
       "width": 816,
       "height": 510,
-      "bytes": 37540,
-      "sha256": "92e3fe48304f493e6e1030045bd411a12880f439d57f1187e78f5addba219fee",
+      "bytes": 37594,
+      "sha256": "39a73402ba8e6083c22f453373ab8c53d03bb1b4c8686226380f64d5d634b84b",
       "provenance": "Shelf with a broad central platform; actual Practice stage entered through the visible stage picker. The only staged state is the normal local unlock save; geometry, hazards, and physics are the production build."
     },
     {
@@ -79,8 +79,8 @@
       "path": "floor_shoulder.webp",
       "width": 816,
       "height": 510,
-      "bytes": 38398,
-      "sha256": "e944f0efcd38a55918d5a4abf43170528f576157cd4cd80011aa67b877351bf1",
+      "bytes": 38498,
+      "sha256": "238bd762da8db8514dda920860e8b801a60e5bd1df0f94cb94825679bb1e9add",
       "provenance": "Shoulder with unequal flanks; actual Practice stage entered through the visible stage picker. The only staged state is the normal local unlock save; geometry, hazards, and physics are the production build."
     },
     {
@@ -88,8 +88,8 @@
       "path": "tissue_carving.webp",
       "width": 1280,
       "height": 800,
-      "bytes": 54010,
-      "sha256": "f975e0617d934ff8e092ad2120cfa1a41fad8496e9ae4158922af112df2efd17",
+      "bytes": 54004,
+      "sha256": "6878cb2618e340557083dc1979b40653a08da77bdb8c8565271149d812dbe04a",
       "provenance": "Actual Stage 4 Practice: normal keyboard movement and stent shots repeatedly carve the real tissue obstacle. The local unlock save only exposes Practice; no targets, tissue, or physics are altered."
     },
     {
@@ -97,8 +97,8 @@
       "path": "streak_feedback.webp",
       "width": 1280,
       "height": 800,
-      "bytes": 45866,
-      "sha256": "e56351590959f308f6f737398fb57d6d564072d390b0366a777c959333113cd8",
+      "bytes": 45922,
+      "sha256": "524d75b73cf6e0f9cd417de902c249a09abe193f301a0da8bb60b296bb1bd9a6",
       "provenance": "Actual first campaign stage entered through Play campaign and Start stage. Held Space is ordinary player input; the capture waits for the game to award its visible five-hit streak multiplier."
     },
     {
@@ -106,8 +106,8 @@
       "path": "clear_celebration.webp",
       "width": 1280,
       "height": 1221,
-      "bytes": 58672,
-      "sha256": "8049667f7fe399def60b633b6741547d632ec42ff21f69afbd663f69f820a741",
+      "bytes": 59274,
+      "sha256": "dcf18bd86d56ce5211c7246ab21ad9b6b4e6e3677f2fbdffd8756c5b1a68396b",
       "provenance": "Actual first campaign stage played from visible controls with ordinary held-Space input. The three panels are chronological captures of the final pop, the surgeon's celebration, and the resulting completion screen."
     },
     {
@@ -115,8 +115,8 @@
       "path": "art_identity_game.webp",
       "width": 1280,
       "height": 800,
-      "bytes": 44658,
-      "sha256": "6bc707a5b5cbdc5680d9450aff9c0288abdc51260ed68a271b3891ac24acc925",
+      "bytes": 44630,
+      "sha256": "cf2c993a521366d13b83bf13ae12a5b6d9dd049764be6848c10a42d4251eed99",
       "provenance": "Current first-stage campaign gameplay entered from Play campaign and Start stage. This is a single current production scene, not a historical before/after comparison."
     },
     {
@@ -124,8 +124,8 @@
       "path": "art_identity_roster.webp",
       "width": 1200,
       "height": 831,
-      "bytes": 67200,
-      "sha256": "3714361ec2f588d9f3fa2a98d4674adf0c89027550067b5d116b53413baf916d",
+      "bytes": 68018,
+      "sha256": "ee7efbb74d43621c854ab28d4763b15e95de21a2fd4f96fb98a65ad7832898b3",
       "provenance": "Current source production renderer: six native 44x60 figures in staged idle/walk/victory, grayscale and silhouette rows; not earned gameplay."
     }
   ]

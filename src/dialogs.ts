@@ -168,6 +168,7 @@ export function settingsPanel(
   );
   surgeonPanel(body, settings.surgeonId, (surgeonId): void => {
     settings.surgeonId = surgeonId;
+    settings.surgeonChosen = true;
     changed();
   });
   paragraph(body, status);
@@ -176,7 +177,7 @@ export function settingsPanel(
 /** Reused in Settings, pause, and the dedicated chooser so all roster controls stay equivalent. */
 export function surgeonPanel(
   body: HTMLElement,
-  selectedId: SurgeonId,
+  selectedId: SurgeonId | null,
   selected: (surgeonId: SurgeonId) => void,
   showHeading = true,
 ): void {
@@ -209,8 +210,8 @@ export function surgeonPanel(
     description.textContent = surgeon.description;
     card.append(portrait, name, description);
     card.addEventListener("click", (): void => {
-      if (id === activeId) return;
       selected(id);
+      if (id === activeId) return;
       activeId = id;
       for (const candidate of roster.querySelectorAll<HTMLButtonElement>(".surgeon_card"))
         candidate.setAttribute("aria-pressed", String(candidate === card));
@@ -241,6 +242,32 @@ export function surgeonChooser(
     card.setAttribute("aria-describedby", description.id);
   }
   footer.append(action("Done", close, true));
+}
+
+/** Opening campaign play requires an explicit roster-card activation before it can continue. */
+export function firstSurgeonChooser(
+  body: HTMLElement,
+  selected: (surgeonId: SurgeonId) => void,
+  continueToMenu: () => void,
+  footer: HTMLElement,
+): void {
+  body.classList.add("surgeon_chooser");
+  const start = action("Continue", continueToMenu, true);
+  start.disabled = true;
+  surgeonPanel(
+    body,
+    null,
+    (surgeonId): void => {
+      selected(surgeonId);
+      start.disabled = false;
+    },
+    false,
+  );
+  const intro = body.querySelector(".surgeon_roster_intro");
+  if (intro !== null)
+    intro.textContent =
+      "Choose the surgeon joining you for your first stage. Every surgeon has the same abilities.";
+  footer.append(start);
 }
 
 export function scoresPanel(body: HTMLElement, records: readonly CampaignRecord[]): void {

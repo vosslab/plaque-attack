@@ -62,6 +62,11 @@ async function withPage(browser, url, { practice = false } = {}, work) {
     await page.clock.install({ time: new Date("2026-10-22T12:00:00Z") });
     await page.goto(url, { waitUntil: "networkidle" });
     await page.locator("#start_level:enabled").waitFor({ state: "attached" });
+    const chooser = page.getByRole("dialog", { name: "Choose your surgeon", exact: true });
+    await chooser
+      .getByRole("button", { name: "Choose Dr. Maya Chen; same abilities", exact: true })
+      .click();
+    await chooser.getByRole("button", { name: "Continue", exact: true }).click();
     await page.clock.pauseAt(new Date((await page.evaluate(() => Date.now())) + 100));
     await waitForVisibleArt(page);
     const result = await work(page);

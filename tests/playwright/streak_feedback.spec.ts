@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { chooseFirstSurgeonIfNeeded } from "./helper_first_run";
 
 // Selector contract: src/index.html owns #hud_streak, #hud_multiplier and #arena;
 // src/ui.ts:updateHud owns the visible current reward, src/renderer.ts owns canvas
@@ -54,6 +55,7 @@ test("real hits show both streak milestones and starting the next stage resets t
   });
   await page.clock.install({ time: new Date("2026-10-22T12:00:00.000Z") });
   await page.goto("/");
+  await chooseFirstSurgeonIfNeeded(page);
   await expect(page.getByRole("button", { name: "Play campaign", exact: true })).toBeVisible();
   await expect(page.locator("#start_level")).toBeEnabled();
   const ready = await page.evaluate(() => Date.now());

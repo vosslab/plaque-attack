@@ -2,6 +2,14 @@
 
 ### Additions and New Features
 
+- Rework the six surgeons as original scientist-inspired individuals across age ranges, with
+  distinct facial structures, silhouettes, personal interests, ergonomic tool housings and
+  hobby-linked victory gestures. Replace generic personality labels and tune cosmetic rhythms;
+  preserve the chooser layout, stable identities and equal gameplay abilities.
+- Introduce an explicit first-run surgeon choice before stage 1 and remember the player's choice.
+  Keep character switching available through the existing chooser and Settings. Verify 50
+  source tests, 19 browser tests, native-size Canvas rendering and all thirteen refreshed WebPs.
+
 - Refresh all thirteen documentation screenshots from the current game as quality-90 WebP.
   Correct the README's stale surgeon chooser image and links across the documentation; remove
   replaced PNGs. Add a repeatable capture command and provenance manifest, including explicit

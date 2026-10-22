@@ -3,6 +3,7 @@ import { createAudio } from "./audio";
 import { campaignPosition, getLevel, isLevelUnlocked, LEVEL_IDS, nextLevelId } from "./constants";
 import {
   createDialogs,
+  firstSurgeonChooser,
   medicine,
   paragraph,
   scoresPanel,
@@ -236,9 +237,28 @@ function main(): void {
         runtime.save.settings.surgeonId,
         (surgeonId): void => {
           runtime.save.settings.surgeonId = surgeonId;
+          runtime.save.settings.surgeonChosen = true;
           settingsChanged();
         },
         close,
+        footer,
+      );
+    });
+  }
+  function chooseFirstSurgeon(): void {
+    runtime.dialog = "surgeon";
+    dialogs.open("Choose your surgeon", (body, close, footer): void => {
+      firstSurgeonChooser(
+        body,
+        (surgeonId): void => {
+          runtime.save.settings.surgeonId = surgeonId;
+          runtime.save.settings.surgeonChosen = true;
+          settingsChanged();
+        },
+        (): void => {
+          if (!runtime.save.settings.surgeonChosen) return;
+          close();
+        },
         footer,
       );
     });
@@ -399,7 +419,10 @@ function main(): void {
           : "";
     },
   );
-  button("play_campaign").addEventListener("click", (): void => briefing(1, "campaign"));
+  button("play_campaign").addEventListener("click", (): void => {
+    if (runtime.save.settings.surgeonChosen) briefing(1, "campaign");
+    else chooseFirstSurgeon();
+  });
   button("start_level").addEventListener("click", begin);
   button("back_menu").addEventListener("click", quit);
   button("briefing_surgeon").addEventListener("click", openSurgeonChooser);
@@ -621,6 +644,7 @@ function main(): void {
   });
   void preload();
   loop.start();
+  if (!runtime.save.settings.surgeonChosen) chooseFirstSurgeon();
 }
 
 main();

@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
+import { chooseFirstSurgeonIfNeeded } from "./helper_first_run";
 
 // Selector contract: src/index.html:99/183/197 owns keyboard hints, celebration status and
 // the inline recovery note; src/ui.ts:47 owns screen visibility and the terminal HUD;
@@ -49,6 +50,7 @@ for (const advanceKey of ["Enter", "Space"]) {
     });
     await page.clock.install({ time: new Date("2026-10-22T12:00:00.000Z") });
     await page.goto("/");
+    await chooseFirstSurgeonIfNeeded(page);
     const play = page.getByRole("button", { name: "Play campaign", exact: true });
     await expect(play).toBeVisible();
     await expect(page.locator("#start_level")).toBeEnabled();

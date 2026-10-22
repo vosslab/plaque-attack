@@ -415,3 +415,37 @@ same footer and native dialog focus/escape handling.
 
 **Owner.** [dialogs.ts](../src/dialogs.ts), [main.ts](../src/main.ts) and
 [style.css](../src/style.css).
+
+### Scientist-inspired surgeon ensemble
+
+**Decision.** Use inspected Nobel laureate and HHMI scientist photographs as a pool of visual
+observations for six original surgeons. Give the cast different age ranges, builds, facial
+structures and invented personal interests, while retaining common surgical equipment cues.
+
+**Why.** The supplied creative critique identified generic personality classes and conventional
+visual shortcuts. Mixing observed features and independently invented stories gives the cast
+more specific identities. The critique informs this decision as supplied source material.
+
+**Consequence.** Revise both base and victory SVGs, chooser descriptions and cosmetic cadence.
+Keep stable IDs, selection layout, shared abilities and the Canvas articulation contract.
+Reference photographs are local study material; the game ships only original editable artwork.
+
+**Owner.** [ART_DIRECTION.md](ART_DIRECTION.md), [src/surgeons.ts](../src/surgeons.ts),
+[src/surgeon_motion.ts](../src/surgeon_motion.ts) and the surgeon SVGs in src/assets.
+
+### First-run surgeon choice
+
+**Decision.** Open the surgeon chooser when no explicit choice is saved. Require a card
+activation before Continue returns to the menu. Keep Play campaign guarded until a choice
+exists, and remember the choice across reloads.
+
+**Why.** The user asked to choose a surgeon first thing before level 1. The default Maya
+portrait cannot establish player intent. Dismissing a dialog should not start a stage.
+
+**Consequence.** Store a validated `surgeonChosen` boolean alongside the stable surgeon ID.
+Older saves retain their progress and selected ID but receive the new explicit-choice prompt.
+The ordinary chooser remains available for later changes. Keyboard dismissal returns to the
+menu; campaign play reopens the prompt while no choice exists.
+
+**Owner.** [src/main.ts](../src/main.ts), [src/dialogs.ts](../src/dialogs.ts) and
+[src/save_load.ts](../src/save_load.ts).

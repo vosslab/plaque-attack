@@ -29,7 +29,8 @@ gameplay and native-size cast views. Refresh the complete set when artwork or in
 
 ## What the images prove
 
-- Menu, chooser and Settings use actual controls with empty device progress.
+- The chooser opens automatically on first visit, with no surgeon selected. Menu and Settings
+  follow a real Maya selection and Continue action; campaign progress remains empty.
 - The recovery dialog uses a staged eight-route save. Its comparison uses staged 0/12/24-route
   saves; these screenshots demonstrate appearance, not earned campaign completion.
 - Floor and tissue examples use staged unlocks only to open Practice. Movement and shots use
@@ -48,6 +49,7 @@ capture runs retain their original provenance; they are not the current document
 The 2026-10-22 refresh captured all thirteen views without browser errors. The encoded images
 were visually inspected, and all decoded dimensions, file hashes and build hashes match the
 manifest. No PNGs remain in the documentation screenshot directory. The thirteen WebPs total
-602,584 bytes. Focused Markdown-link, README-opening and ASCII checks pass (273 tests); the
-capture scripts pass ESLint and Prettier. This refresh changes documentation and capture tools,
-not production gameplay. The full game test suite was not rerun for this documentation change.
+607,202 bytes. The revised cast and first-run chooser are included. Focused Markdown-link,
+README-opening and ASCII checks pass (275 tests); the capture scripts pass ESLint and Prettier.
+[ART_DIRECTION.md](ART_DIRECTION.md#scientist-cast-verification) records the accompanying game
+verification and evidence limits.

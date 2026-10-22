@@ -191,8 +191,7 @@ async function captureInterface() {
       if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`);
     });
     await ready(page);
-    await save("main_menu", page, "Current production menu; empty device progress.");
-    await page.getByRole("button", { name: "Choose surgeon", exact: true }).click();
+
     let dialog = page.getByRole("dialog", { name: "Choose your surgeon", exact: true });
     assert.equal(await dialog.locator("button[aria-pressed]").count(), 6);
     await page.evaluate(() =>
@@ -201,9 +200,17 @@ async function captureInterface() {
     await save(
       "surgeon_roster",
       dialog,
-      "Actual chooser opened from menu; six cosmetic surgeons; default Maya selected.",
+      "Automatic first-run chooser; six cosmetic surgeons; explicit selection still required.",
     );
-    await dialog.getByRole("button", { name: "Done", exact: true }).click();
+    await dialog
+      .getByRole("button", { name: "Choose Dr. Maya Chen; same abilities", exact: true })
+      .click();
+    await dialog.getByRole("button", { name: "Continue", exact: true }).click();
+    await save(
+      "main_menu",
+      page,
+      "Current production menu after choosing Maya; empty device progress.",
+    );
     await page.getByRole("button", { name: "Settings", exact: true }).click();
     dialog = page.getByRole("dialog", { name: "Settings", exact: true });
     await save(
@@ -220,7 +227,13 @@ async function captureInterface() {
             "plaque_trouble_save",
             JSON.stringify({
               version: 3,
-              settings: { music: false, effects: false, completedTutorials: [], surgeonId: "maya" },
+              settings: {
+                music: false,
+                effects: false,
+                completedTutorials: [],
+                surgeonId: "maya",
+                surgeonChosen: true,
+              },
               unlockedLevel: 15,
               records: [],
               completedLevelIds: order.slice(0, count),

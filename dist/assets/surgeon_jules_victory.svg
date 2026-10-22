@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="128" viewBox="0 0 96 128" role="img" aria-labelledby="jules-victory-title jules-victory-desc">
   <title id="jules-victory-title">Dr. Jules Okafor, victorious artery surgeon</title>
-  <desc id="jules-victory-desc">The tallest surgeon, with a small curled head, upright narrow violet torso and conspicuously long straight legs. A quiet palm-to-temple salute celebrates success. Masked and gloved, holding an upward delivery applicator. Fictional Plaque Attack character.</desc>
+  <desc id="jules-victory-desc">A tall early-career surgeon with a long narrow silhouette, close curls and a lifted chin. A competitive ballroom dancer who counts the beat under their breath. Masked and gloved, with an upward delivery applicator. Opens a ballroom dance frame for a triumphant final count. Fictional Plaque Attack character.</desc>
   <defs>
     <linearGradient id="jules-victory-scrubs" x1="0" y1="0" x2="1" y2="1">
       <stop stop-color="#9972dc" />
@@ -23,22 +23,23 @@
       <path d="M77 61V30" stroke="#638aa2" stroke-width="2" />
       <path d="M71 29h12l-3-15h-6z" fill="#e8f8ff" />
       <path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5" />
-      <rect x="70" y="60" width="14" height="19" rx="4" fill="#f9c869" />
+      <path d="M73 57H82L84 79H72Z" fill="#ccb8ec"/>
     </g>
     <g id="jules-victory-raised-arms">
       <g id="jules-victory-gloves">
-        <path d="M27 57L16 43L22 28L31 25Q36 25 35 29L27 33L25 41L34 54Z" fill="#effff9" />
+        <path d="M28 53L17 48L13 39L17 33L16 29Q15 26 12 29L7 35L4 32Q1 32 3 38L7 43L11 56L24 64L32 59Z" fill="#effff9"/>
+        <path d="M7 42l6-3" stroke="#78aab5" stroke-width="1.8"/>
         <path d="M61 57L71 63L80 68Q85 72 81 78L75 85Q69 90 63 83L55 67Z" fill="#effff9" />
         <path d="M68 72l8 3" stroke="#78aab5" stroke-width="2" />
       </g>
     </g>
-    <g id="jules-victory-head" transform="translate(8 2) scale(.83 .78)">
-      <path d="M24 24Q26 9 44 11Q61 12 61 30L60 46Q57 61 42 60Q26 59 24 43Z" fill="#704737" />
-      <path d="M22 27Q15 20 22 14Q19 5 29 6Q34 0 41 6Q49 0 54 8Q64 7 63 18Q68 24 61 30L57 25Q39 29 22 27Z" fill="#33263d" />
-      <path d="M25 26Q42 22 60 27M30 12l1 3m13-7 1 4m10 4 2 3" fill="none" stroke="#9c6ac8" stroke-width="2.5" />
-      <path d="M25 41L59 39L57 54Q43 63 28 54Z" fill="#e3fff8" />
-      <path d="M32 50Q44 53 56 49" fill="none" stroke="#82bcb7" stroke-width="1.8" />
-      <path d="M31 37q3-5 6-1m13 0q3-5 6 0" fill="none" stroke-width="3" />
+    <g id="jules-victory-head" transform="rotate(3 44 29)">
+      <path d="M30 17Q33 9 44 10Q58 11 59 24L57 38Q53 48 42 47Q32 44 30 34Z" fill="#704737"/>
+      <path d="M28 23Q24 16 28 13Q26 8 33 8Q34 2 40 6Q46 2 50 7Q57 5 58 11Q63 15 59 23L52 17L34 19Z" fill="#443343"/>
+      <path d="M30 19Q43 14 58 20" stroke="#a48bbd" fill="none" stroke-width="3"/>
+      <path d="M31 31L57 30L55 41Q44 49 33 40Z" fill="#e3fff8"/>
+      <path d="M36 37h14" stroke="#82bcb7" stroke-width="1.6"/>
+      <path d="M34 26q3-5 6 0m8 0q3-5 6 0" fill="none" stroke-width="2.5"/>
     </g>
   </g>
 </svg>

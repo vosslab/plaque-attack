@@ -20,6 +20,7 @@ export function defaultSave(): SaveFile {
       effects: false,
       completedTutorials: [],
       surgeonId: DEFAULT_SURGEON_ID,
+      surgeonChosen: false,
     },
     unlockedLevel: 1,
     records: [],
@@ -180,6 +181,8 @@ export function validateSave(value: unknown): SaveFile | undefined {
       effects: settings.effects,
       completedTutorials,
       surgeonId: isSurgeonId(settings.surgeonId) ? settings.surgeonId : DEFAULT_SURGEON_ID,
+      // A completed choice needs both an allowed identity and the literal completion marker.
+      surgeonChosen: isSurgeonId(settings.surgeonId) && settings.surgeonChosen === true,
     },
     records: rank(records),
     completedLevelIds: restored,

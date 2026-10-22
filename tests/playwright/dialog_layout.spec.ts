@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
+import { chooseFirstSurgeonIfNeeded } from "./helper_first_run";
 
 async function expectInViewport(page: Page, locator: Locator): Promise<void> {
   const box = await locator.boundingBox();
@@ -24,6 +25,7 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     await page.clock.install({ time: new Date("2026-10-22T12:00:00Z") });
     await page.goto("/");
+    await chooseFirstSurgeonIfNeeded(page);
     await expect(page.locator("#start_level")).toBeEnabled();
     await page.clock.pauseAt(new Date((await page.evaluate(() => Date.now())) + 100));
     const dialog = page.locator("#game_dialog");

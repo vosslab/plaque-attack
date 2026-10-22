@@ -58,3 +58,8 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
   and accessories, so choosing among characters with the same abilities feels meaningful.
 - Preserve the current chunky arcade visual style, which I call pixel art. Show the actual
   44x60 grayscale and silhouette lineup, and add a few individual idle motions and reactions.
+
+- Use the game-design-expert and SVG-creator-expert skills together for the surgeon redesign.
+- Ask the player to pick a surgeon first thing, before starting level 1.
+- Prioritize Luna subagents, use Sol 6.1 for hard coding tasks, and use Astra for SVG artwork.
+- Keep working independently while I am away; finish the requested work and verification.

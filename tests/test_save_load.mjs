@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { addRecord, defaultSave, loadSave, SAVE_KEY, saveSave } from "../src/save_load.ts";
+import {
+  addRecord,
+  defaultSave,
+  loadSave,
+  SAVE_KEY,
+  saveSave,
+  validateSave,
+} from "../src/save_load.ts";
 import { DEFAULT_SURGEON_ID } from "../src/surgeons.ts";
 
 function storageFixture(context, storage) {
@@ -84,7 +91,7 @@ test("version one migration preserves classic results, settings and stable unloc
     save: {
       ...legacy,
       version: 3,
-      settings: { ...legacy.settings, surgeonId: DEFAULT_SURGEON_ID },
+      settings: { ...legacy.settings, surgeonId: DEFAULT_SURGEON_ID, surgeonChosen: false },
       records: [{ ...legacyRecord, campaign: "classic" }],
       completedLevelIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
     },
@@ -132,6 +139,7 @@ test("top five ranks by score, progress and earlier date and survives a settings
     effects: false,
     completedTutorials: ["move", "fire"],
     surgeonId: "samira",
+    surgeonChosen: true,
   };
   save.unlockedLevel = 7;
   for (const entry of entries) save = addRecord(save, entry);
@@ -183,5 +191,27 @@ test("missing or unknown cosmetic surgeon defaults without discarding valid prog
     assert.equal(loaded.status, "available");
     assert.equal(loaded.save.unlockedLevel, unlockedLevel);
     assert.equal(loaded.save.settings.surgeonId, DEFAULT_SURGEON_ID);
+    assert.equal(loaded.save.settings.surgeonChosen, false);
   }
+});
+
+test("only an explicit true surgeon choice survives the save boundary", () => {
+  const selected = {
+    ...defaultSave(),
+    settings: { ...defaultSave().settings, surgeonChosen: true },
+  };
+  const absent = { ...defaultSave(), settings: { ...defaultSave().settings } };
+  delete absent.settings.surgeonChosen;
+  const invalid = {
+    ...defaultSave(),
+    settings: { ...defaultSave().settings, surgeonChosen: "yes" },
+  };
+  const invalidIdentity = {
+    ...defaultSave(),
+    settings: { ...defaultSave().settings, surgeonId: "unknown", surgeonChosen: true },
+  };
+  assert.equal(validateSave(selected)?.settings.surgeonChosen, true);
+  assert.equal(validateSave(absent)?.settings.surgeonChosen, false);
+  assert.equal(validateSave(invalid)?.settings.surgeonChosen, false);
+  assert.equal(validateSave(invalidIdentity)?.settings.surgeonChosen, false);
 });

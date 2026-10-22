@@ -10,21 +10,22 @@ type MotionProfile = {
   celebrationRate: number;
 };
 
-// Presentation alone: a calm nod, steady acknowledgment, precise dip, compact
-// bounce, confident sway and curious double take. The renderer pivots at the leg seam.
+// Cosmetic rhythms follow personal interests: conducting, ballroom counting,
+// stargazing, radio listening, storytelling and a gardener's pleased nod.
+// The renderer pivots at the leg seam; these never change movement or firing.
 const MOTION: Readonly<Record<SurgeonId, MotionProfile>> = {
   maya: {
-    idleRate: 1.8,
+    idleRate: 2.4,
     idleAngle: 0.016,
-    idleAccent: 0,
+    idleAccent: 0.25,
     lift: 8,
     liftDuration: 0.52,
     tilt: 0.018,
     celebrationRate: 6,
   },
   jules: {
-    idleRate: 1.2,
-    idleAngle: 0.012,
+    idleRate: 1.8,
+    idleAngle: 0.022,
     idleAccent: 0,
     lift: 5,
     liftDuration: 0.66,
@@ -32,19 +33,19 @@ const MOTION: Readonly<Record<SurgeonId, MotionProfile>> = {
     celebrationRate: 4,
   },
   imani: {
-    idleRate: 2.1,
-    idleAngle: 0.022,
-    idleAccent: 0.2,
+    idleRate: 0.9,
+    idleAngle: 0.014,
+    idleAccent: 0.1,
     lift: 7,
     liftDuration: 0.44,
     tilt: 0.02,
     celebrationRate: 9,
   },
   leo: {
-    idleRate: 2.6,
-    idleAngle: 0.018,
-    idleAccent: 0.1,
-    lift: 12,
+    idleRate: 1.3,
+    idleAngle: 0.024,
+    idleAccent: 0.3,
+    lift: 5,
     liftDuration: 0.38,
     tilt: -0.018,
     celebrationRate: 7,
@@ -59,9 +60,9 @@ const MOTION: Readonly<Record<SurgeonId, MotionProfile>> = {
     celebrationRate: 5,
   },
   alex: {
-    idleRate: 2.3,
-    idleAngle: 0.03,
-    idleAccent: 0.45,
+    idleRate: 2.1,
+    idleAngle: 0.018,
+    idleAccent: 0.15,
     lift: 11,
     liftDuration: 0.46,
     tilt: 0.035,

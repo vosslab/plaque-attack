@@ -1,6 +1,6 @@
 # Plaque Attack art direction
 
-## Current identity pass
+## Scientist-inspired ensemble
 
 Build a tangible, playful illustrated world with six memorable surgeon personalities, artery
 settings that feel like places, and a patient whose recovery feels earned. Preserve clear
@@ -9,10 +9,10 @@ Use shape, posture, expression, material and light to establish identity. Preser
 chunky arcade style the user calls pixel art: bold contours, simple masses and readable small
 figures. The editable implementation remains SVG rendered through Canvas.
 
-This pass revises twelve base/victory surgeon SVGs, six artery scenes and the cardiac recovery
-composition. Existing viewBoxes, feet/tool anchors, collision geometry, semantic IDs and recovery
-symbols remain the runtime contracts. Character choice stays cosmetic. Recovery keeps its
-stable-ID routes and existing milestones; make its visual payoff legible across progress states.
+This revision develops the twelve base/victory surgeon SVGs, their personal descriptions and
+cosmetic rhythms. Existing viewBoxes, feet/tool anchors, collision geometry and semantic IDs
+remain the runtime contracts. Character choice stays cosmetic. The established artery scenes
+and cardiac recovery composition provide the setting.
 
 At the actual 44x60 gameplay size, height, body mass, face, hair, posture and accessories must
 separate the cast through grayscale and solid silhouettes as well as color. Larger chooser
@@ -23,9 +23,9 @@ The settled direction draws on the user's art request and forwarded commentary f
 project. That commentary is an inspiration source, not a new set of verbatim human rules.
 [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#art-identity-and-recovery) records that provenance.
 
-[active_plans/active/art_identity.md](active_plans/active/art_identity.md) owns this pass's
-task and acceptance status. The asset and rendering evidence below describes earlier deliveries;
-it does not establish acceptance of the current pass.
+[active_plans/active/art_identity.md](active_plans/active/art_identity.md) records the previous
+completed identity pass. Its evidence remains historical; the scientist-inspired revision has
+separate verification recorded below.
 
 ## Visual contract
 
@@ -162,16 +162,43 @@ applicator unify the cast; stature, mass and gesture carry identity independentl
 None changes physics, collision, movement or weapon configuration. The selected portrait appears
 in the roster and Canvas arena. Briefing and results open the same full roster chooser.
 
-The six concepts have visible personality consequences:
+The current cast uses fictional personal interests to motivate expressions and gestures. Ages
+are design ranges, not gameplay classes; hobbies and temperament do not follow demographic identity.
 
-| Surgeon | Personality | Shape and reaction |
+| Surgeon | Individual story | Shape and reaction |
 | --- | --- | --- |
-| Maya Chen | Calm anchor | Compact rounded figure, round cap, small thumbs-up and calm nod |
-| Jules Okafor | Quiet lookout | Tall narrow upright mass, small head and curls, quiet salute and slow acknowledgment |
-| Imani Patel | Thoughtful planner | Narrow pointed berry drape, careful two-hand grip, open palm and precise dip |
-| Leo Rivera | Determined closer | Low broad square stance, blue cap and beard, fist pump and compact bounce |
-| Samira Haddad | Bold pathfinder | Tilted head, diagonal shoulders and wide hip stance, open wave and confident sway |
-| Alex Morgan | Curious inventor | Spiky hair, round glasses and tucked elbow, two-finger sign and double take |
+| Maya Chen | Older choir conductor who sneaks in extra encores | Short rounded build, silver curls, compact conducting gesture |
+| Jules Okafor | Early-career ballroom competitor who counts the beat | Tall narrow build, close curls, dancer's acknowledgment |
+| Imani Patel | Older stargazer who gives telescopes names | Broad shoulders, gold rectangular lenses, silver brows, close berry covering |
+| Leo Rivera | Middle-aged radio restorer listening for distant stations | High crown, silver temples, rounded torso, listening tilt |
+| Samira Haddad | Middle-aged collector of antique medical instruments | Swept silver crop, angular face, wide offset stance |
+| Alex Morgan | Early-career balcony gardener whose tomato is named Gerald | Stocky build, soft cap, freckles, open friendly reaction |
+
+### Portrait study
+
+The following photographs were downloaded and visually inspected on 2026-10-22. Observations
+below concern the photographs, not the scientists' personalities. Original surgeon designs
+combine features across references; their interests and biographies are invented. Reference
+photographs remain in ignored local study output and are not shipped game assets.
+
+- [Erich Jarvis, HHMI](https://www.hhmi.org/scientists/erich-d-jarvis): close curls,
+  angular cheek structure, silver facial-hair accents and turned shoulders.
+- [Tu Youyou, Nobel Prize interview portrait](https://www.nobelprize.org/prizes/medicine/2015/tu/interview/):
+  swept crown, rectangular lenses and visible age around the brow.
+- [Bonnie Bassler, HHMI](https://www.hhmi.org/news/tapping-bacterial-conversations):
+  broad scalloped curl mass, asymmetric part and curved cheek contour.
+- [Carolyn Bertozzi and Barry Sharpless, MIT](https://news.mit.edu/2022/two-winners-nobel-prize-chemistry-share-mit-roots-1006):
+  swept silver forelock versus high exposed crown, with contrasting face proportions.
+
+The shared mask, gloves, scrub neckline and upward applicator establish the surgeon role.
+Individual grip housings preserve the common nozzle and firing axis. The existing bold-contour
+SVG language preserves the game's chunky small-scale appearance. Detailed medical realism and
+literal portraits are outside this fictional ensemble's purpose.
+
+Construction references: the SVG skill's local Drawing Mentor volume 2, lines 640-662,
+reduces objects to primitive masses and silhouette; Mastering SVG, lines 635-659, separates
+viewBox coordinates from display size. These guided native-size silhouette checks and the
+preserved 96x128 coordinate contract.
 
 The chooser's portrait and trait text describe personality, with an explicit same-abilities
 statement. `src/surgeon_motion.ts` owns cosmetic timing, `src/renderer.ts` owns articulation,
@@ -197,7 +224,7 @@ pose; the face, forelock/silver lock, teal jacket and coral shirt preserve ident
 heart/map overlay remains the owner of restored coronary territories. These fictional milestones
 show a return to activity without a new claim about disease cure.
 
-## Current rendered evidence
+## Previous art-pass evidence
 
 The local production rebuild and final capture probe pass. The final source check passes all
 49 Node tests; all 32 SVGs pass structural validation and source/build byte parity. The full
@@ -259,3 +286,27 @@ its limits; the historical twelve-asset checks above do not prove these addition
 
 The later basin, shelf and shoulder variants, rendered evidence and geometry/completion checks
 are recorded in [FLOOR_VARIATION.md](FLOOR_VARIATION.md).
+
+## Scientist cast verification
+
+The 2026-10-22 revision uses Astra-authored final SVGs and independent Luna visual review.
+The production renderer's native-size [cast sheet](screenshots/art_identity_roster.webp)
+shows idle, walking and victory poses plus grayscale and silhouettes. The
+[first-run chooser](screenshots/surgeon_roster.webp) shows the six personal stories with no
+preselected card. Hobbies read principally through the chooser copy; gestures support them.
+
+All twelve surgeon SVGs parse with unique IDs and resolved local paint references. Source and
+built SVGs match. A source-renderer probe checks all six identities at arena edges, their
+victory transition, frozen paused pixels and static reduced motion. Staged motion and stride
+fixtures demonstrate rendering, not earned campaign completion.
+
+The source check gate passes 50 tests. The final production build and screenshot capture pass;
+all thirteen quality-90 WebPs and their build hashes match the manifest. All 19 tests in the
+fresh final browser suite pass. Coverage includes explicit first choice, Escape/reopening, reload persistence, manual switching, Settings
+selection, live selected artwork, compact dialogs, ordinary play, recovery and results.
+
+Transient evidence is explicitly retained under `output/scientist_cast/`: `check.log`,
+`browser.log`, `capture.log`, `svg_checks.json`, `checks.json`, `parity.json`, `VISUAL_REVIEW.md`
+and the implementation/review correction record in `STATUS.md`. Earlier menu-first test
+fixtures and capture selectors failed after onboarding changed; final evidence uses the
+actual new selection controls. No remote deployment or human playtest is claimed.

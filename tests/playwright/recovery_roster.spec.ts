@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
+import { chooseFirstSurgeonIfNeeded } from "./helper_first_run";
 
 // This is deliberately a browser contract rather than a renderer-pixel snapshot. It protects
 // the choice a player makes, its accessible controls, its device persistence and the identity
@@ -22,6 +23,7 @@ const campaignOrder = [
 ];
 
 async function waitForReady(page: Page): Promise<void> {
+  await chooseFirstSurgeonIfNeeded(page);
   await expect(page.getByRole("button", { name: "Play campaign", exact: true })).toBeVisible();
   await expect(page.locator("#start_level")).toBeEnabled();
 }
@@ -87,6 +89,52 @@ async function clearFirstStage(page: Page): Promise<void> {
   await expect(cleared).toBeVisible();
 }
 
+test("the first campaign requires an explicit surgeon choice and remembers it", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const dialog = page.getByRole("dialog", { name: "Choose your surgeon", exact: true });
+  const start = dialog.getByRole("button", { name: "Continue", exact: true });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("button", { pressed: true })).toHaveCount(0);
+  await expect(start).toBeDisabled();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole("region", { name: "Plaque Attack", exact: true })).toBeVisible();
+
+  await page.getByRole("button", { name: "Play campaign", exact: true }).click();
+  await expect(dialog).toBeVisible();
+  await surgeonButton(page, "Dr. Maya Chen").click();
+  await expect(surgeonButton(page, "Dr. Maya Chen")).toHaveAttribute("aria-pressed", "true");
+  await expect(start).toBeEnabled();
+  await start.click();
+  await page.getByRole("button", { name: "Play campaign", exact: true }).click();
+  await expect(page.getByRole("heading", { name: /^Stage 1:/ })).toBeVisible();
+  expect(await selectedSurgeon(page)).toBe("maya");
+
+  await page.getByRole("button", { name: "Back to menu", exact: true }).click();
+  await page.reload();
+  await expect(dialog).toBeHidden();
+  expect(await selectedSurgeon(page)).toBe("maya");
+  await page.getByRole("button", { name: "Play campaign", exact: true }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole("heading", { name: /^Stage 1:/ })).toBeVisible();
+
+  // The existing Settings roster is also an explicit choice, including before first play.
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Settings", exact: true }).click();
+  await surgeonButton(page, "Dr. Samira Haddad").click();
+  await page.getByRole("button", { name: "Done", exact: true }).click();
+  await page.reload();
+  await expect(dialog).toBeHidden();
+  expect(await selectedSurgeon(page)).toBe("samira");
+  await page.getByRole("button", { name: "Play campaign", exact: true }).click();
+  await expect(page.getByRole("heading", { name: /^Stage 1:/ })).toBeVisible();
+});
+
 function stageNode(page: Page, levelId: number): Locator {
   return page.locator(`.recovery_stage_list_button[data-stage="${levelId}"]`);
 }
@@ -104,6 +152,7 @@ test("six equally able surgeons are accessible, selectable, and persist after re
   await openRoster(page);
   const dialog = page.getByRole("dialog", { name: "Choose your surgeon", exact: true });
   await expect(dialog).toContainText("Six personalities. Same abilities.");
+  await expect(surgeonButton(page, "Dr. Maya Chen")).toHaveAttribute("aria-pressed", "true");
   await expect(
     dialog.getByRole("group", { name: "Choose your surgeon", exact: true }).getByRole("button"),
   ).toHaveCount(surgeons.length);

@@ -1,12 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="128" viewBox="0 0 96 128" role="img" aria-labelledby="leo-title leo-desc">
   <title id="leo-title">Dr. Leo Rivera, artery surgeon</title>
-  <desc id="leo-desc">square low head, beard block, wide braced legs. Masked and gloved, holding an upward delivery applicator. Fictional Plaque Attack character.</desc>
-  <defs><linearGradient id="leo-scrubs" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3897dc"/><stop offset="1" stop-color="#2366ae"/></linearGradient></defs>
+  <desc id="leo-desc">A middle-aged surgeon with a high bald crown, silver temples, rectangular glasses and a rounded pear-shaped torso. Repairs old radios and listens for distant stations. Masked and gloved, with an upward delivery applicator. Fictional Plaque Attack character.</desc>
+  <defs>
+    <linearGradient id="leo-scrubs" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#3897dc"/>
+      <stop offset="1" stop-color="#2366ae"/>
+    </linearGradient>
+  </defs>
   <g stroke="#162b40" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
-    <g id="leo-legs" ><path d="M24 98H44L37 117H21ZM50 98H66L74 117H56Z" fill="#2366ae" /><path d="M21 115H38V123H13Q12 118 21 115ZM55 115H73Q81 118 80 123H57Z" fill="#263852" /></g>
-    <g id="leo-torso" ><path d="M21 66Q40 60 63 68L72 82L69 98H19L17 79Z" fill="url(#leo-scrubs)" /><path d="M30 69L41 78L55 69" fill="none" stroke="#e4f5f2" stroke-width="2.5"/><path d="M48 84H62V95H48Z" fill="#2366ae" stroke-width="2"/><path d="M53 86h5m-2.5-2.5v5" stroke="#e4f5f2" stroke-width="1.8"/></g>
-    <g id="leo-tool" ><path d="M77 69V29" stroke="#e0f4fc" stroke-width="8"/><path d="M77 61V30" stroke="#638aa2" stroke-width="2"/><path d="M71 29h12l-3-15h-6z" fill="#e8f8ff"/><path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5"/><rect x="70" y="60" width="14" height="19" rx="4" fill="#f9c869"/></g>
-    <g id="leo-hands" ><path d="M20 72Q10 73 9 85L11 92Q17 98 23 91L28 82Z" fill="#effff9" /><path d="M64 69Q67 61 74 65L81 68Q85 72 81 78L75 85Q69 90 64 84L60 77Z" fill="#effff9"/><path d="M68 72l8 3" stroke="#78aab5" stroke-width="2"/></g>
-    <g id="leo-head" ><path d="M21 36Q22 19 42 20Q62 20 65 36L63 52Q59 69 42 69Q24 66 22 53Z" fill="#e6b48d" /><path d="M20 35Q17 22 29 17Q43 10 59 20Q68 26 65 38L54 34L22 38Z" fill="#9edaff" /><path d="M26 24Q40 19 51 24M22 36Q41 30 63 36" fill="none" stroke="#f4d8ce" stroke-width="2.5"/><path d="M23 46L29 58Q43 65 61 56L62 46L65 50L63 64Q53 77 39 72Q26 71 22 59Z" fill="#824c3d"/><path d="M25 48L61 46L60 59Q43 68 27 59Z" fill="#e3fff8" /><path d="M32 54h22" stroke="#82bcb7" stroke-width="1.8"/><path d="M30 42l7-2m13 0 7 2" fill="none" stroke-width="3"/></g>
+    <g id="leo-legs" >
+      <path d="M29 98H44L40 117H27ZM51 98H65L68 117H54Z" fill="#2366ae" />
+      <path d="M21 115H38V123H13Q12 118 21 115ZM55 115H73Q81 118 80 123H57Z" fill="#263852" />
+    </g>
+    <g id="leo-torso" >
+      <path d="M30 65L54 64Q70 76 73 94L69 98H23Q17 82 30 65Z" fill="url(#leo-scrubs)" />
+      <path d="M30 69L41 78L55 69" fill="none" stroke="#e4f5f2" stroke-width="2.5"/>
+      <path d="M48 84H62V95H48Z" fill="#2366ae" stroke-width="2"/>
+      <path d="M53 89h5m-2.5-2.5v5" stroke="#e4f5f2" stroke-width="1.8"/>
+    </g>
+    <g id="leo-tool" >
+      <path d="M77 69V29" stroke="#e0f4fc" stroke-width="8"/>
+      <path d="M77 61V30" stroke="#638aa2" stroke-width="2"/>
+      <path d="M71 29h12l-3-15h-6z" fill="#e8f8ff"/>
+      <path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5"/>
+      <path d="M70 58H83V80H70Z" fill="#a8cbd6"/>
+      <path d="M73 62h7m-7 4h7" stroke="#547789" stroke-width="2"/>
+    </g>
+    <g id="leo-hands" >
+      <path d="M20 72Q10 73 9 85L11 92Q17 98 23 91L28 82Z" fill="#effff9" />
+      <path d="M64 69Q67 61 74 65L81 68Q85 72 81 78L75 85Q69 90 64 84L60 77Z" fill="#effff9"/>
+      <path d="M68 72l8 3" stroke="#78aab5" stroke-width="2"/>
+    </g>
+    <g id="leo-head">
+      <path d="M27 32Q25 15 43 14Q61 14 62 34L61 49Q58 65 43 65Q29 64 27 49Z" fill="#e6b48d"/>
+      <path d="M27 35Q21 20 29 19L32 34M59 33L58 20Q66 23 62 38" fill="#b7bec5"/>
+      <path d="M32 23Q43 17 53 23" fill="none" stroke="#b67b60" stroke-width="1.7"/>
+      <path d="M28 46L61 45L58 58Q44 67 30 57Z" fill="#e3fff8"/>
+      <path d="M34 53h18" stroke="#82bcb7" stroke-width="1.6"/>
+      <g fill="none" stroke="#263852" stroke-width="2.3">
+        <rect x="27" y="32" width="14" height="10" rx="3"/>
+        <rect x="46" y="32" width="14" height="10" rx="3"/>
+        <path d="M41 35h5"/>
+      </g>
+      <path d="M34 36v3m18-3v3" stroke-width="2.8"/>
+    </g>
   </g>
 </svg>

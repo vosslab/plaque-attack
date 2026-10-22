@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { chooseFirstSurgeonIfNeeded } from "./helper_first_run";
 
 // Selector contract: src/index.html:18 owns named regions, buttons, arena and HUD IDs;
 // src/ui.ts:55/91/121 owns briefing, HUD and result text;
@@ -12,6 +13,7 @@ async function controlledPage(page: Page): Promise<void> {
   const start = new Date("2026-10-22T12:00:00.000Z");
   await page.clock.install({ time: start });
   await page.goto("/");
+  await chooseFirstSurgeonIfNeeded(page);
   await expect(page.getByRole("button", { name: "Play campaign", exact: true })).toBeVisible();
   // Art loads independently of the menu; finish startup before freezing game time.
   await expect(page.locator("#start_level")).toBeEnabled();
@@ -47,6 +49,7 @@ test("smoke: campaign opens the first briefing and returns to the menu", async (
   page.on("pageerror", (error) => page_errors.push(error.message));
 
   await page.goto("/");
+  await chooseFirstSurgeonIfNeeded(page);
   const menu = page.getByRole("region", { name: "Plaque Attack", exact: true });
   const play = page.getByRole("button", { name: "Play campaign", exact: true });
   await expect(menu).toBeVisible();
@@ -217,6 +220,13 @@ test("prior progress unlocks the drug and maintenance practice modes without ran
     value: prior,
   });
   await controlledPage(page);
+  const chosenSave = await page.evaluate((key) => localStorage.getItem(key), save_key);
+  expect(JSON.parse(chosenSave ?? "null")).toMatchObject({
+    version: 3,
+    unlockedLevel: 15,
+    settings: { surgeonId: "maya", surgeonChosen: true },
+    records: [{ campaign: "classic", score: 1234, levelReached: 15, outcome: "completed" }],
+  });
   await page.getByRole("button", { name: "High scores", exact: true }).click();
   const scores = page.getByRole("dialog", { name: "High scores", exact: true });
   await expect(scores).toContainText("Classic 15 / Stage 15 / Completed");
@@ -259,7 +269,7 @@ test("prior progress unlocks the drug and maintenance practice modes without ran
     ).toBeVisible();
     await page.getByRole("button", { name: "Back to menu", exact: true }).click();
   }
-  expect(await page.evaluate((key) => localStorage.getItem(key), save_key)).toBe(prior);
+  expect(await page.evaluate((key) => localStorage.getItem(key), save_key)).toBe(chosenSave);
   await page.getByRole("button", { name: "Settings", exact: true }).click();
   const settings = page.getByRole("dialog", { name: "Settings", exact: true });
   await settings.getByLabel("Music", { exact: true }).check();
@@ -289,6 +299,7 @@ test("malformed saved bytes survive settings changes with a visible recovery exp
     value: malformed,
   });
   await page.goto("/");
+  await chooseFirstSurgeonIfNeeded(page);
   await page.getByRole("button", { name: "Settings", exact: true }).click();
   const settings = page.getByRole("dialog", { name: "Settings", exact: true });
   await expect(settings).toContainText("Saved data could not be read");
@@ -309,6 +320,7 @@ test("malformed saved bytes survive settings changes with a visible recovery exp
 test("failed required art blocks play and can be retried without reloading", async ({ page }) => {
   await page.route("**/assets/clopidogrel.svg", (route) => route.abort());
   await page.goto("/");
+  await chooseFirstSurgeonIfNeeded(page);
   await page.getByRole("button", { name: "Play campaign", exact: true }).click();
   await expect(page.getByRole("button", { name: "Start stage", exact: true })).toBeDisabled();
   await expect(

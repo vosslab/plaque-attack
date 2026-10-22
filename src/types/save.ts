@@ -8,6 +8,8 @@ export type Settings = {
   completedTutorials: TutorialPrompt[];
   // Presentation-only. It never changes simulation state, scores, or difficulty.
   surgeonId: SurgeonId;
+  // A default portrait is an initial display value, not evidence of a player choice.
+  surgeonChosen: boolean;
 };
 export type LegacyCampaignRecord = {
   score: number;
