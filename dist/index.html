@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#15152b">
+  <title>Plaque Trouble</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game_shell">
+    <header class="game_header"><span class="brand_mark" aria-hidden="true">+</span> The cardiovascular arcade</header>
+    <section id="main_menu" class="menu_panel" aria-labelledby="game_title">
+      <p class="eyebrow">15 levels. Three tools. One steady hand.</p>
+      <h1 id="game_title">Plaque <span>Trouble</span></h1>
+      <p class="menu_intro">Move, fire upward, and turn a big blockage into a little breathing room.</p>
+      <div class="arena_preview" aria-hidden="true"><span class="preview_plaque"></span><span class="preview_trail"></span><span class="preview_surgeon">+</span></div>
+      <button id="play_campaign" class="action_button" type="button">Play campaign</button>
+      <p class="control_hint">A / D or arrow keys to move &middot; Space to fire</p>
+      <p class="medical_caption">An arcade metaphor for cardiovascular care.</p>
+    </section>
+    <section id="level_briefing" class="menu_panel" aria-labelledby="briefing_title" hidden>
+      <p class="eyebrow">Act I / Coronary intervention</p>
+      <h2 id="briefing_title" tabindex="-1">First blockage</h2>
+      <p id="briefing_objective" class="menu_intro"></p>
+      <p class="tool_label">Equipped tool: coronary stent</p>
+      <p class="control_hint">Gameplay is being prepared. Your first objective is ready.</p>
+      <button id="back_menu" class="action_button" type="button">Back to menu</button>
+    </section>
+    <footer>Original arcade science. No medical knowledge required.</footer>
+  </main>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

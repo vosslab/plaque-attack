@@ -1,0 +1,26 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #15152b; color: #fff5e8; font-family: ui-rounded, system-ui, sans-serif; }
+button { font: inherit; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid #ffbf69; outline-offset: 5px; }
+.game_shell { --accent: #38d6c4; width: min(960px, calc(100% - 32px)); margin: 0 auto; }
+.game_header { display: flex; gap: 12px; align-items: center; padding: 28px 0; font-weight: 700; letter-spacing: .04em; }
+.brand_mark { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--accent); color: #15152b; font-size: 25px; }
+.menu_panel { padding: clamp(24px, 5vw, 60px); border: 2px solid #686281; border-radius: 28px; background: #211e39; }
+.eyebrow { margin: 0 0 16px; color: #c49bff; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: .8rem; }
+h1 { margin: 0; font-size: clamp(3rem, 8vw, 5.5rem); line-height: 1; letter-spacing: -.05em; }
+h1 span { color: #ffc857; }
+h2 { font-size: clamp(2rem, 5vw, 3rem); margin: 12px 0 24px; }
+.menu_intro { max-width: 620px; font-size: clamp(1.1rem, 2.5vw, 1.35rem); line-height: 1.6; }
+.arena_preview { height: 180px; position: relative; overflow: hidden; margin: 30px 0; border-block: 12px solid #b84460; border-radius: 36px; background: #461d32; }
+.preview_plaque { position: absolute; top: 18px; left: 28%; width: 78px; height: 76px; border: 6px solid #7c3d24; border-radius: 45% 55% 38% 62%; background: #ffc857; box-shadow: inset -12px -10px #eb993e; transform: rotate(-18deg); }
+.preview_trail { position: absolute; left: 62%; bottom: 0; width: 8px; height: 118px; border: 2px solid #d7edf4; background: #738d9b; }
+.preview_surgeon { position: absolute; left: calc(62% - 17px); bottom: 0; display: grid; place-items: center; width: 42px; height: 52px; border: 3px solid #15152b; border-radius: 16px 16px 5px 5px; background: #38d6c4; color: #15152b; font-size: 30px; font-weight: 900; }
+.action_button { cursor: pointer; min-height: 56px; padding: 16px 30px; border: 2px solid #15152b; border-radius: 14px; background: var(--accent); color: #15152b; font-weight: 800; box-shadow: 0 4px 0 #187d79; }
+.action_button:hover { background: #79eadb; }
+.action_button:active { transform: translateY(2px); box-shadow: 0 2px 0 #187d79; }
+.control_hint, .medical_caption { color: #d7ccdf; line-height: 1.6; }
+.medical_caption { font-size: .85rem; margin-top: 28px; }
+.tool_label { padding: 16px; border-left: 4px solid #d7edf4; background: #15152b; font-weight: 700; }
+footer { padding: 24px 0; font-size: .8rem; color: #d7ccdf; }
+@media (max-width: 480px) { .game_header { font-size: .8rem; padding: 18px 0; } .menu_panel { border-radius: 20px; } .arena_preview { height: 150px; } .action_button { width: 100%; } }

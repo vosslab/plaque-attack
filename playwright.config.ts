@@ -6,6 +6,7 @@ const PORT = process.env["PW_PORT"] ?? "4173";
 export default defineConfig({
   testDir: "tests/playwright",
   testIgnore: ["**/_temp*", "**/dist_*/**"],
+  outputDir: "output/playwright",
   timeout: 30_000,
   fullyParallel: true,
   reporter: "list",
