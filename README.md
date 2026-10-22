@@ -1,8 +1,8 @@
-# plaque-attack
+# Plaque Attack
 
 A browser arcade game for gamers and biology enthusiasts: choose one of six surgeons, split floating plaque, and restore a patient's recovery map across 24 artery-themed stages.
 
-**[Play Plaque Trouble in your browser](https://vosslab.github.io/plaque-attack/)**
+**[Play Plaque Attack in your browser](https://vosslab.github.io/plaque-attack/)**
 No installation or account required. Bring your arcade reflexes; the biology is optional.
 The link opens the published game; the source changes described here await a separate deployment.
 
@@ -14,7 +14,7 @@ The link opens the published game; the source changes described here await a sep
 
 ## The game
 
-Plaque Trouble turns a floating-hazard arcade loop into a colorful cardiovascular adventure. Move a
+Plaque Attack turns a floating-hazard arcade loop into a colorful cardiovascular adventure. Move a
 cartoon surgeon along the artery, fire upward, and make room for the smaller hazards created as large
 plaques split. Short captions provide optional biology context; no medical knowledge is required.
 

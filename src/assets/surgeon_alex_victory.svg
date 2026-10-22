@@ -1,26 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="128" viewBox="0 0 96 128" role="img" aria-labelledby="alex-victory-title alex-victory-desc">
-  <title id="alex-victory-title">Dr. Alex Morgan, victorious artery surgeon</title><desc id="alex-victory-desc">A friendly East Asian surgeon with a short dark haircut, round protective glasses, green scrubs, pale gloves, and a raised stent applicator. Fictional arcade character. Celebrating with a raised gloved fist, smiling eyes, and both feet planted.</desc>
-  <defs><linearGradient id="alex-victory-scrubs" x2="1" y2="1"><stop stop-color="#7acb62"/><stop offset="1" stop-color="#2d8a54"/></linearGradient></defs>
-  <g stroke="#122b43" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-    <g id="alex-victory-legs"><path d="M30 96h17v23H28zM50 96h17l3 23H50z" fill="#297849"/><path d="M29 114h17v9H22q-1-7 7-9M51 114h16q9 2 8 9H51z" fill="#263852"/><path d="M25 122h18m12 0h16" stroke="#c8ffc3" stroke-width="2"/></g>
-    <g id="alex-victory-torso"><path d="M26 62Q48 53 69 64l8 33q-28 12-56 0z" fill="url(#alex-victory-scrubs)"/><path d="m37 64 11 12 10-12M48 76v25" fill="none" stroke="#ecffe6" stroke-width="2"/><path d="M55 81h12v12H55z" fill="#2c804e" stroke-width="2"/><path d="M58 86h6m-3-3v6" stroke="#ecffe6" stroke-width="2"/></g>
-    <g id="alex-victory-raised-arms" fill="url(#alex-victory-scrubs)">
-      <path d="M29 65 16 49 10 34 3 38 5 56 21 78z"/>
-      <path d="m64 65 12-9 3-16 12 2-2 23-16 16z"/>
-    </g>
-    <g id="alex-victory-tool">
-      <path d="M85 44V18" stroke="#e0f4fc" stroke-width="8"/>
-      <path d="M85 39V17" stroke="#638aa2" stroke-width="2"/>
-      <path d="M79 18h12L88 4h-6z" fill="#e8f8ff"/>
-      <path d="m82 8 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5"/>
-      <rect x="79" y="34" width="12" height="14" rx="4" fill="#f9c869"/>
-    </g>
-    <g id="alex-victory-gloves" fill="#effff9">
-      <path d="M4 38 3 26q0-4 4-4l6 1q4 0 4 4l-1 11q-5 4-12 0z"/>
-      <path d="m5 27 8 1m-6 5 6 1" stroke="#78aab5" stroke-width="2"/>
-      <path d="M79 45q-4-2-3-6l2-5q1-3 4-1l1 4 6-1q4 1 3 5l-2 7q-6 3-11-3z"/>
-      <path d="m82 41 7 1" stroke="#78aab5" stroke-width="2"/>
-    </g>
-    <g id="alex-victory-head"><ellipse cx="46" cy="39" rx="25" ry="27" fill="#e0ab83"/><ellipse cx="21" cy="42" rx="5" ry="8" fill="#f1c49e"/><path d="M21 31q-3-16 12-21Q52 2 67 15q6 7 4 19l-7-5q-14 4-42 2z" fill="#273847"/><path d="M23 29q24-5 47 1" fill="none" stroke="#75b55e" stroke-width="4"/><path d="M22 42q24-8 48 0l-5 20q-18 11-37-1z" fill="#e3fff8"/><path d="M29 48q17 8 33 0m-30 7q14 6 27 0" stroke="#86c8c2" stroke-width="2"/><path d="M32 37q3-4 6 0m16 0q3-4 6 0" fill="none" stroke-width="2"/><g fill="none" stroke="#314451" stroke-width="2"><circle cx="35" cy="36" r="6"/><circle cx="57" cy="36" r="6"/><path d="M41 36h10"/></g></g>
+  <title id="alex-victory-title">Dr. Alex Morgan, victorious artery surgeon</title>
+  <desc id="alex-victory-desc">A lively surgeon with round glasses, spiky short hair and an off-center lean flashes a two-finger victory sign. Fictional Plaque Attack character.</desc>
+  <defs><linearGradient id="alex-victory-scrubs" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6dbd59"/><stop offset="1" stop-color="#2d8a54"/></linearGradient></defs>
+  <g stroke="#162b40" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+    <g id="alex-victory-legs" ><path d="M29 98H44L41 117H27ZM51 98H66L68 117H53Z" fill="#2d8a54" /><path d="M27 115H42V123H20Q18 119 27 115ZM53 115H68L75 120V123H53Z" fill="#263852" /></g>
+    <g id="alex-victory-torso" ><path d="M29 64L57 61L66 73L70 98H25L20 81Z" fill="url(#alex-victory-scrubs)" /><path d="M33 65L43 75L55 63" fill="none" stroke="#e4f5f2" stroke-width="2.5"/><path d="M48 82H62V94H48Z" fill="#2d8a54" stroke-width="2"/><path d="M53 86h5m-2.5-2.5v5" stroke="#e4f5f2" stroke-width="1.8"/></g>
+    <g id="alex-victory-tool" ><path d="M77 69V29" stroke="#e0f4fc" stroke-width="8"/><path d="M77 61V30" stroke="#638aa2" stroke-width="2"/><path d="M71 29h12l-3-15h-6z" fill="#e8f8ff"/><path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5"/><rect x="70" y="60" width="14" height="19" rx="4" fill="#f9c869"/></g>
+    <g id="alex-victory-raised-arms"><g id="alex-victory-gloves" ><path d="M27 68L18 58L19 49L25 39Q28 35 25 33Q22 32 19 39L17 42L17 33Q17 29 13 30L11 45L8 43Q4 43 7 49L8 61L19 78Z" fill="#effff9" /><path d="M64 69Q67 61 74 65L81 68Q85 72 81 78L75 85Q69 90 64 84L60 77Z" fill="#effff9"/><path d="M68 72l8 3" stroke="#78aab5" stroke-width="2"/></g></g>
+    <g id="alex-victory-head" ><path d="M22 31Q24 16 41 15Q60 14 64 31L64 46Q58 61 42 60Q25 59 22 44Z" fill="#e0ab83" /><path d="M20 33L18 24L25 21L23 13L36 14L44 6L49 13L59 12L59 19Q69 22 66 33L57 29L49 32L39 25L31 32Z" fill="#273847" /><path d="M22 33L29 32M56 31L65 33" fill="none" stroke="#75b55e" stroke-width="2.5"/><path d="M25 46Q44 40 63 45L58 57Q43 65 28 57Z" fill="#e3fff8" /><path d="M32 50Q44 53 56 49" fill="none" stroke="#82bcb7" stroke-width="1.8"/><path d="M31 37q3-5 6-1m13 0q3-5 6 0" fill="none" stroke-width="3"/><g fill="none" stroke="#263852" stroke-width="2.7"><circle cx="33" cy="38" r="8"/><circle cx="54" cy="36" r="8"/><path d="M41 37h5M23 36l3 1m36-3 3-1"/></g><path d="M29 34l2-1m19-2 2-1" stroke="#f7ffff" stroke-width="1.7"/></g>
   </g>
 </svg>

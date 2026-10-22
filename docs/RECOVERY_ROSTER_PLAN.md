@@ -7,7 +7,7 @@ player, approval session, or subjective playtest to close.
 
 ## Product contract
 
-Plaque Trouble gains six selectable cardiovascular surgeons. They differ in appearance, never in
+Plaque Attack has six selectable cardiovascular surgeons. They differ in appearance, never in
 movement, collision, shot timing, projectile configuration, score,
 or progression. The selection UI says that plainly: **Same abilities for every surgeon.** A
 player may change selection from the menu before a run, and the local save remembers it.

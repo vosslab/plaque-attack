@@ -1,5 +1,7 @@
 # Plaque Trouble implementation ledger
 
+Historical title: this completed baseline predates the current **Plaque Attack** display name.
+
 **Goal:** Implement the complete 15-level Plaque Trouble campaign in `docs/GAME_SPEC.md`,
 including browser-ready presentation and acceptance evidence. The spec is the source of truth;
 its colorful vector arcade direction is sufficient to begin without a separate UI decision.

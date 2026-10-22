@@ -1,26 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="128" viewBox="0 0 96 128" role="img" aria-labelledby="imani-victory-title imani-victory-desc">
-  <title id="imani-victory-title">Dr. Imani Patel, victorious artery surgeon</title><desc id="imani-victory-desc">A friendly dark-skinned surgeon in a berry surgical hijab and sea-green scrubs, with pale gloves and a raised stent applicator. Fictional arcade character. Celebrating with a raised gloved fist, smiling eyes, and both feet planted.</desc>
-  <defs><linearGradient id="imani-victory-scrubs" x2="1" y2="1"><stop stop-color="#45cbb4"/><stop offset="1" stop-color="#167b78"/></linearGradient></defs>
-  <g stroke="#162c42" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-    <g id="imani-victory-legs"><path d="M28 96h19v23H27zM50 96h18l3 23H50z" fill="#176e74"/><path d="M29 114h17v9H22q-1-7 7-9M51 114h16q9 2 8 9H51z" fill="#263852"/><path d="M25 122h18m12 0h16" stroke="#a4f3e4" stroke-width="2"/></g>
-    <g id="imani-victory-torso"><path d="M25 62Q48 52 70 64l8 33q-29 12-57 0z" fill="url(#imani-victory-scrubs)"/><path d="m37 64 11 12 10-12M48 76v25" fill="none" stroke="#d8fff4" stroke-width="2"/><path d="M55 81h12v12H55z" fill="#126b72" stroke-width="2"/><path d="M58 86h6m-3-3v6" stroke="#d8fff4" stroke-width="2"/></g>
-    <g id="imani-victory-raised-arms" fill="url(#imani-victory-scrubs)">
-      <path d="M29 65 16 49 10 34 3 38 5 56 21 78z"/>
-      <path d="m64 65 12-9 3-16 12 2-2 23-16 16z"/>
-    </g>
-    <g id="imani-victory-tool">
-      <path d="M85 44V18" stroke="#e0f4fc" stroke-width="8"/>
-      <path d="M85 39V17" stroke="#638aa2" stroke-width="2"/>
-      <path d="M79 18h12L88 4h-6z" fill="#e8f8ff"/>
-      <path d="m82 8 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5"/>
-      <rect x="79" y="34" width="12" height="14" rx="4" fill="#f9c869"/>
-    </g>
-    <g id="imani-victory-gloves" fill="#effff9">
-      <path d="M4 38 3 26q0-4 4-4l6 1q4 0 4 4l-1 11q-5 4-12 0z"/>
-      <path d="m5 27 8 1m-6 5 6 1" stroke="#78aab5" stroke-width="2"/>
-      <path d="M79 45q-4-2-3-6l2-5q1-3 4-1l1 4 6-1q4 1 3 5l-2 7q-6 3-11-3z"/>
-      <path d="m82 41 7 1" stroke="#78aab5" stroke-width="2"/>
-    </g>
-    <g id="imani-victory-head"><path d="M18 42Q17 9 43 5q31-1 30 36l-4 22q-24 12-48-1z" fill="#913d63"/><ellipse cx="46" cy="39" rx="22" ry="25" fill="#5c392f"/><ellipse cx="23" cy="42" rx="4" ry="7" fill="#71493c"/><path d="M21 30q25-8 50 1" fill="none" stroke="#f0a2be" stroke-width="4"/><path d="M23 42q24-8 47 0l-5 20q-18 11-37-1z" fill="#e3fff8"/><path d="M29 48q17 8 33 0m-30 7q14 6 27 0" stroke="#86c8c2" stroke-width="2"/><path d="M31 37q4-6 8 0m14 0q4-6 8 0" fill="none" stroke-width="3"/></g>
+  <title id="imani-victory-title">Dr. Imani Patel, victorious artery surgeon</title>
+  <desc id="imani-victory-desc">A slim surgeon in a pointed berry drape opens one gloved hand in a measured, pleased flourish. Fictional Plaque Attack character.</desc>
+  <defs><linearGradient id="imani-victory-scrubs" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#37b5a7"/><stop offset="1" stop-color="#167b78"/></linearGradient></defs>
+  <g stroke="#162b40" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+    <g id="imani-victory-legs" ><path d="M29 98H44L43 117H29ZM51 98H64L65 117H51Z" fill="#167b78" /><path d="M29 115H43V123H23Q21 119 29 115ZM51 115H65Q71 118 70 123H51Z" fill="#263852" /></g>
+    <g id="imani-victory-torso" ><path d="M31 62L59 62Q67 71 67 83L69 98H24L27 78Z" fill="url(#imani-victory-scrubs)" /><path d="M35 77L43 82L53 78" fill="none" stroke="#e4f5f2" stroke-width="2.5"/><path d="M50 86H61V95H50Z" fill="#167b78" stroke-width="2"/><path d="M53 86h5m-2.5-2.5v5" stroke="#e4f5f2" stroke-width="1.8"/></g>
+    <g id="imani-victory-tool" ><path d="M77 69V29" stroke="#e0f4fc" stroke-width="8"/><path d="M77 61V30" stroke="#638aa2" stroke-width="2"/><path d="M71 29h12l-3-15h-6z" fill="#e8f8ff"/><path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5"/><rect x="70" y="60" width="14" height="19" rx="4" fill="#f9c869"/></g>
+    <g id="imani-victory-raised-arms"><g id="imani-victory-gloves" ><path d="M30 72L23 81L16 76L11 65Q9 61 6 64L7 76Q5 75 4 79Q3 83 9 87L17 94Q21 97 25 93L37 80Z" fill="#effff9" transform="translate(3 0)"/><path d="M64 69Q67 61 74 65L81 68Q85 72 81 78L75 85Q69 90 64 84L60 77Z" fill="#effff9"/><path d="M68 72l8 3" stroke="#78aab5" stroke-width="2"/></g></g>
+    <g id="imani-victory-head" ><path d="M22 37Q16 15 35 6Q52-1 63 15Q72 28 68 49L74 72L49 81L20 68Q26 56 22 37Z" fill="#913d63" /><path d="M28 26Q33 17 45 18Q59 18 62 32L60 47Q53 60 42 58Q28 56 27 43Z" fill="#5c392f" /><path d="M25 32Q35 12 52 19Q65 25 64 46M26 57L46 72L66 63" fill="none" stroke="#f4d8ce" stroke-width="2.5"/><path d="M29 41Q44 37 60 42L57 55Q44 62 31 53Z" fill="#e3fff8" /><path d="M32 50Q44 53 56 49" fill="none" stroke="#82bcb7" stroke-width="1.8"/><path d="M31 37q3-5 6-1m13 0q3-5 6 0" fill="none" stroke-width="3"/></g>
   </g>
 </svg>

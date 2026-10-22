@@ -1,6 +1,6 @@
-# Plaque Trouble game specification
+# Plaque Attack game specification
 
-Plaque Trouble is a single-player browser arcade game inspired by Bubble Trouble: move a cartoon
+Plaque Attack is a single-player browser arcade game inspired by Bubble Trouble: move a cartoon
 cardiovascular surgeon along the floor, fire upward, dodge drifting hazards, and turn one large
 plaque into progressively smaller fragments. The campaign then shifts to antiplatelet tools and
 the sustained control of small platelet hazards.
@@ -20,7 +20,7 @@ mechanics placement matrix. Numerical balance values remain tunable.
 
 | Item | Specification |
 | --- | --- |
-| Display title | Plaque Trouble |
+| Display title | Plaque Attack |
 | Repository | `plaque-attack`; keep its existing name |
 | Genre | 2D arcade action with a cardiovascular theme |
 | Audience | Casual players and biology learners; no medical knowledge required |
@@ -457,10 +457,14 @@ colors and geometry. Avoid external fonts, embedded scripts, and externally fetc
 | Organic scenes | Six `src/assets/scene-*.svg` assets | Editable wall, lining, lesion, stent, and healing motifs; manifest in [ART_DIRECTION.md](ART_DIRECTION.md) |
 | Lipid variants | Six `src/assets/lipid-*.svg` assets | Distinct playful forms, visual-only selection; retain collision-readable silhouettes |
 
-Each surgeon's silhouette is readable at actual play size: oversized cap and mask, distinct scrubs,
-short legs, gloved hands, and an upward-facing tool. Create idle, run, fire, hit, and victory poses
-from the same proportions. Idle breathing is subtle; the run cycle is short; firing emphasizes the
-tool. Skin tone is a visual choice, not a gameplay attribute.
+At the actual 44x60 play size, varied stature, body mass, face, hair and posture distinguish the
+six surgeons in grayscale and solid silhouette. Shared PPE, gloved hands and an upward-facing
+tool preserve the chunky arcade style. Each 96x128 source retains the y123 foot baseline,
+x77 tool anchor, y100 upper-body seam and x48 leg split used by the Canvas renderer.
+Individual idle and victory cadences are cosmetic; reduced motion uses static poses. The chooser
+pairs larger portraits with personality copy and states that all six have the same abilities.
+Skin tone is a visual choice, not a gameplay attribute. Concepts and current evidence status
+belong to [ART_DIRECTION.md](ART_DIRECTION.md).
 
 Plaque retains a roughly circular occupied silhouette despite an irregular contour. Decorative
 protrusions stay close to its collision circle. Tiny targets simplify to a bold outline and a

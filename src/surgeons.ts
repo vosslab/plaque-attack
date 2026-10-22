@@ -11,37 +11,37 @@ export const SURGEONS = {
     id: "maya",
     name: "Dr. Maya Chen",
     portraitAssetId: "surgeon-maya",
-    description: "A calm hand in cobalt scrubs with coral accents.",
+    description: "The calm anchor. A deep breath, then onward.",
   },
   jules: {
     id: "jules",
     name: "Dr. Jules Okafor",
     portraitAssetId: "surgeon-jules",
-    description: "A steady specialist with violet scrubs.",
+    description: "The quiet lookout. Always in your corner.",
   },
   imani: {
     id: "imani",
     name: "Dr. Imani Patel",
     portraitAssetId: "surgeon-imani",
-    description: "A precise operator in a berry headscarf and deep teal scrubs.",
+    description: "The thoughtful planner. Every detail has a place.",
   },
   leo: {
     id: "leo",
     name: "Dr. Leo Rivera",
     portraitAssetId: "surgeon-leo",
-    description: "A focused clinician in bright blue scrubs and a neat beard.",
+    description: "The determined closer. Celebrates every little win.",
   },
   samira: {
     id: "samira",
     name: "Dr. Samira Haddad",
     portraitAssetId: "surgeon-samira",
-    description: "A confident surgeon in plum scrubs with rose accents.",
+    description: "The bold pathfinder. First to say, let's go.",
   },
   alex: {
     id: "alex",
     name: "Dr. Alex Morgan",
     portraitAssetId: "surgeon-alex",
-    description: "A quick thinker in forest green scrubs and round glasses.",
+    description: "The curious inventor. One more idea to try.",
   },
 } as const satisfies Record<SurgeonId, SurgeonDefinition>;
 

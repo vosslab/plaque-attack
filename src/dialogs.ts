@@ -231,6 +231,15 @@ export function surgeonChooser(
 ): void {
   body.classList.add("surgeon_chooser");
   surgeonPanel(body, selectedId, selected, false);
+  const intro = body.querySelector(".surgeon_roster_intro");
+  if (intro !== null)
+    intro.textContent = "Six personalities. Same abilities. Pick your kind of teammate.";
+  for (const [index, card] of body.querySelectorAll(".surgeon_card").entries()) {
+    const description = card.querySelector(".surgeon_name + span");
+    if (description === null) continue;
+    description.id = `surgeon_personality_${index}`;
+    card.setAttribute("aria-describedby", description.id);
+  }
   footer.append(action("Done", close, true));
 }
 

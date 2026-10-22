@@ -47,7 +47,7 @@ test("smoke: campaign opens the first briefing and returns to the menu", async (
   page.on("pageerror", (error) => page_errors.push(error.message));
 
   await page.goto("/");
-  const menu = page.getByRole("region", { name: "Plaque Trouble", exact: true });
+  const menu = page.getByRole("region", { name: "Plaque Attack", exact: true });
   const play = page.getByRole("button", { name: "Play campaign", exact: true });
   await expect(menu).toBeVisible();
   await play.click();

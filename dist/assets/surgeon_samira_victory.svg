@@ -1,26 +1,44 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="96" height="128" viewBox="0 0 96 128" role="img" aria-labelledby="samira-victory-title samira-victory-desc">
-  <title id="samira-victory-title">Dr. Samira Haddad, victorious artery surgeon</title><desc id="samira-victory-desc">A friendly olive-skinned surgeon in a rose surgical hijab and wine-colored scrubs, with pale gloves and a raised stent applicator. Fictional arcade character. Celebrating with a raised gloved fist, smiling eyes, and both feet planted.</desc>
-  <defs><linearGradient id="samira-victory-scrubs" x2="1" y2="1"><stop stop-color="#d65b8d"/><stop offset="1" stop-color="#8c285c"/></linearGradient></defs>
-  <g stroke="#20243e" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-    <g id="samira-victory-legs"><path d="M28 96h19v23H27zM50 96h18l3 23H50z" fill="#792554"/><path d="M29 114h17v9H22q-1-7 7-9M51 114h16q9 2 8 9H51z" fill="#293650"/><path d="M25 122h18m12 0h16" stroke="#ffc3dd" stroke-width="2"/></g>
-    <g id="samira-victory-torso"><path d="M25 62Q48 52 70 64l8 33q-29 12-57 0z" fill="url(#samira-victory-scrubs)"/><path d="m37 64 11 12 10-12M48 76v25" fill="none" stroke="#ffe8f1" stroke-width="2"/><path d="M55 81h12v12H55z" fill="#872a5b" stroke-width="2"/><path d="M58 86h6m-3-3v6" stroke="#ffe8f1" stroke-width="2"/></g>
-    <g id="samira-victory-raised-arms" fill="url(#samira-victory-scrubs)">
-      <path d="M29 65 16 49 10 34 3 38 5 56 21 78z"/>
-      <path d="m64 65 12-9 3-16 12 2-2 23-16 16z"/>
+  <title id="samira-victory-title">Dr. Samira Haddad, victorious artery surgeon</title>
+  <desc id="samira-victory-desc">A rose-scarved surgeon leans into a broad asymmetrical stance, one knee angled outward and the opposite hip planted. A confident open-hand wave celebrates success. Masked and gloved, holding an upward delivery applicator. Fictional Plaque Attack character.</desc>
+  <defs>
+    <linearGradient id="samira-victory-scrubs" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#c85187" />
+      <stop offset="1" stop-color="#8c285c" />
+    </linearGradient>
+  </defs>
+  <g stroke="#162b40" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+    <g id="samira-victory-legs">
+      <path d="M29 97H44L35 117H21ZM54 97H70L75 117H59Z" fill="#8c285c" />
+      <path d="M21 115H35V123H12Q12 119 21 115ZM59 115H75L83 120V123H59Z" fill="#263852" />
+    </g>
+    <g id="samira-victory-torso">
+      <path d="M31 65L59 58L68 67L59 81L74 97L26 98L36 81L25 73Z" fill="url(#samira-victory-scrubs)" />
+      <path d="M36 65L46 73L57 61" fill="none" stroke="#e4f5f2" stroke-width="2.5" />
+      <path d="M50 83L62 81L64 92L51 94Z" fill="#8c285c" stroke-width="2" />
+      <path d="M55 87h5m-2.5-2.5v5" fill="none" stroke="#e4f5f2" stroke-width="1.8" />
     </g>
     <g id="samira-victory-tool">
-      <path d="M85 44V18" stroke="#e0f4fc" stroke-width="8"/>
-      <path d="M85 39V17" stroke="#638aa2" stroke-width="2"/>
-      <path d="M79 18h12L88 4h-6z" fill="#e8f8ff"/>
-      <path d="m82 8 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5"/>
-      <rect x="79" y="34" width="12" height="14" rx="4" fill="#f9c869"/>
+      <path d="M77 69V29" stroke="#e0f4fc" stroke-width="8" />
+      <path d="M77 61V30" stroke="#638aa2" stroke-width="2" />
+      <path d="M71 29h12l-3-15h-6z" fill="#e8f8ff" />
+      <path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5" />
+      <rect x="70" y="60" width="14" height="19" rx="4" fill="#f9c869" />
     </g>
-    <g id="samira-victory-gloves" fill="#effff9">
-      <path d="M4 38 3 26q0-4 4-4l6 1q4 0 4 4l-1 11q-5 4-12 0z"/>
-      <path d="m5 27 8 1m-6 5 6 1" stroke="#78aab5" stroke-width="2"/>
-      <path d="M79 45q-4-2-3-6l2-5q1-3 4-1l1 4 6-1q4 1 3 5l-2 7q-6 3-11-3z"/>
-      <path d="m82 41 7 1" stroke="#78aab5" stroke-width="2"/>
+    <g id="samira-victory-raised-arms">
+      <g id="samira-victory-gloves">
+        <path d="M30 68L21 53L25 44Q29 39 25 37L21 41L21 31Q20 27 17 30L16 38L14 31Q12 27 10 31L11 42L8 39Q4 39 6 44L12 57L22 78Z" fill="#effff9" />
+        <path d="M64 69Q67 61 74 65L81 68Q85 72 81 78L75 85Q69 90 64 84L60 77Z" fill="#effff9" />
+        <path d="M68 72l8 3" stroke="#78aab5" stroke-width="2" />
+      </g>
     </g>
-    <g id="samira-victory-head"><path d="M17 43Q16 10 43 5q30-1 31 37l-4 22q-24 11-50-1z" fill="#df719c"/><ellipse cx="46" cy="39" rx="22" ry="25" fill="#bc805e"/><ellipse cx="23" cy="42" rx="4" ry="7" fill="#d69a75"/><path d="M21 30q25-8 50 1" fill="none" stroke="#ffe0e9" stroke-width="4"/><path d="M23 42q24-8 47 0l-5 20q-18 11-37-1z" fill="#e3fff8"/><path d="M29 48q17 8 33 0m-30 7q14 6 27 0" stroke="#86c8c2" stroke-width="2"/><path d="M31 37q4-6 8 0m14 0q4-6 8 0" fill="none" stroke-width="3"/></g>
+    <g id="samira-victory-head" transform="translate(7 13) scale(.88 .77) rotate(8 45 38)">
+      <path d="M21 37Q15 16 34 7Q51 0 65 17Q75 29 68 50L78 68Q69 74 61 68L57 55L24 62Q18 51 21 37Z" fill="#df719c" />
+      <path d="M26 26Q31 16 46 17Q62 18 64 32L61 48Q55 61 40 59Q26 56 25 42Z" fill="#bc805e" />
+      <path d="M24 32Q34 13 51 19Q67 23 66 40M61 56L71 65" fill="none" stroke="#f4d8ce" stroke-width="2.5" />
+      <path d="M27 42L61 41L57 55Q42 63 29 53Z" fill="#e3fff8" />
+      <path d="M32 50Q44 53 56 49" fill="none" stroke="#82bcb7" stroke-width="1.8" />
+      <path d="M31 37q3-5 6-1m13 0q3-5 6 0" fill="none" stroke-width="3" />
+    </g>
   </g>
 </svg>

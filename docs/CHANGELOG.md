@@ -2,6 +2,24 @@
 
 ### Additions and New Features
 
+- Restore **Plaque Attack**, the user's intended rhyming title, in the menu, browser title,
+  metadata, Canvas fallback and current product documentation. Preserve historical old-name
+  records, repository URLs and saved-data keys.
+- Establish the lean [ART_DIRECTION.md](ART_DIRECTION.md) identity brief and
+  [active_plans/active/art_identity.md](active_plans/active/art_identity.md) delivery ledger for
+  twelve surgeon SVGs, six artery scenes and cardiac recovery art. Integrated art acceptance
+  remains pending until actual captures and fresh reviews are recorded.
+- Give the six cosmetic surgeons distinct character concepts, larger chooser portraits and
+  personality copy; add individual idle/victory cadences with static reduced motion. Revise
+  six artery illustrations and the renderer's organic frame/floor presentation, retaining
+  authoritative gameplay geometry and carved lanes.
+- Correct the first enlarged chooser's desktop height regression with a three-column,
+  two-row horizontal-card layout: 960x597.30 instead of 960x686.45 at 1280x800, retaining
+  100x120 portraits, visible personality copy and fixed narrow-screen actions.
+- Replace near-identical recovery busts with five poses from seated rest to purposeful activity;
+  retain the heart/map alignment, route IDs and existing restored-territory overlays. Record
+  actual user guidance separately from the forwarded art commentary used as design input.
+
 - Add [FUN_SURVEY.md](FUN_SURVEY.md), a source-grounded survey of eleven neighboring games,
   with ranked future ideas and explicit evidence limits. Present the existing hit streak,
   exact 5/10-hit milestone cues, optional sound, and actual awarded points. Keep existing scoring

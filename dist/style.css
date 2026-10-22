@@ -381,8 +381,91 @@ h2 { margin: 0 0 24px; max-width: 750px; font-size: clamp(2rem, 4.5vw, 3.7rem); 
   animation: roster_steady 2.8s ease-in-out infinite;
 }
 
-.game_dialog .surgeon_chooser .surgeon_roster_intro { margin: 0 0 12px; }
+/* Horizontal portraits keep all six personalities in a compact desktop dialog. */
+.game_dialog:has(.surgeon_chooser) {
+  width: min(960px, calc(100% - 32px));
+  max-height: min(600px, calc(100dvh - 32px));
+}
+.game_dialog .surgeon_chooser .surgeon_roster_intro {
+  max-width: none;
+  margin: 0 0 14px;
+  font-size: .88rem;
+  line-height: 1.5;
+}
 .surgeon_chooser .surgeon_roster { margin-bottom: 0; }
+.surgeon_chooser .surgeon_card {
+  grid-template-columns: 100px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 6px 10px;
+  min-height: 170px;
+  padding: 27px 12px 12px;
+  text-align: left;
+}
+.surgeon_chooser .surgeon_portrait {
+  grid-row: 1 / -1;
+  justify-self: center;
+  width: 100px;
+  height: 120px;
+  animation: none;
+}
+.surgeon_chooser .surgeon_name { font-size: .9rem; }
+.surgeon_chooser .surgeon_name + span {
+  display: block;
+  max-width: 25ch;
+  justify-self: start;
+  color: #d7cbdf;
+  font-size: .75rem;
+  line-height: 1.4;
+}
+.surgeon_chooser .surgeon_card::after {
+  top: 7px;
+  right: 8px;
+  padding: 2px 5px;
+  font-size: .53rem;
+}
+.surgeon_chooser .surgeon_card[aria-pressed="true"]::after { content: "Selected"; }
+.surgeon_chooser .surgeon_card:hover,
+.surgeon_chooser .surgeon_card[aria-pressed="true"] { transform: none; }
+.surgeon_chooser .surgeon_card:focus-visible {
+  outline: 3px solid #ffc857;
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .surgeon_chooser .surgeon_card {
+    grid-template-columns: 90px minmax(0, 1fr);
+    min-height: 156px;
+  }
+  .surgeon_chooser .surgeon_portrait { width: 90px; height: 110px; }
+}
+@media (max-width: 540px) {
+  .surgeon_chooser .surgeon_roster { grid-template-columns: 1fr; }
+}
+@media (max-width: 360px) {
+  .surgeon_chooser .surgeon_card {
+    grid-template-columns: 90px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    min-height: 142px;
+    gap: 6px 10px;
+    padding-inline: 8px;
+    text-align: left;
+  }
+  .surgeon_chooser .surgeon_portrait { grid-row: 1 / -1; width: 90px; height: 100px; }
+  .surgeon_chooser .surgeon_name + span { justify-self: start; }
+}
+@media (min-width: 621px) and (max-height: 620px) {
+  .game_dialog:has(.surgeon_chooser) { max-height: calc(100dvh - 24px); }
+  .surgeon_chooser .surgeon_card {
+    grid-template-columns: 76px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 5px 8px;
+    min-height: 128px;
+    padding: 24px 10px 10px;
+    text-align: left;
+  }
+  .surgeon_chooser .surgeon_portrait { grid-row: 1 / -1; width: 76px; height: 90px; }
+  .surgeon_chooser .surgeon_name { font-size: .8rem; }
+  .surgeon_chooser .surgeon_name + span { justify-self: start; font-size: .7rem; }
+}
 
 /* The campaign map is a heart-specific recovery view, not a numerical health claim. */
 .recovery_map {

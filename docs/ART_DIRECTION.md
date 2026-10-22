@@ -1,4 +1,31 @@
-# Organic artery art
+# Plaque Attack art direction
+
+## Current identity pass
+
+Build a tangible, playful illustrated world with six memorable surgeon personalities, artery
+settings that feel like places, and a patient whose recovery feels earned. Preserve clear
+silhouettes at gameplay size and enough quiet space to read targets, shots and warnings.
+Use shape, posture, expression, material and light to establish identity. Preserve the current
+chunky arcade style the user calls pixel art: bold contours, simple masses and readable small
+figures. The editable implementation remains SVG rendered through Canvas.
+
+This pass revises twelve base/victory surgeon SVGs, six artery scenes and the cardiac recovery
+composition. Existing viewBoxes, feet/tool anchors, collision geometry, semantic IDs and recovery
+symbols remain the runtime contracts. Character choice stays cosmetic. Recovery keeps its
+stable-ID routes and existing milestones; make its visual payoff legible across progress states.
+
+At the actual 44x60 gameplay size, height, body mass, face, hair, posture and accessories must
+separate the cast through grayscale and solid silhouettes as well as color. Larger chooser
+portraits and personality copy make the same-ability choice meaningful. Individual idle and
+victory cadences express personality; reduced motion presents static poses.
+
+The settled direction draws on the user's art request and forwarded commentary from another
+project. That commentary is an inspiration source, not a new set of verbatim human rules.
+[DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#art-identity-and-recovery) records that provenance.
+
+[active_plans/active/art_identity.md](active_plans/active/art_identity.md) owns this pass's
+task and acceptance status. The asset and rendering evidence below describes earlier deliveries;
+it does not establish acceptance of the current pass.
 
 ## Visual contract
 
@@ -128,12 +155,48 @@ square leaves a small antialiasing margin around the silhouette.
 
 ## Surgeon and recovery art
 
-Six original editable `surgeon_*.svg` figures share a `96 128` viewBox, foot position and tool
-anchor. Maya wears cobalt with coral accents; Jules violet; Imani deep teal with a berry
-headscarf; Leo blue with a beard; Samira plum and rose; Alex forest green with round glasses.
-Skin, hair and clothing make the figures distinct. None changes physics or weapon configuration.
-The selected portrait appears in the roster and Canvas arena. Briefing and results open the same
-full roster chooser.
+Six editable `surgeon_*.svg` figures and their six victory variants share a `96 128` viewBox,
+foot baseline at y123, upward tool anchor at x77, upper-body articulation seam at y100 and
+leg split at x48. Runtime draws them at 44x60. The shared mint PPE, navy contours and common
+applicator unify the cast; stature, mass and gesture carry identity independently of ethnicity.
+None changes physics, collision, movement or weapon configuration. The selected portrait appears
+in the roster and Canvas arena. Briefing and results open the same full roster chooser.
+
+The six concepts have visible personality consequences:
+
+| Surgeon | Personality | Shape and reaction |
+| --- | --- | --- |
+| Maya Chen | Calm anchor | Compact rounded figure, round cap, small thumbs-up and calm nod |
+| Jules Okafor | Quiet lookout | Tall narrow upright mass, small head and curls, quiet salute and slow acknowledgment |
+| Imani Patel | Thoughtful planner | Narrow pointed berry drape, careful two-hand grip, open palm and precise dip |
+| Leo Rivera | Determined closer | Low broad square stance, blue cap and beard, fist pump and compact bounce |
+| Samira Haddad | Bold pathfinder | Tilted head, diagonal shoulders and wide hip stance, open wave and confident sway |
+| Alex Morgan | Curious inventor | Spiky hair, round glasses and tucked elbow, two-finger sign and double take |
+
+The chooser's portrait and trait text describe personality, with an explicit same-abilities
+statement. `src/surgeon_motion.ts` owns cosmetic timing, `src/renderer.ts` owns articulation,
+and `src/artery_art.ts` owns the organic procedural frame/floor presentation. The underlying
+floor and tissue geometry remain authoritative for collision and carved openings.
+
+Current working evidence is in `output/art_identity/`: `roster_refine/recognition.png` contains
+the native 44x60 color, grayscale and silhouette lineups; `chooser/REPORT.md` covers chooser
+fixtures, superseded for layout by `chooser_compact/REPORT.md` and its three viewport captures;
+`scenes/REPORT.md` covers six settings and target readability; `recovery/REPORT.md`
+covers five patient poses and real-consumer fixtures. `roster_refine/REPORT.md` records the repair
+of Maya/Jules stature and Imani/Samira silhouette separation; `roster_refine/SPEC_REVIEW.md`
+accepts the corrected native-size recognition, crop and stride evidence. These refined images
+supersede the initial `roster/` delivery for the current cast.
+`runtime/REPORT.md` records source-renderer checks, motion fixtures and geometry boundaries.
+Final integrated acceptance remains
+open in [active_plans/active/art_identity.md](active_plans/active/art_identity.md).
+
+Recovery retains one person through seated rest, upright reaching, first steps, walking with
+a seedling and a broad final stride/greeting. The chair and limb negative spaces change with
+pose; the face, forelock/silver lock, teal jacket and coral shirt preserve identity. The existing
+heart/map overlay remains the owner of restored coronary territories. These fictional milestones
+show a return to activity without a new claim about disease cure.
+
+## Historical roster evidence
 
 Six editable victory variants accompany the base roster:
 [surgeon_maya_victory.svg](../src/assets/surgeon_maya_victory.svg),

@@ -7,6 +7,70 @@ the reasoning a later reader needs. Guidance Neil Voss states belongs in
 `docs/active_plans/decisions/`. [PROPAGATED HEADER - ENTRIES BELOW ARE YOURS]
 <!-- VENDORED HEADER: END -->
 
+### Plaque Attack identity
+
+**Decision.** Use **Plaque Attack** as the current display name in the game, metadata and
+product documentation. Preserve the repository URL and saved-data keys.
+
+**Why.** The user repeated the intended rhyming title. The earlier Plaque Trouble display
+name drifted from that identity.
+
+**Consequence.** Historical changelog entries and completed plan headings may retain the old
+name when clearly labeled historical. Correct current player-facing references at their owner.
+
+**Owner.** [GAME_SPEC.md](GAME_SPEC.md) and [src/index.html](../src/index.html).
+
+### Art identity and recovery
+
+**Decision.** Give the six-surgeon cast, six artery settings and cardiac recovery composition
+one tangible illustrated world. Favor distinct silhouettes and personalities, readable play
+space, and recovery milestones that visibly reward progress. The lean brief is in
+[ART_DIRECTION.md](ART_DIRECTION.md).
+
+**Why.** The requested art pass calls for stronger visual identity and meaningful recovery.
+Forwarded commentary from another project informs the approach; it is source material rather
+than verbatim human rules for this repository.
+
+**Consequence.** Artists choose the visual solutions within existing SVG, collision, anchor,
+save and ability contracts. Accept the integrated artwork after actual gameplay-size and
+recovery-state captures, fresh specification review, independent visual review and integration.
+
+**Owner.** [ART_DIRECTION.md](ART_DIRECTION.md), with delivery status in
+[active_plans/active/art_identity.md](active_plans/active/art_identity.md).
+
+### Cosmetic cast expression
+
+**Decision.** Express six personalities through distinct stature, mass, face, hair, posture,
+accessories, chooser copy and idle/victory cadence. Keep the chunky arcade style, editable SVG
+sources and the shared source anchors and articulation seams.
+
+**Why.** A same-ability choice becomes meaningful when players recognize an attitude and
+silhouette at the actual 44x60 gameplay size. Color and costume alone were insufficient in
+the initial roster review.
+
+**Consequence.** Check native grayscale and solid silhouettes as well as full portraits.
+Motion is presentation only and reduced motion is static. Distinctness requires visual review;
+valid XML and preserved coordinates establish source integrity only.
+
+**Owner.** [ART_DIRECTION.md](ART_DIRECTION.md), `src/surgeons.ts`, `src/surgeon_motion.ts`,
+`src/renderer.ts`, and chooser-scoped rules in `src/dialogs.ts` and `src/style.css`.
+
+### Purposeful recovery poses
+
+**Decision.** Preserve patient identity across five poses from seated rest to purposeful
+activity, with stronger body and limb silhouettes. Keep the existing heart, map anchors,
+stable route IDs and territory overlays.
+
+**Why.** Changes in posture and activity make the existing milestones emotionally legible.
+Shared face, hair and clothing identify the same person through those changes.
+
+**Consequence.** The artwork carries the visible return to activity; `src/recovery.ts` owns
+restored territories and state text. Staged route fixtures establish presentation, not earned
+campaign completion or a medical outcome.
+
+**Owner.** [ART_DIRECTION.md](ART_DIRECTION.md), `src/assets/cardiac_recovery.svg`, and
+`src/recovery.ts`.
+
 ### Present earned hit streaks
 
 **Decision.** Present the existing hit count, x2/x3 milestones, and awarded target points through
@@ -55,7 +119,7 @@ authoritative code or contract document, rather than a person.
 ### Game specification authority
 
 **Decision.** Use [GAME_SPEC.md](GAME_SPEC.md) as the current gameplay contract for
-Plaque Trouble, with [EXPANSION_PLAN.md](EXPANSION_PLAN.md) owning the exact expanded stage matrix.
+Plaque Attack, with [EXPANSION_PLAN.md](EXPANSION_PLAN.md) owning the exact expanded stage matrix.
 
 **Why.** The concept needs explicit collision, scoring, progression, and maintenance rules before
 parallel implementation can share reliable contracts.

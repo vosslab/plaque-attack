@@ -21,7 +21,7 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
   and write for gamers and biology enthusiasts.
 - The root `test-results` directory is not ignored; account for that in the project setup.
 - Use the UI/UX engineer review skill for runtime flows and the final interface audit.
-- Expand Plaque Trouble with more levels and an ordered challenge curve; keep the game fun, since
+- Expand the game with more levels and an ordered challenge curve; keep the game fun, since
   learning does not need to be boring.
 - The first three levels are pretty easy; low, fast, small balls are hard. Put fun first.
 - Give the expansion more organic medical-inspired scenes and a broader variety of lipid art, with
@@ -50,3 +50,9 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 - Explore non-flat floors more deeply and assess whether they add enough to the game.
 - Survey other games in `~/nsh/TYPESCRIPT` for more fun game ideas. The more fun the game,
   the happier I will be!
+- The game should be called Plaque Attack because it rhymes. Keep that name in the game and
+  its current documentation.
+- Give the six surgeons distinct personalities through varied height, body, face, hair, posture
+  and accessories, so choosing among characters with the same abilities feels meaningful.
+- Preserve the current chunky arcade visual style, which I call pixel art. Show the actual
+  44x60 grayscale and silhouette lineup, and add a few individual idle motions and reactions.

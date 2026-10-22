@@ -15,6 +15,8 @@ import { DEFAULT_SURGEON_ID, getSurgeon } from "./surgeons";
 import { floorY, playerSupportY } from "./arena_geometry";
 import { sampleTargetPath } from "./motion";
 import { streakMilestone } from "./scoring";
+import { drawMembrane } from "./artery_art";
+import { celebrationMotion, idleBodyAngle } from "./surgeon_motion";
 
 type Particle = { x: number; y: number; vx: number; vy: number; life: number; color: string };
 type HitEffect = {
@@ -159,27 +161,10 @@ export function createRenderer(
     ctx.lineTo(ARENA_WIDTH, ARENA_HEIGHT);
     ctx.lineTo(0, ARENA_HEIGHT);
     ctx.closePath();
-    const tissueDepth = ctx.createLinearGradient(0, 492, 0, ARENA_HEIGHT);
-    tissueDepth.addColorStop(0, "#ab7188");
-    tissueDepth.addColorStop(1, "#68445f");
-    ctx.fillStyle = tissueDepth;
-    ctx.fill();
-    // Every scallop and nucleus stays inside the actual solid floor silhouette.
+    // Every lobule and fiber stays inside the actual solid floor silhouette.
     ctx.clip();
-    for (let x = -12; x < ARENA_WIDTH + 24; x += 27) {
-      const y = floorY(floor, Math.max(0, x)) + 14 + Math.sin(x * 0.09) * 3;
-      ctx.fillStyle = "#ab7188";
-      ctx.strokeStyle = "#d5a5ad";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.ellipse(x, y, 18, 13, Math.sin(x) * 0.3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = "#624457";
-      ctx.beginPath();
-      ctx.ellipse(x + 3, y + 2, 5, 3, 0.4, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    const top = Math.min(...floor.controlPoints.map((point) => point.y));
+    drawMembrane(ctx, 0, top, ARENA_WIDTH, ARENA_HEIGHT);
     // Trace the exact collision surface, clipped inward so this highlight never
     // suggests an extra ledge above the walkable geometry.
     ctx.strokeStyle = "#efc2c2";
@@ -310,19 +295,16 @@ export function createRenderer(
     const { x, y } = state.player.position;
     const victory = celebration !== undefined && celebration.elapsed >= VICTORY_POSE_DELAY;
     const poseElapsed = victory ? celebration.elapsed - VICTORY_POSE_DELAY : 0;
-    const hop =
-      !reducedMotion && victory ? Math.sin(Math.min(1, poseElapsed / 0.42) * Math.PI) * 18 : 0;
-    const tilt = !reducedMotion && victory ? Math.sin(poseElapsed * 13) * 0.045 : 0;
+    const { hop, tilt } = celebrationMotion(selected.id, poseElapsed, reducedMotion);
     // Pivot at the feet and reserve the rotated sprite's full width at either wall.
     const halfWidth =
       (PLAYER_WIDTH / 2) * Math.cos(tilt) + PLAYER_HEIGHT * Math.abs(Math.sin(tilt));
     const poseX = Math.max(halfWidth, Math.min(ARENA_WIDTH - halfWidth, x));
     const poseY = Math.min(y, playerSupportY(state.level.arena.floor, poseX, halfWidth * 2));
-    const running = moving && state.phase === "playing" && !reducedMotion;
+    const running =
+      moving && (state.phase === "playing" || state.phase === "paused") && !reducedMotion;
     const stride = running ? Math.sin(state.elapsed * 22) : 0;
     const recoil = firingRemaining > 0 ? 2 : 0;
-    const breathing =
-      !reducedMotion && state.phase === "playing" ? Math.sin(state.elapsed * 3) * 0.4 : 0;
     ctx.save();
     ctx.translate(x, y - PLAYER_HEIGHT);
     ctx.fillStyle = "#180f24";
@@ -331,7 +313,7 @@ export function createRenderer(
     ctx.ellipse(0, PLAYER_HEIGHT - 2, 26, 4, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalAlpha = 1;
-    ctx.translate(0, recoil + breathing);
+    ctx.translate(0, recoil);
     if (victory) {
       ctx.translate(
         poseX - x,
@@ -369,6 +351,13 @@ export function createRenderer(
       ctx.restore();
     }
     // Source regions preserve the original editable sprite while articulating the two legs.
+    // Idle pivots the intact upper figure at the existing leg seam. This preserves
+    // scarves/hair and the feet; the applicator moves less than two logical pixels.
+    const bodyPivot = (PLAYER_HEIGHT * 100) / 128;
+    ctx.save();
+    ctx.translate(0, bodyPivot);
+    ctx.rotate(moving ? 0 : idleBodyAngle(selected.id, state.elapsed, reducedMotion));
+    ctx.translate(0, -bodyPivot);
     ctx.drawImage(
       surgeon,
       0,
@@ -380,6 +369,7 @@ export function createRenderer(
       PLAYER_WIDTH,
       (PLAYER_HEIGHT * 100) / 128,
     );
+    ctx.restore();
     for (const side of [-1, 1]) {
       ctx.save();
       ctx.translate(side * 5, (PLAYER_HEIGHT * 100) / 128);
@@ -489,29 +479,23 @@ export function createRenderer(
     ctx.fillStyle = "#844f68";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
-    // Static tissue texture fills the frame without moving when the game pauses.
-    // The scene covers its center, leaving only the decorative outer wall visible.
+    // Static material is clipped to the decorative frame outside the physics world.
     const left = -offsetX / scale;
     const top = -offsetY / scale;
     const right = ARENA_WIDTH - left;
     const bottom = ARENA_HEIGHT - top;
-    for (let y = top - 12; y < bottom + 12; y += 22) {
-      if (y > 12 && y < ARENA_HEIGHT - 12 && offsetX === 0) continue;
-      for (let x = left - 18; x < right + 18; x += 31) {
-        const variation = Math.sin(x * 0.09 + y * 0.13);
-        ctx.fillStyle = "#986279";
-        ctx.strokeStyle = "#b37e90";
-        ctx.lineWidth = 0.7;
-        ctx.beginPath();
-        ctx.ellipse(x + variation * 4, y, 18, 12, variation * 0.3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-        ctx.fillStyle = "#71495f";
-        ctx.beginPath();
-        ctx.ellipse(x + 3, y + 1, 4, 2, 0.4, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(left, top, right - left, -top);
+    ctx.rect(left, ARENA_HEIGHT, right - left, bottom - ARENA_HEIGHT);
+    ctx.rect(left, 0, -left, ARENA_HEIGHT);
+    ctx.rect(ARENA_WIDTH, 0, right - ARENA_WIDTH, ARENA_HEIGHT);
+    ctx.clip();
+    if (top < 0) drawMembrane(ctx, left, top, right, 0);
+    if (bottom > ARENA_HEIGHT) drawMembrane(ctx, left, ARENA_HEIGHT, right, bottom);
+    if (left < 0) drawMembrane(ctx, left, 0, 0, ARENA_HEIGHT);
+    if (right > ARENA_WIDTH) drawMembrane(ctx, ARENA_WIDTH, 0, right, ARENA_HEIGHT);
+    ctx.restore();
     ctx.drawImage(images[state.level.scene], 0, 0, ARENA_WIDTH, ARENA_HEIGHT);
     // Scene art retains its editable decorative lower wall. Extend the adjacent clean
     // lumen color beneath it so only the geometry-owned floor describes solid ground.

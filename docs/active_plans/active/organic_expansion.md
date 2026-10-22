@@ -1,5 +1,7 @@
 # Plaque Trouble organic expansion plan
 
+Historical title: this completed expansion predates the current **Plaque Attack** display name.
+
 **Goal:** Deliver a fun, deliberately paced 24-stage campaign with fluid motion, organic artwork,
 erodible shelter, automatic floor following, optional pockets and bounded plaque coalescence.
 
