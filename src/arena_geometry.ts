@@ -1,24 +1,10 @@
 import { DEFAULT_ARENA, FLUID_WALL_INSET, PLAYER_WIDTH } from "./constants";
+import { floorMinimumY, floorY } from "./floor_geometry";
 import type { FloorProfile } from "./types/level";
 import type { Velocity } from "./types/simulation";
 
 export const FLAT_FLOOR: FloorProfile = DEFAULT_ARENA.floor;
-
-export function floorY(floor: FloorProfile, x: number): number {
-  const points = floor.controlPoints;
-  const first = points[0];
-  const last = points[points.length - 1];
-  if (first === undefined || last === undefined) throw new Error("Floor requires control points");
-  if (x <= first.x) return first.y;
-  for (let index = 1; index < points.length; index += 1) {
-    const left = points[index - 1];
-    const right = points[index];
-    if (left === undefined || right === undefined || x > right.x) continue;
-    const t = (x - left.x) / (right.x - left.x);
-    return left.y + (right.y - left.y) * t * t * (3 - 2 * t);
-  }
-  return last.y;
-}
+export { floorY } from "./floor_geometry";
 
 export function floorSlope(floor: FloorProfile, x: number): number {
   for (let index = 1; index < floor.controlPoints.length; index += 1) {
@@ -51,12 +37,7 @@ export function playerSupportY(
 ): number {
   const left = x - width / 2;
   const right = x + width / 2;
-  let support = Math.min(floorY(floor, left), floorY(floor, right));
-  // Each smoothstep span is monotonic, so endpoints and enclosed knots give the exact minimum.
-  for (const point of floor.controlPoints) {
-    if (point.x > left && point.x < right) support = Math.min(support, point.y);
-  }
-  return support;
+  return floorMinimumY(floor, left, right);
 }
 
 export function targetVerticalBounds(

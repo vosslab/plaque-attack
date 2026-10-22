@@ -4,7 +4,16 @@ import { playerSupportY } from "../src/arena_geometry.ts";
 import { createTarget } from "../src/characters.ts";
 import { projectileContact, sweptTargetPlayerContact } from "../src/collision.ts";
 import { resolveCoalescence } from "../src/coalescence.ts";
-import { FIXED_STEP, getLevel, LEVEL_IDS, MAX_TARGETS, PLAYER_HEIGHT } from "../src/constants.ts";
+import {
+  ARENA_WIDTH,
+  FIXED_STEP,
+  getLevel,
+  LEVEL_IDS,
+  MAX_TARGETS,
+  PLAYER_HEIGHT,
+  PLAYER_WIDTH,
+  WEAPON_CONFIGS,
+} from "../src/constants.ts";
 import { advanceLevel, createSimulation, pauseSimulation } from "../src/game_state.ts";
 import { advanceTarget, synchronizeTargetMotion } from "../src/motion.ts";
 import { stepSimulation } from "../src/simulation.ts";
@@ -318,6 +327,31 @@ test("first three stages keep their baseline arena; floor support and firing sha
       events.find((event) => event.type === "shot").position.y,
       state.player.position.y - PLAYER_HEIGHT + 8,
     );
+  }
+});
+
+test("authored cover clears the surgeon across slopes and preserves the central firing lane", () => {
+  const shotHalfWidth =
+    Math.max(...Object.values(WEAPON_CONFIGS).map((weapon) => weapon.width)) / 2;
+  for (const id of LEVEL_IDS) {
+    const { floor, tissue } = getLevel(id).arena;
+    for (const patch of tissue.filter((entry) => entry.pocketId === undefined)) {
+      for (const cell of patch.cells) {
+        const left = cell.position.x - PLAYER_WIDTH / 2;
+        const right = cell.position.x + 12 + PLAYER_WIDTH / 2;
+        for (let x = left; x <= right; x += 1) {
+          assert.ok(
+            cell.position.y + 12 < playerSupportY(floor, x) - PLAYER_HEIGHT,
+            `Level ${id}, cell ${cell.id}: surgeon must pass safely at x=${x}`,
+          );
+        }
+        assert.ok(
+          cell.position.x + 12 < ARENA_WIDTH / 2 - shotHalfWidth ||
+            cell.position.x > ARENA_WIDTH / 2 + shotHalfWidth,
+          `Level ${id}, cell ${cell.id}: central shots must reach the arena`,
+        );
+      }
+    }
   }
 });
 

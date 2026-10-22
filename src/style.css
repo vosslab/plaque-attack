@@ -52,8 +52,11 @@ h1 span { display: block; color: var(--gold); }
 .menu_art { position: relative; display: flex; min-width: 0; align-items: center; justify-content: center; padding: 35px 15px 70px 0; }
 .art_orbit { position: absolute; border: 1px solid #ab667526; border-radius: 50%; width: 470px; height: 470px; }
 .orbit_two { width: 365px; height: 365px; }
-.hero_arena { position: relative; width: 112%; min-width: 460px; aspect-ratio: 1.18; transform: rotate(-10deg); overflow: hidden; border: 2px solid #cb617d; border-radius: 46% 24% 35% 27%; background: #461d32; box-shadow: 0 24px 45px #0c0d2270, 0 0 0 12px #b8446012; }
-.hero_artery { position: absolute; width: 150%; height: 100%; max-width: none; left: -25%; object-fit: cover; opacity: .82; }
+.hero_arena { position: relative; isolation: isolate; width: 112%; min-width: 460px; aspect-ratio: 1.18; transform: rotate(-10deg); overflow: hidden; border: 2px solid #cb617d; border-radius: 46% 24% 35% 27%; background: #461d32; box-shadow: 0 24px 45px #0c0d2270, 0 0 0 12px #b8446012; }
+/* Keep the translucent artery behind the shot and filtered foreground art. */
+.hero_artery { position: absolute; z-index: 0; width: 150%; height: 100%; max-width: none; left: -25%; object-fit: cover; opacity: .82; }
+.hero_shot { z-index: 1; }
+.hero_plaque, .hero_surgeon, .hit_spark { z-index: 2; }
 .hero_plaque { position: absolute; filter: drop-shadow(0 8px 3px #180d2050); }
 .plaque_one { width: 32%; left: 24%; top: 11%; transform: rotate(15deg); }
 .plaque_two { width: 18%; right: 9%; top: 40%; transform: rotate(-25deg); }

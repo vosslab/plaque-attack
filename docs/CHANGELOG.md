@@ -2,6 +2,15 @@
 
 ### Additions and New Features
 
+- Lower tissue shields to a small clearance above the surgeon's head, following the local
+  floor height. Make the arch underside shallow to reduce the space where lipids can circulate
+  beneath cover. Preserve the central firing lane and separate optional membrane encounters.
+
+- Give the landing illustration explicit, isolated background and foreground layers in response
+  to a report of clipped lipid artwork. Preserve the composition and SVGs; verify Chromium and
+  WebKit at desktop, mobile and Retina sizes. The exact reported clipping was not reproduced
+  locally, so confirmation in the affected browser remains outstanding.
+
 - Zoom in on the selected surgeon after a successful stage. Preserve the final pop, frame the
   whole figure, then play the victory gesture at close range before results. Use a static
   close-up with reduced motion and freeze the camera when paused. Verify both real-clear

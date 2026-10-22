@@ -1,4 +1,6 @@
 import { logicalCoordinate } from "./brands";
+import { floorMinimumY } from "./floor_geometry";
+import { PLAYER_HEIGHT, PLAYER_WIDTH } from "./player_dimensions";
 import type {
   ArenaLayout,
   FloorProfile,
@@ -78,23 +80,44 @@ function patch(
 }
 
 const PAIRED = Object.freeze([
-  patch("paired-left", 222, 342, [".######.", "########", "########", ".######."]),
-  patch("paired-right", 642, 342, [".######.", "########", "########", ".######."]),
+  patch("paired-left", 222, 0, [".######.", "########", "########", ".######."]),
+  patch("paired-right", 642, 0, [".######.", "########", "########", ".######."]),
 ]);
 const OFFSET = Object.freeze([
-  patch("offset-left", 204, 330, [".######.", "########", "########", ".######."]),
-  patch("offset-right", 660, 354, ["..######.", ".########", "#########", ".#######."]),
+  patch("offset-left", 204, 0, [".######.", "########", "########", ".######."]),
+  patch("offset-right", 660, 0, ["..######.", ".########", "#########", ".#######."]),
 ]);
 const ARCH = Object.freeze([
-  patch("arch", 180, 330, [
+  patch("arch", 180, 0, [
     "...############...",
     ".################.",
     "##################",
     "#####........#####",
-    ".####........####.",
-    ".###..........###.",
   ]),
 ]);
+
+function placeCover(floor: FloorProfile, cover: TissuePatch): TissuePatch {
+  // A surgeon overlapping a cell can stand half a body width beyond its edge;
+  // the supporting feet extend another half width. Keep the whole head clear.
+  const offsetY = Math.min(
+    ...cover.cells.map(
+      (cell) =>
+        floorMinimumY(floor, cell.position.x - PLAYER_WIDTH, cell.position.x + 12 + PLAYER_WIDTH) -
+        PLAYER_HEIGHT -
+        10 -
+        cell.position.y -
+        12,
+    ),
+  );
+  return Object.freeze({
+    ...cover,
+    cells: Object.freeze(
+      cover.cells.map((cell) =>
+        Object.freeze({ ...cell, position: point(cell.position.x, cell.position.y + offsetY) }),
+      ),
+    ),
+  });
+}
 
 // The optional encounter is spatially separate from every cover silhouette.
 // Its two 32px-diameter contents fit in the hollow interior without touching it.
@@ -133,13 +156,16 @@ function layout(
 ): ArenaLayout {
   return Object.freeze({
     floor,
-    tissue: Object.freeze(pocket ? [...tissue, POCKET_SHELL] : [...tissue]),
+    tissue: Object.freeze([
+      ...tissue.map((cover) => placeCover(floor, cover)),
+      ...(pocket ? [POCKET_SHELL] : []),
+    ]),
     pockets: Object.freeze(pocket ? [OPTIONAL_POCKET] : []),
   });
 }
 
-// All layouts preserve the continuous x=420..540 firing lane. Cells end at
-// y=402: 38px above even the highest possible muzzle (492 - 60 + 8).
+// Cover follows the local floor with head clearance and a shallow arch opening.
+// All layouts preserve the continuous x=420..540 firing lane.
 // Keys are persistent level IDs, rather than campaign ordinals.
 export const ARENA_LAYOUTS: Readonly<Record<LevelId, ArenaLayout>> = Object.freeze({
   1: layout(FLAT), // Stage 1

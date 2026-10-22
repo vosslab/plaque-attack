@@ -66,3 +66,4 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 - Git commands and staging are out of scope, except for `git mv`.
 - Make the stent more organic; the existing design looks more like a trellis than a stent.
 - Zoom in on the surgeon after level completion so their celebration actions are easier to see.
+- Keep HUMAN_GUIDANCE for durable guidance, not one-off requests or individual bug fixes.

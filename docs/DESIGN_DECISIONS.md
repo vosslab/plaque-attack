@@ -466,3 +466,32 @@ generic wall implant reuses the tool SVG; the two artery scenes retain editable 
 **Owner.** [src/assets/stent.svg](../src/assets/stent.svg), the retained-implant groups in the
 stented/healed scene SVGs, and [src/renderer.ts](../src/renderer.ts).
 
+### Landing illustration layers
+
+**Decision.** Isolate the hero artwork and assign explicit local layers: artery background,
+shot, then lipid targets, surgeon and sparks.
+
+**Why.** The illustration combines a rotated clipping container with opacity, filters and
+transformed children. Explicit layer ownership makes its intended paint order clear.
+
+**Consequence.** Preserve the existing composition and SVGs. Cross-browser captures validate
+the intended appearance; they do not establish reproduction of the reported clipping defect.
+
+**Owner.** [src/style.css](../src/style.css).
+
+### Low tissue shields
+
+**Decision.** Position each cover patch above the local floor with a small surgeon-head
+clearance. Keep the patch rigid and the arch opening shallow. Use the shared floor sampler and
+player dimensions so sloped-floor placement follows the same geometry as walking.
+
+**Why.** High cover leaves a large chamber where lipids can bounce beneath the shield.
+Lower cover reduces that space while leaving the surgeon room to move and carve a firing hole.
+
+**Consequence.** Preserve the central firing lane and optional membrane-pocket coordinates.
+Small hazards can still enter from the sides; cover reduces exposure rather than granting immunity.
+
+**Owner.** [src/arena_layouts.ts](../src/arena_layouts.ts),
+[src/floor_geometry.ts](../src/floor_geometry.ts), and
+[src/player_dimensions.ts](../src/player_dimensions.ts).
+
