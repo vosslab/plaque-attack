@@ -8,6 +8,8 @@ export default defineConfig({
   testIgnore: ["**/_temp*", "**/dist_*/**"],
   outputDir: "output/playwright",
   timeout: 30_000,
+  // Keep the local Python server's connection bursts within its small backlog.
+  workers: 2,
   fullyParallel: true,
   reporter: "list",
   use: {

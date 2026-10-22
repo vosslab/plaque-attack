@@ -17,5 +17,10 @@
 //     },
 //   ];
 //
-// Default: no local overrides.
-export default [];
+// Generated evidence under output/ is gitignored and is not source code. Ignore
+// it explicitly because ESLint's file enumeration does not follow .gitignore.
+export default [
+  {
+    ignores: ["output/**"],
+  },
+];

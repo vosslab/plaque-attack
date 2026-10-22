@@ -4,18 +4,21 @@ This guide covers the repository-side build and the GitHub Pages configuration. 
 
 ## Current status
 
-The game implementation and final verification are still in progress. `build_github_pages.sh` currently stops because the required application entry point and page assets are not present yet. GitHub Pages setup can be completed after the build succeeds.
+The complete 15-level campaign builds successfully into `dist/`. Local verification and acceptance
+reviews pass. The local build is Pages-ready, and the local preview serves the game successfully.
 
 The repository's SSH remote is `git@github.com:vosslab/plaque-attack.git`. No deployed site URL has been confirmed.
 
 ## Build and preview
 
-Install Node.js and npm, then clone the repository and install its dependencies:
+Install Node.js 24 or newer, npm, and Python 3 for the preview server. Clone the repository and
+install its dependencies:
 
 ```bash
 git clone git@github.com:vosslab/plaque-attack.git
 cd plaque-attack
 ./devel/setup_typescript.sh
+source source_me.sh
 ```
 
 Build the static site and preview it locally:
@@ -25,7 +28,11 @@ Build the static site and preview it locally:
 ./run_web_server.sh
 ```
 
-`build_github_pages.sh` type-checks and bundles the TypeScript entry point, copies the HTML and stylesheet, and writes a complete static site under `dist/`, including `.nojekyll`. `run_web_server.sh` rebuilds `dist/` and serves it locally on a random port. Open the localhost address printed by the script. These commands are the intended path; the build and preview cannot succeed until implementation supplies the entry point and page assets.
+`build_github_pages.sh` type-checks and bundles the TypeScript entry point, copies the HTML,
+stylesheet, and SVG assets, and writes a complete static site under `dist/`, including `.nojekyll`.
+`run_web_server.sh` rebuilds `dist/` and serves it locally on a random port. Open the localhost
+address printed by the script, choose **Play campaign**, and start level 1. Stop the server with
+Ctrl+C. To choose a port explicitly, use `PORT=8728 ./run_web_server.sh`.
 
 ## Configure Pages
 

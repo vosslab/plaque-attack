@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-labelledby="platelet-title">
+  <title id="platelet-title">Clustered violet platelet activation token</title>
+  <g id="platelet-cluster" stroke="#ebdcff" stroke-width="2.8" stroke-linejoin="round">
+    <path d="M20 7q9-6 17 3 16-5 20 10 8 8 1 18 4 16-12 18-9 11-20 2-14 3-17-11-11-8-4-20Q4 13 20 7Z" fill="#8554c5"/>
+    <circle cx="21" cy="24" r="12" fill="#bb8aee"/><circle cx="42" cy="23" r="12" fill="#b68af2"/><circle cx="43" cy="43" r="12" fill="#a26fe0"/><circle cx="22" cy="43" r="13" fill="#c99bff"/><circle cx="32" cy="32" r="12" fill="#d4afff"/>
+  </g><g id="platelet-glints" fill="none" stroke="#f5eaff" stroke-width="2.8" stroke-linecap="round"><path d="m15 22 3-4m19 11 3-2m-24 15 3-4"/></g>
+</svg>

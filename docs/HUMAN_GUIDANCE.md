@@ -16,3 +16,6 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
   and advanced levels focused on maintaining a manageable hazard count.
 - Use the TypeScript engineer, SVG creator expert, CSS creative expert, and
   HTML game parallel builder skills for this work.
+- After the game work, refresh the README and prepare the GitHub setup.
+- The root `test-results` directory is not ignored; account for that in the project setup.
+- Use the UI/UX engineer review skill for runtime flows and the final interface audit.

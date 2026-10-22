@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="plaque-title">
+  <title id="plaque-title">Irregular golden plaque fragment</title>
+  <defs><radialGradient id="plaque-gold" cx="35%" cy="26%" r="75%"><stop stop-color="#fff3a6"/><stop offset=".48" stop-color="#ffce55"/><stop offset="1" stop-color="#ed8a27"/></radialGradient></defs>
+  <g id="plaque-body" stroke-linejoin="round"><path d="M65 6 81 12 96 13 104 27 117 37 116 54 123 68 115 84 108 100 91 105 78 119 62 115 45 122 32 110 17 103 15 86 5 72 11 55 8 40 22 29 30 15 48 16Z" fill="url(#plaque-gold)" stroke="#fff0b3" stroke-width="5"/>
+  <path d="m56 37 24-5 21 22-6 30-25 14-29-15-5-24Z" fill="#f3a333" opacity=".65"/><path d="M23 50q3-22 27-24M25 62l-1 7" fill="none" stroke="#fff9d5" stroke-width="7" stroke-linecap="round"/><path d="m81 103 12-6 8-13" fill="none" stroke="#bc671f" stroke-width="4" stroke-linecap="round"/>
+  <g id="plaque-crystals" fill="#ffef9d"><path d="m54 48 8-5 6 9-8 6zM78 71l8-3 4 10-9 4z"/><circle cx="42" cy="80" r="4"/></g></g>
+</svg>

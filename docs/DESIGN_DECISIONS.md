@@ -50,3 +50,15 @@ for antiplatelet stages. Numerical balance settings remain playtest defaults. Sp
 does not establish implementation, browser acceptance, or deployment.
 
 **Owner.** [GAME_SPEC.md](GAME_SPEC.md).
+
+### Level configuration contract
+
+**Decision.** Keep `LevelId` as a union and pair it with a `Record` for level configuration.
+
+**Why.** This gives the compiler a complete mapping without deriving the identifier type from a
+configuration table that would create an import cycle.
+
+**Consequence.** New levels update the union and the record together; keep their ownership and
+imports arranged to avoid a cycle.
+
+**Owner.** Shared level contracts and level configuration modules.
