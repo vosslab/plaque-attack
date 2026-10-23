@@ -1,9 +1,9 @@
 import { activateFlow, projectileSwitchContact } from "./remix_mechanics";
 import type { FlowSwitchDefinition } from "./types/level";
-import { logicalCoordinate, projectileId, targetId } from "./brands";
-import { createTarget, nextPlaqueSize } from "./characters";
+import { logicalCoordinate, projectileId } from "./brands";
+import { nextPlaqueSize } from "./characters";
+import { splitTarget } from "./lipid_behaviors";
 import {
-  MAX_TARGETS,
   DUAL_ACTIVE_LIMIT,
   DUAL_FIRE_INTERVAL,
   PLAYER_HEIGHT,
@@ -77,24 +77,6 @@ export function projectileExpired(projectile: Projectile): boolean {
     projectile.origin.y - projectile.position.y + 1e-9 >= config.range ||
     projectile.hitTargetIds.length >= config.targetLimit
   );
-}
-
-function splitTarget(state: SimulationState, target: Target): void {
-  if (target.kind !== "plaque") return;
-  const size = nextPlaqueSize(target.size);
-  if (size === undefined) return;
-  for (const direction of [-1, 1] as const) {
-    const child = createTarget(
-      { kind: "plaque", size, direction, position: { ...target.position } },
-      targetId(state.nextTargetId++),
-      state.level.speedMultiplier,
-      state.tick + 1,
-      state.level.arena.floor,
-    );
-    child.mergeCooldownUntil = target.mergeCooldownUntil;
-    if (state.targets.length < MAX_TARGETS) state.targets.push(child);
-    else state.arena.pendingInsertions.push({ kind: "split", sourceId: target.id, target: child });
-  }
 }
 
 // Resolve the global earliest contact, then recompute eligibility after every removal.

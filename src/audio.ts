@@ -193,6 +193,14 @@ export function createAudio(): {
             tone(220, 0.34, 0.028, now, effectVoices, "sine", 660);
             tone(330, 0.25, 0.018, now + 0.08, effectVoices, "sine", 990);
             break;
+          case "clearance_pulse":
+            // A brief ascending chord belongs to the clearance event, even with no removals.
+            tone(392, 0.22, 0.03, now, effectVoices, "triangle", 784);
+            tone(587.33, 0.24, 0.022, now + 0.06, effectVoices, "sine", 1174.66);
+            break;
+          case "unstable_split":
+            tone(210, 0.14, 0.025, now, effectVoices, "triangle", 420);
+            break;
           case "support_released":
             tone(520, 0.16, 0.025, now, effectVoices, "triangle", 780);
             break;

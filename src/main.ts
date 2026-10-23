@@ -21,6 +21,7 @@ import {
 import { createInputController } from "./input";
 import { createRecoveryMap } from "./recovery";
 import { createRenderer } from "./renderer";
+import { hasOpeningGuide } from "./opening_guide";
 import { addRecord, loadSave, markLevelCompleted, saveSave, storageMessage } from "./save_load";
 import { stepSimulation } from "./simulation";
 import { createFixedLoop } from "./timer";
@@ -459,10 +460,19 @@ function main(): void {
       const prompt = (["move", "fire", "split"] as const).find(
         (item) => !runtime.save.settings.completedTutorials.includes(item),
       );
-      tutorial.textContent =
-        state.level.id === 1 && state.phase === "playing" && prompt !== undefined
-          ? prompts[prompt]
-          : "";
+      let tutorialText = "";
+      if (hasOpeningGuide(state)) {
+        const keys = (["move", "fire"] as const)
+          .filter((item) => !runtime.save.settings.completedTutorials.includes(item))
+          .map((item) => prompts[item]);
+        tutorialText = [...keys, "Follow the drift: move toward the marker while firing."].join(
+          ". ",
+        );
+      } else if (state.level.id === 1 && state.phase === "playing" && prompt !== undefined) {
+        tutorialText = prompts[prompt];
+      }
+      // The status region changes only when instructions change, never every animation frame.
+      if (tutorial.textContent !== tutorialText) tutorial.textContent = tutorialText;
     },
   );
   button("play_campaign").addEventListener("click", (): void => {

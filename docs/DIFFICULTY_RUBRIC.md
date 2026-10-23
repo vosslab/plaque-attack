@@ -191,7 +191,7 @@ gate counts and scoped encounter evidence are tracked in
 That report describes challenge; it does not assign a fun score or establish survival, enjoyment
 or completion time. Historical before/after runs remain evidence of their original snapshots.
 
-The current categorical gameplay and usability review is recorded in
-[PLAYTEST_RESULTS.md](PLAYTEST_RESULTS.md), with criteria and evidence rules in
+The current categorical gameplay and usability review, including its bounded follow-up
+reassessment, is recorded in [PLAYTEST_RESULTS.md](PLAYTEST_RESULTS.md), with criteria and evidence rules in
 [PLAYTEST_RUBRICS.md](PLAYTEST_RUBRICS.md). It is a bounded agent assessment, not a difficulty
 score or a claim about human enjoyment.

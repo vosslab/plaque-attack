@@ -27,7 +27,21 @@ type TargetBody = {
   // Active-play elapsed seconds; inherited by split descendants.
   mergeCooldownUntil: number;
 };
-export type PlaqueTarget = TargetBody & { kind: "plaque"; size: PlaqueSize };
+export type PlaqueBehaviorState =
+  | {
+      kind: "sticky";
+      // Active-play seconds; zero means free motion. Restore the inward velocity on release.
+      pauseRemaining: number;
+      resumeVelocityX: number;
+    }
+  | { kind: "heavy" }
+  | { kind: "unstable"; splitRemaining: number };
+
+export type PlaqueTarget = TargetBody & {
+  kind: "plaque";
+  size: PlaqueSize;
+  behavior?: PlaqueBehaviorState;
+};
 export type PlateletTarget = TargetBody & { kind: "platelet"; size: PlateletSize };
 // Only active hazards belong here. Removed/inactive visual remnants are renderer effects.
 export type Target = PlaqueTarget | PlateletTarget;
@@ -144,6 +158,10 @@ export type RuntimeSupportPocket = {
   capsulePosition: LogicalPoint | undefined;
 };
 
+export type RuntimeClearancePulse = {
+  activated: boolean;
+};
+
 export type FinaleState = {
   phaseIndex: number;
   transitionRemaining: number;
@@ -159,6 +177,7 @@ export type StageRetryState = {
 export type RemixState = {
   flow: FlowState;
   supportPockets: RuntimeSupportPocket[];
+  clearancePulse?: RuntimeClearancePulse;
   contactShield: boolean;
   finale: FinaleState | undefined;
   retry: StageRetryState;

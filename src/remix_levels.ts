@@ -2,6 +2,7 @@ import { logicalCoordinate } from "./brands";
 import { floorMinimumY } from "./floor_geometry";
 import { PLAYER_HEIGHT, PLAYER_WIDTH } from "./player_dimensions";
 import type {
+  ClearancePulseDefinition,
   FinalePhase,
   FlowSwitchDefinition,
   LevelConfig,
@@ -65,6 +66,35 @@ function supportArena(level: LevelConfig, centerX = 132): LevelConfig["arena"] {
   return { ...arena, tissue: [...arena.tissue, shell], supportPockets: [support] };
 }
 
+function clearanceSeam(
+  level: LevelConfig,
+  arena: LevelConfig["arena"] = level.arena,
+): {
+  arena: LevelConfig["arena"];
+  pulse: ClearancePulseDefinition;
+} {
+  const id = "clearance-seam";
+  const x = 780;
+  const y =
+    floorMinimumY(arena.floor, x - PLAYER_WIDTH, x + 36 + PLAYER_WIDTH) - PLAYER_HEIGHT - 230;
+  const cells = Array.from({ length: 3 }, (_, index) => ({
+    id: `${id}:${index}`,
+    position: { x: logicalCoordinate(x + index * 12), y: logicalCoordinate(y) },
+  }));
+  const seam: TissuePatch = { id, pocketId: undefined, cells };
+  const references = cells.map((cell) => ({ patchId: id, cellId: cell.id }));
+  const pulse: ClearancePulseDefinition = {
+    id: "local-clearance",
+    seamCells: references,
+    position: { x: logicalCoordinate(x + 18), y: logicalCoordinate(y + 6) },
+    radius: 180,
+  };
+  return {
+    arena: { ...arena, tissue: [...arena.tissue, seam] },
+    pulse,
+  };
+}
+
 function finale(
   level: LevelConfig,
   phases: readonly [FinalePhase, ...FinalePhase[]],
@@ -83,32 +113,53 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
     case 3:
       return {
         ...level,
+        initialTargets: level.initialTargets.map((target, index) =>
+          target.kind === "plaque" && index === 0 ? { ...target, behavior: "sticky" } : target,
+        ),
         briefing:
-          "Tissue shelters you but also blocks shots. Carve a notch, or move beside cover to split the three lipid families.",
+          "The tack-marked lipid pauses at a wall; its shrinking ring shows when it will drift again. Move beneath it or handle another family first.",
       };
     case 4:
       return {
         ...level,
         arena: supportArena(level),
+        initialTargets: level.initialTargets.map((target, index) =>
+          target.kind === "plaque" && index === 0
+            ? { ...target, size: "medium", behavior: "heavy" }
+            : target,
+        ),
         briefing:
-          "Carve the small support cache on the left, then walk beneath it to collect a contact shield. Clear the lipid families.",
+          "The compact heavy lipid splits in one hit into three tiny fragments. The left cache grants an optional contact shield; clear every family.",
       };
     case 5:
       return finale(
         {
           ...level,
-          name: "Lipid avalanche",
+          name: "Lipid choices",
           briefing:
-            "Clear the left pair, then cross for the right pair. Split all four large lipid families to open the artery.",
+            "First practice the wall-hold and heavy split. Then watch the unstable lipid's fuse ring: shoot where you want its ordinary fragments, or let the warned timer split it.",
         },
         [
           {
-            name: "Left fissure",
-            targets: level.initialTargets.filter((target) => target.position.x < 480),
+            name: "Practice: tack and weight",
+            targets: level.initialTargets.slice(0, 3).map((target, index) => {
+              if (target.kind !== "plaque") return target;
+              if (index === 0) return { ...target, behavior: "sticky" };
+              if (index === 1) return { ...target, size: "medium", behavior: "heavy" };
+              return target;
+            }),
           },
           {
-            name: "Right fissure",
-            targets: level.initialTargets.filter((target) => target.position.x >= 480),
+            name: "Warning: unstable fuse",
+            targets: [
+              {
+                kind: "plaque",
+                size: "medium",
+                position: { x: logicalCoordinate(810), y: logicalCoordinate(150) },
+                direction: -1,
+                behavior: "unstable",
+              },
+            ],
           },
         ],
         "artery_opening",
@@ -125,12 +176,16 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
             ? "Shoot the circular flow switch to gather hazards toward the marked center lane. Clear all six with aspirin."
             : "Shoot the flow switch to gather a center column, then use persistent clopidogrel shots to hit up to three hazards.",
       };
-    case 7:
+    case 7: {
+      const seam = clearanceSeam(level);
       return {
         ...level,
+        arena: seam.arena,
+        clearancePulse: seam.pulse,
         briefing:
-          "Carve the arch for a firing lane. The left pocket is an optional risk: breaching it releases extra hazards. Clear the finite outer parade.",
+          "Carve the marked right-side seam when tiny platelets approach its ring to trigger one local clearance pulse. The left pocket remains optional; aspirin clears the parade.",
       };
+    }
     case 18:
       return {
         ...level,
@@ -249,15 +304,20 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
           position: { x: logicalCoordinate(426 + index * 12), y: logicalCoordinate(bridgeY) },
         })),
       };
+      const seam = clearanceSeam(level, {
+        ...level.arena,
+        tissue: [...level.arena.tissue, bridge],
+      });
       return finale(
         {
           ...level,
           name: "Triple-play crescendo",
           weapon: "clopidogrel",
-          arena: { ...level.arena, tissue: [...level.arena.tissue, bridge] },
+          arena: seam.arena,
+          clearancePulse: seam.pulse,
           flowSwitches: [current(480)],
           briefing:
-            "Carve an aperture beneath the switch. Gather the next column, pierce up to three hazards per shot, then sweep the last fragments to restore the lining.",
+            "Carve the marked seam when tiny platelets enter its ring for one local clearance pulse. Open the aperture beneath the switch, gather the next column, then sweep the last fragments to restore the lining.",
         },
         [
           {
@@ -357,15 +417,18 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
               }
             : level.objective,
       };
-    case 15:
+    case 15: {
+      const support = supportArena(level, 828);
+      const seam = clearanceSeam(level, support);
       return finale(
         {
           ...level,
           name: "Restore the rhythm",
-          arena: supportArena(level, 828),
+          arena: seam.arena,
+          clearancePulse: seam.pulse,
           flowSwitches: [current(320), current(640)],
           briefing:
-            "Open the outer lanes, cross the streams for an optional right shield, then clear the last fan. Your carved arena and shield persist through all three groups.",
+            "Carve the marked seam when tiny platelets enter its ring for one local clearance pulse. Open the outer lanes, cross the streams for an optional right shield, then clear the last fan.",
         },
         [
           {
@@ -401,6 +464,7 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
         ],
         "patient_recovery",
       );
+    }
     default:
       return level;
   }

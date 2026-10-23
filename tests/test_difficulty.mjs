@@ -32,6 +32,19 @@ test("plaque removal workload includes every binary split descendant; platelets 
   assert.equal(large.leafCeiling, 8);
 });
 
+test("heavy authored medium plaque measures its one-hit three-tiny payoff", () => {
+  const heavy = spawn("plaque", "medium");
+  heavy.behavior = "heavy";
+  assert.deepEqual(removalTree(heavy), [
+    { size: "medium", count: 1 },
+    { size: "tiny", count: 3 },
+  ]);
+  const measured = targetMetrics([heavy], LEVELS[1]);
+  assert.equal(measured.workload, 4);
+  assert.equal(measured.leafCeiling, 3);
+  assert.equal(targetMetrics([spawn("plaque", "medium")], LEVELS[1]).workload, 7);
+});
+
 test("movement and precision weight hits throughout the tree and alternate both dual tools", () => {
   const level = { ...LEVELS[1], weapon: "dual", speedMultiplier: 0.7 };
   const measured = targetMetrics([spawn("plaque", "small")], level);

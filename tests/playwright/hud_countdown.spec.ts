@@ -1,5 +1,7 @@
+/// <reference types="node" />
 import { expect, test } from "@playwright/test";
 import { build } from "esbuild";
+import { cwd } from "node:process";
 import type { SimulationState } from "../../src/types/simulation";
 
 // Selector contract: src/index.html:131-165 owns the HUD; src/ui.ts:updateHud
@@ -29,7 +31,7 @@ test.beforeAll(async () => {
           updateHud(state);
         };
       `,
-      resolveDir: process.cwd(),
+      resolveDir: cwd(),
       loader: "js",
     },
     bundle: true,

@@ -1,6 +1,7 @@
 import { logicalCoordinate, targetId } from "./brands";
 import { playerSupportY } from "./arena_geometry";
 import { createTarget } from "./characters";
+import { HEAVY_SPEED_FACTOR } from "./lipid_behaviors";
 import { distanceToBox, projectileContact } from "./collision";
 import {
   CONTACT_INVULNERABILITY,
@@ -20,6 +21,7 @@ export const FINALE_TRANSITION_DURATION = 0.75;
 
 export function createRemixState(state: SimulationState["level"], seed: RandomSeed): RemixState {
   return {
+    ...(state.clearancePulse === undefined ? {} : { clearancePulse: { activated: false } }),
     flow: { kind: "ready" },
     supportPockets: (state.arena.supportPockets ?? []).map((pocket) => ({
       id: pocket.id,
@@ -88,11 +90,20 @@ export function advanceFlow(state: SimulationState, dt: number): void {
 function restoreOrdinaryDrift(state: SimulationState, switchId: string): void {
   const definition = state.level.flowSwitches?.find((item) => item.id === switchId);
   for (const target of state.targets) {
+    if (
+      target.kind === "plaque" &&
+      target.behavior?.kind === "sticky" &&
+      target.behavior.pauseRemaining > 0
+    )
+      continue;
     const laneOffset = (definition?.laneX ?? target.position.x) - target.position.x;
     const direction =
       Math.sign(target.velocity.x) || Math.sign(laneOffset) || (target.id % 2 === 0 ? 1 : -1);
     target.velocity.x =
-      direction * TARGET_PRESETS[target.size].horizontalSpeed * state.level.speedMultiplier;
+      direction *
+      TARGET_PRESETS[target.size].horizontalSpeed *
+      state.level.speedMultiplier *
+      (target.kind === "plaque" && target.behavior?.kind === "heavy" ? HEAVY_SPEED_FACTOR : 1);
   }
 }
 
@@ -102,7 +113,16 @@ export function steerCurrent(state: SimulationState, dt: number): void {
   const definition = state.level.flowSwitches?.find((item) => item.id === flow.switchId);
   if (definition === undefined) return;
   for (const target of state.targets) {
-    const maximum = TARGET_PRESETS[target.size].horizontalSpeed * state.level.speedMultiplier;
+    if (
+      target.kind === "plaque" &&
+      target.behavior?.kind === "sticky" &&
+      target.behavior.pauseRemaining > 0
+    )
+      continue;
+    const maximum =
+      TARGET_PRESETS[target.size].horizontalSpeed *
+      state.level.speedMultiplier *
+      (target.kind === "plaque" && target.behavior?.kind === "heavy" ? HEAVY_SPEED_FACTOR : 1);
     const desired = Math.max(
       -maximum,
       Math.min(maximum, (definition.laneX - target.position.x) * 1.4),

@@ -5,7 +5,7 @@ cardiovascular surgeon along the floor, fire upward, dodge drifting hazards, and
 plaque into progressively smaller fragments. The campaign then shifts to antiplatelet tools and
 the sustained control of small platelet hazards.
 
-Status: current source contract, 2026-10-22. All 24 stages are authored in four chapters,
+Status: current source contract, 2026-10-23. All 24 stages are authored in four chapters,
 with the first three stages preserved. The remix adds shootable flow switches, optional contact
 shields, finite phase finales, quick stage retries and distinct earned restoration.
 [archive/remix_campaign_plan.md](archive/remix_campaign_plan.md)
@@ -176,6 +176,15 @@ Initial phase derives from clamped spawn height and stable target ID. Every size
 lower firing and player-contact region, including aspirin's shorter range. This is a predictable
 arcade model, not a fluid solver.
 
+Authored plaque variants change encounter choices without changing controls. A sticky plaque
+pauses as a whole body at a sidewall for 0.65 seconds of active play, shows its remaining hold,
+then resumes inward motion. A medium heavy plaque drifts at 0.65 of its normal speed; its first
+successful hit makes three ordinary tiny plaques. An unstable plaque shows a six-second active
+play fuse. A successful shot splits it normally; if the fuse expires first, it splits into
+ordinary next-size children without hit score or streak. A shot resolves before a fuse expiring on
+the same tick. Children and merged results are ordinary plaques, and paused, ready and terminal
+time does not advance these timers. These are arcade inventions, not biological lipid behavior.
+
 | Size | Radius | Successful stent hit |
 | --- | --- | --- |
 | Large | 58 | Two medium plaques |
@@ -214,11 +223,17 @@ firing lanes; terrain height alone does not guarantee safety.
 
 ## Tissue, pockets, and coalescence
 
-Stages 1-3 keep their flat arena, slow fluid drift and original workload. Stage 4 introduces
-tissue, stage 5 adds optional support and floor following, and stage 6 divides its four original
-large plaque families into two alternating-side pairs. Mandatory plaque hit work remains
-7, 10, 15, 25, 37, and 60 before optional hazards or merges. The authored configuration owns
-all placement and counts; [DIFFICULTY_REVIEW.md](DIFFICULTY_REVIEW.md) retains earlier tuning evidence.
+Stages 1-3 keep their flat arena, slow fluid drift and original workload. The remix introduces a
+sticky plaque at stage 4, a heavy plaque and optional support at stage 5, then practices both
+before an unstable plaque in stage 6's second phase. Stage 9 introduces a marked clearance seam
+among tiny platelets; its first committed seam erosion triggers one local pulse against nearby
+tiny plaques and platelets, awarding the existing removal points. Larger hazards remain. The seam
+can return selectively in later encounters. The pulse activates once per attempt and its telegraph
+shows the authored radius. It is a helpful arcade effect, not a modeled biological or clinical
+process. The first-three-stage configuration remains unchanged; later authored work now includes
+behavior-specific splits, so old later-stage hit totals are not current metrics. Authored
+placement is in `src/remix_levels.ts`; behavior and reach estimates have explicit bounds in
+[gameplay variety metrics](../output/gameplay_variety/metrics.md).
 
 ### Flow and optional support
 
@@ -480,6 +495,20 @@ Gameplay HUD priority is lives and objective, then tool, then score. Interventio
 their remaining total. The overload countdown stays visible adjacent to the count. Phase names,
 current ready/active/cooldown, optional support or armed shield, and positive retry counts appear
 when relevant. Live announcements track meaningful state changes rather than per-frame countdowns.
+Essential objective, tool, and warning text use a 12.8px minimum. On short portrait screens the
+gameplay header, footer, and orientation hint may be omitted to preserve the arena and controls;
+short landscape uses a wider, independently scrollable status area with Pause in its own row.
+Completed maintenance displays zero remaining time and no unfinished-maintenance warning; active,
+paused, and lost maintenance retain the existing ceiling countdown.
+
+Stage 1 adds a presentation-only intercept guide while play is active: a static floor chevron and
+matching outline identify the nearest horizontal live target, latched until it is removed. The
+marker suggests the target's horizontal position projected by approximately 0.8 seconds of
+horizontal velocity, clamped to the player-center floor limits. The persistent tip reads
+"Follow the drift: move toward the marker while firing." Pause hides the cue while retaining its
+selection; fresh attempts, terminal phases, and other stages have no guide. It does not move or
+fire for the player and does not change simulation, input, weapon, stage, or save behavior. Browser
+readability and usefulness remain subject to the current playtest reassessment.
 
 Use "Plaque cleared!" after Act I rounds, "Platelet activity controlled!" after Act II clear
 rounds, and "Maintenance complete!" after timed rounds. Avoid "artery cured" and medical-emergency

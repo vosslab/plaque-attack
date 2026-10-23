@@ -11,6 +11,7 @@ import {
   PLAYER_WIDTH,
 } from "./constants";
 import { advanceTarget } from "./motion";
+import { advanceUnstable, resolveClearancePulse } from "./lipid_behaviors";
 import { awardSurvival, completeLevel, endRun } from "./scoring";
 import type { SimulationEvent } from "./types/events";
 import type { SimulationState, SimulationStep } from "./types/simulation";
@@ -112,6 +113,7 @@ export const stepSimulation: SimulationStep = (state, input, dt) => {
   for (const target of state.targets) advanceTarget(target, dt, state.level.arena.floor);
   resolveTargetTissue(state, dt, tissue);
   resolveProjectileHits(state, dt, events, tissue);
+  advanceUnstable(state, dt, events);
   resolveCoalescence(state, events);
   const contact =
     state.player.contactInvulnerabilityRemaining <= 1e-9 &&
@@ -122,6 +124,7 @@ export const stepSimulation: SimulationStep = (state, input, dt) => {
   const contactDamage = contact && !absorbContact(state, events);
   if (contactDamage) damage(state, "contact", events);
   commitTissueErosion(state, tissue, events);
+  resolveClearancePulse(state, tissue, events);
   advanceSupport(state, dt, tissue, events);
   state.elapsed += dt;
   advanceWaves(state, dt, events);

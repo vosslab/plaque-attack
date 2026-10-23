@@ -18,6 +18,9 @@ import { streakMilestone } from "./scoring";
 import { drawMembrane } from "./artery_art";
 import { celebrationMotion, idleBodyAngle } from "./surgeon_motion";
 import { createRemixRendering } from "./remix_rendering";
+import { openingInterceptGuide } from "./opening_guide";
+import { drawLipidBehavior } from "./lipid_rendering";
+import type { TargetId } from "./brands";
 
 type Particle = { x: number; y: number; vx: number; vy: number; life: number; color: string };
 type HitEffect = {
@@ -62,6 +65,7 @@ export function createRenderer(
   let streakCallout: StreakCallout | undefined;
   let pendingEvents: SimulationEvent[] = [];
   let lastSimulation: Readonly<SimulationState> | undefined;
+  let openingTargetId: TargetId | undefined;
   let lastCelebrationElapsed: number | undefined;
   let lastTick = 0;
   let lastLevel = 0;
@@ -441,6 +445,7 @@ export function createRenderer(
     const newLevel =
       state !== lastSimulation || state.level.id !== lastLevel || state.tick < lastTick;
     if (newLevel) {
+      openingTargetId = undefined;
       remixRendering.clear();
       particles = [];
       hitEffects = [];
@@ -453,6 +458,9 @@ export function createRenderer(
       moving = false;
       lastCelebrationElapsed = undefined;
     }
+    const openingCue = openingInterceptGuide(state, openingTargetId);
+    // Pause hides the guide while preserving the chosen target for resume.
+    if (state.phase !== "paused") openingTargetId = openingCue?.targetId;
     const simulationDt = newLevel
       ? 0
       : Math.max(0, Math.min(0.1, (state.tick - lastTick) * FIXED_STEP));
@@ -638,7 +646,18 @@ export function createRenderer(
         target.radius * 2,
         target.radius * 2,
       );
+      if (target.id === openingCue?.targetId) {
+        ctx.beginPath();
+        ctx.arc(0, 0, target.radius + 5, 0, Math.PI * 2);
+        ctx.strokeStyle = "#142936";
+        ctx.lineWidth = 6;
+        ctx.stroke();
+        ctx.strokeStyle = "#b7f7ff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
       ctx.restore();
+      if (target.kind === "plaque") drawLipidBehavior(ctx, target, x, y);
     }
     for (const effect of hitEffects) {
       const progress = Math.min(1, 1 - effect.life / HIT_EFFECT_DURATION);
@@ -734,6 +753,25 @@ export function createRenderer(
       ctx.restore();
     }
     drawSurgeon(state, surgeonId, celebration);
+    if (openingCue !== undefined) {
+      const { x } = openingCue;
+      const y = floorY(state.level.arena.floor, x) - 7;
+      ctx.save();
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(x - 13, y - 10);
+      ctx.lineTo(x, y);
+      ctx.lineTo(x + 13, y - 10);
+      // A dark border keeps the static marker readable against the textured floor.
+      ctx.strokeStyle = "#142936";
+      ctx.lineWidth = 9;
+      ctx.stroke();
+      ctx.strokeStyle = "#b7f7ff";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.restore();
+    }
     remixRendering.drawFeedback(state);
     for (const particle of particles) {
       ctx.globalAlpha = Math.max(0, particle.life / 0.42);

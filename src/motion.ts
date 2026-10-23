@@ -1,6 +1,7 @@
 import { FLAT_FLOOR, floorSlope, targetVerticalBounds } from "./arena_geometry";
 import { logicalCoordinate } from "./brands";
 import { ARENA_WIDTH } from "./constants";
+import { STICKY_PAUSE_DURATION } from "./lipid_behaviors";
 import type { FloorProfile } from "./types/level";
 import type { LogicalPoint } from "./types/player";
 import type { Target, TargetMotionSegment, Velocity } from "./types/simulation";
@@ -101,14 +102,38 @@ export function advanceTarget(target: Target, dt: number, floor: FloorProfile = 
   target.previousPosition = { ...target.position };
   target.motionSegments = [];
   if (!Number.isFinite(dt) || dt <= 0) return;
-  const initialPhase = target.fluidPhase;
+  const sticky =
+    target.kind === "plaque" && target.behavior?.kind === "sticky" ? target.behavior : undefined;
   let elapsed = 0;
   while (elapsed < dt) {
+    if (sticky !== undefined && sticky.pauseRemaining > 0) {
+      const duration = Math.min(dt - elapsed, sticky.pauseRemaining);
+      const end = Math.min(dt, elapsed + duration);
+      target.motionSegments.push({
+        startTime: elapsed / dt,
+        endTime: end / dt,
+        start: { ...target.position },
+        end: { ...target.position },
+      });
+      sticky.pauseRemaining = Math.max(0, sticky.pauseRemaining - duration);
+      target.velocity.x = 0;
+      target.velocity.y = 0;
+      elapsed = end;
+      if (sticky.pauseRemaining <= 1e-9) {
+        sticky.pauseRemaining = 0;
+        target.velocity.x = sticky.resumeVelocityX;
+      }
+      continue;
+    }
     const velocityX = target.velocity.x;
     const wall = velocityX >= 0 ? ARENA_WIDTH - target.radius : target.radius;
     const wallTime = velocityX === 0 ? Infinity : (wall - target.position.x) / velocityX;
     if (wallTime <= 0) {
       target.velocity.x = -velocityX;
+      if (sticky !== undefined && velocityX !== 0) {
+        sticky.resumeVelocityX = -velocityX;
+        sticky.pauseRemaining = STICKY_PAUSE_DURATION;
+      }
       continue;
     }
     // Short linear legs bound the curvature error, even for callers using a long time step.
@@ -125,7 +150,7 @@ export function advanceTarget(target: Target, dt: number, floor: FloorProfile = 
     target.position = {
       x: logicalCoordinate(x),
       y: logicalCoordinate(
-        orbitY(target, floor, x, initialPhase + target.fluidAngularSpeed * nextElapsed),
+        orbitY(target, floor, x, target.fluidPhase + target.fluidAngularSpeed * duration),
       ),
     };
     target.motionSegments.push({
@@ -134,9 +159,17 @@ export function advanceTarget(target: Target, dt: number, floor: FloorProfile = 
       start,
       end: { ...target.position },
     });
+    target.fluidPhase = (target.fluidPhase + target.fluidAngularSpeed * duration) % (2 * Math.PI);
     elapsed = nextElapsed;
-    if (duration === wallTime) target.velocity.x = -velocityX;
+    if (duration === wallTime) {
+      target.velocity.x = -velocityX;
+      if (sticky !== undefined) {
+        sticky.resumeVelocityX = -velocityX;
+        sticky.pauseRemaining = STICKY_PAUSE_DURATION;
+        target.velocity.x = 0;
+      }
+    }
   }
-  target.fluidPhase = (initialPhase + target.fluidAngularSpeed * dt) % (2 * Math.PI);
-  target.velocity.y = targetVerticalVelocity(target, floor);
+  target.velocity.y =
+    sticky !== undefined && sticky.pauseRemaining > 0 ? 0 : targetVerticalVelocity(target, floor);
 }

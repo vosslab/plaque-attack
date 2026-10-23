@@ -171,6 +171,13 @@ const SIZES: readonly PlaqueSize[] = ["large", "medium", "small", "tiny"];
 
 // Expand every removal, including the fast small descendants, rather than initial bodies alone.
 export function removalTree(spawn: TargetSpawn): Hit[] {
+  if (spawn.kind === "plaque" && spawn.behavior === "heavy") {
+    // Heavy is a one-hit medium source that creates three ordinary tiny targets.
+    return [
+      { size: spawn.size, count: 1 },
+      { size: "tiny", count: 3 },
+    ];
+  }
   const hits: Hit[] = [];
   let size: PlaqueSize | undefined = spawn.size;
   let count = 1;
@@ -624,6 +631,7 @@ export function difficultyReport(): Report {
         "Ideal throughput assumes perfect useful hits, ignoring travel and active caps; stent also has one live projectile. Optimistic firing work is not completion time.",
         "Ratios use each contiguous chapter/tool/objective block introduction; zero baselines are undefined. Maintenance workload/leaf ratios use initial targets, movement/precision use recurring entry means.",
         "Novelty is retained as authored briefing and actual entry data, never numeric points. Review flags require reviewer inspection.",
+        "Heavy plaque workload follows its authored one-hit, three-tiny split. Unstable workload treats a player-shot split as the upper bound on scored hits; a fuse split scores no hit and can lower that total by one. Clearance-pulse radius and eligible target counts describe authored reach only: actual removals depend on positions when the seam is eroded, and no exhaustive benefit estimate is made.",
       ],
     },
     stages,

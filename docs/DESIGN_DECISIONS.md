@@ -7,6 +7,72 @@ the reasoning a later reader needs. Guidance Neil Voss states belongs in
 `docs/active_plans/decisions/`. [PROPAGATED HEADER - ENTRIES BELOW ARE YOURS]
 <!-- VENDORED HEADER: END -->
 
+### Gameplay variety behaviors and clearance seam
+
+**Decision.** Add three authored plaque behaviors and a one-use tissue clearance pulse while
+keeping the first three stages and familiar controls. Sticky pauses at a sidewall; a medium heavy
+plaque takes one hit and makes three ordinary tiny targets; an unstable plaque has a six-second
+active-play fuse whose timeout makes an ordinary next-size split without hit score. Eroding the
+marked seam activates one local pulse that removes nearby tiny plaques and platelets and awards
+the existing removal points. Introduce these in order at display stages 4, 5, 6 and 9, with
+selective later seam returns.
+
+**Why.** The encounters add timing, target-order and cover decisions inside the existing left,
+right and fire controls. The compact heavy target offers a shorter cleanup than an ordinary medium
+split family. These are arcade mechanics and visual metaphors, not claims about lipid biology,
+stent treatment or clinical care.
+
+**Consequence.** `src/remix_levels.ts` owns placement and `src/lipid_behaviors.ts` plus existing
+simulation owners implement behavior. Difficulty metrics calculate heavy work from its actual
+three-child split. Unstable scored work is a player-shot upper bound; pulse reach and benefit are
+encounter-dependent and are not exhaustively estimated. The plan's staged introduction is
+authored; integrated play, readability and fun remain subject to their evidence gates.
+
+**Owner.** [active_plans/active/gameplay_variety_plan.md](active_plans/active/gameplay_variety_plan.md),
+`src/lipid_behaviors.ts`, `src/remix_levels.ts`, `src/difficulty.ts`, and
+[output/gameplay_variety/metrics.md](../output/gameplay_variety/metrics.md).
+
+### Stage-one intercept guide
+
+**Decision.** Add a presentation-only guide in stage 1 that selects the nearest horizontal live
+target, retains that target until removal, and marks its horizontal position projected by about
+0.8 seconds of velocity within player-center floor limits. Pair the static chevron and target
+outline with the persistent tip "Follow the drift: move toward the marker while firing."
+
+**Why.** Detached ordinary-input measurements found a shorter unproductive interval when following
+the cue, while nearest-then-latched selection avoided the measured life losses of stateless target
+selection on the right-start route. Those measurements do not establish browser usability or human
+comprehension.
+
+**Consequence.** The renderer owns selection and resets it for fresh attempts, changed stages,
+rewinds, and terminal phases; pause hides the cue but retains selection. The guide does not
+automatically move or fire and changes no simulation, save, weapon, level, or input contract.
+The independent reassessment records a sampled G5 Concern because the passive-center route retains
+a 15.433-second hit gap; cue-following routes are substantially faster.
+
+**Owner.** `src/opening_guide.ts`, `src/renderer.ts`, `src/main.ts`, and
+`tests/test_opening_guide.mjs`; current reassessment status is tracked in
+[playtest_improvements_plan.md](archive/playtest_improvements_plan.md).
+
+### Completed-maintenance countdown and compact HUD
+
+**Decision.** Display zero remaining and suppress the unfinished-maintenance warning after an
+accepted maintenance clear. Retain the existing ceiling countdown during active, paused, and lost
+maintenance. Keep essential objective, tool, and warning text at a 12.8px minimum, with responsive
+layout preserving gameplay and controls on narrow screens.
+
+**Why.** The prior stage-23 clear showed `00:01` at its accepted completion boundary, and the
+portrait HUD's essential objective and tool text measured 10.88px and 10.4px. The fix belongs to
+presentation so simulation completion semantics remain unchanged.
+
+**Consequence.** Isolated HUD coverage and source measurements support the rendering contracts;
+they do not establish actual-control clear behavior, complete built-artifact fit, or readability.
+Independent rebuilt-browser reassessment assigns G6 and U5 Meets within its sampled routes and
+viewports; the full scope and bounds are recorded in [PLAYTEST_RESULTS.md](PLAYTEST_RESULTS.md).
+
+**Owner.** `src/ui.ts`, `src/style.css`, `tests/playwright/hud_countdown.spec.ts`, and the
+integrated reassessment tracked in [PLAYTEST_RESULTS.md](PLAYTEST_RESULTS.md).
+
 ### Agent playtest evidence
 
 **Decision.** Use separate categorical gameplay and usability ratings, each tied to direct
@@ -633,3 +699,22 @@ metadata; unchanged target sizes and cadence require no metric formula change.
 
 **Owner.** `src/remix_levels.ts`, `src/waves.ts`, `src/entry_shift.ts`, `src/difficulty.ts`,
 and [GAME_SPEC.md](GAME_SPEC.md).
+
+### Opening guidance and bounded playtest findings
+
+**Decision.** Use a persistent stage-one instruction with a static, latched intercept marker to
+teach movement while firing. Keep the cue presentational: it does not aim, move or fire for the
+player and does not change simulation rules. Completed maintenance displays zero remaining while
+active countdown behavior retains its existing ceiling.
+
+**Why.** In the sampled input comparison, following the marker greatly shortened the stage-one
+route and productive-event gap. The passive-center held-fire route remained unchanged, so the
+evidence supports a useful optional guide but not a universal pacing fix.
+
+**Consequence.** Keep G5 at Concern for the measured passive-center gap and document it as a
+residual finding, not a required implementation or a human-study claim. G6 and U5 ratings follow
+the rebuilt browser evidence and remain bounded to the sampled artifact and viewports.
+
+**Owner.** `src/opening_guide.ts`, `src/renderer.ts`, `src/ui.ts`, `src/style.css`, and
+[PLAYTEST_RESULTS.md](PLAYTEST_RESULTS.md), with delivery status in
+[archive/playtest_improvements_plan.md](archive/playtest_improvements_plan.md).

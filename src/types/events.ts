@@ -90,6 +90,21 @@ export type FinalePhaseStartedEvent = {
   phaseCount: number;
 };
 
+export type UnstableSplitEvent = {
+  type: "unstable_split";
+  targetId: TargetId;
+  position: LogicalPoint;
+  size: PlaqueSize;
+};
+
+export type ClearancePulseEvent = {
+  type: "clearance_pulse";
+  pulseId: string;
+  position: LogicalPoint;
+  radius: number;
+  removedTargetIds: TargetId[];
+};
+
 export type SimulationEvent =
   | ShotEvent
   | TargetHitEvent
@@ -107,4 +122,6 @@ export type SimulationEvent =
   | SupportReleasedEvent
   | ShieldCollectedEvent
   | ShieldAbsorbedEvent
-  | FinalePhaseStartedEvent;
+  | FinalePhaseStartedEvent
+  | UnstableSplitEvent
+  | ClearancePulseEvent;

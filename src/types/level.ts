@@ -42,9 +42,17 @@ export type DrugKind = "aspirin" | "clopidogrel";
 export type ProjectileKind = "stent" | DrugKind;
 export type WeaponMode = ProjectileKind | "dual";
 export type HorizontalDirection = -1 | 1;
+export type PlaqueBehavior = "sticky" | "heavy" | "unstable";
 
 export type TargetSpawn =
-  | { kind: "plaque"; size: PlaqueSize; position: LogicalPoint; direction: HorizontalDirection }
+  | {
+      kind: "plaque";
+      size: PlaqueSize;
+      position: LogicalPoint;
+      direction: HorizontalDirection;
+      // Omission selects ordinary plaque. Split children and merged results stay ordinary.
+      behavior?: PlaqueBehavior;
+    }
   | {
       kind: "platelet";
       size: PlateletSize;
@@ -78,6 +86,14 @@ export type TissuePatch = {
 export type TissueCellReference = {
   readonly patchId: string;
   readonly cellId: string;
+};
+
+export type ClearancePulseDefinition = {
+  readonly id: string;
+  // The first committed erosion of any marked cell activates this optional aid once.
+  readonly seamCells: readonly TissueCellReference[];
+  readonly position: Readonly<LogicalPoint>;
+  readonly radius: number;
 };
 
 export type PocketDefinition = {
@@ -163,6 +179,7 @@ export type LevelConfig = {
   speedMultiplier: number;
   arena: ArenaLayout;
   flowSwitches?: readonly FlowSwitchDefinition[];
+  clearancePulse?: ClearancePulseDefinition;
   merge: MergeRule;
   initialTargets: readonly TargetSpawn[];
   objective: LevelObjective;

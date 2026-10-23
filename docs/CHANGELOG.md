@@ -2,6 +2,17 @@
 
 ### Additions and New Features
 
+- Implement the stage-1 intercept guide as a persistent tip, static floor chevron, and latched
+  nearest-target outline with an approximate 0.8-second horizontal lead. It does not auto-move or
+  fire and does not change simulation behavior. Show zero remaining after completed maintenance,
+  preserve the active countdown ceiling, and raise essential HUD text to 12.8px with narrow-screen
+  layout adjustments. Source, repository, build, all 25 browser tests, and the 1,373-test pytest
+  suite pass. Final integration accepts the bounded delivery. G5 remains Concern because the
+  passive-center route still has a 15.433s maximum hit gap, while cue-following is much faster in
+  the sampled run; G6 and U5 are Meets. Evidence and status are in the
+  [archived plan](archive/playtest_improvements_plan.md) and
+  [independent reassessment](active_plans/reports/playtest_improvements_reassessment.md).
+
 - Add separate gameplay and usability rubrics and record a bounded agent playtest against the
   current build in [PLAYTEST_RUBRICS.md](PLAYTEST_RUBRICS.md) and
   [PLAYTEST_RESULTS.md](PLAYTEST_RESULTS.md). Findings retain categorical ratings, exact

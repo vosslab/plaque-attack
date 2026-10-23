@@ -7,6 +7,7 @@ import type { AssetImages } from "./types/runtime";
 import type { SimulationState } from "./types/simulation";
 
 type Feedback = { x: number; y: number; text: string; life: number; color: string };
+type PulseEffect = { x: number; y: number; radius: number; life: number };
 
 /** Only cleared groups earn restoration; time, damage and a failed run earn none. */
 export function restorationProgress(state: Readonly<SimulationState>): number {
@@ -35,6 +36,7 @@ export function createRemixRendering(
   drawFeedback: (state: Readonly<SimulationState>) => void;
 } {
   let feedback: Feedback[] = [];
+  let pulses: PulseEffect[] = [];
   let lastHitProjectile: ProjectileId | undefined;
   let consecutiveHits = 0;
   const label = (text: string, x: number, y: number, color: string): void => {
@@ -71,10 +73,8 @@ export function createRemixRendering(
               "#e5d2ff",
             );
           else if (event.split) {
-            const next =
-              event.size === "large" ? "MEDIUM" : event.size === "medium" ? "SMALL" : "TINY";
             label(
-              `${event.size.toUpperCase()} > 2 ${next}`,
+              `${event.size.toUpperCase()} SPLIT`,
               event.position.x,
               event.position.y + 32,
               "#ffe0a0",
@@ -82,6 +82,21 @@ export function createRemixRendering(
           }
           break;
         }
+        case "clearance_pulse":
+          if (pulses.length >= 4) pulses.shift();
+          pulses.push({ ...event.position, radius: event.radius, life: 0.8 });
+          // Give the payoff priority over the ordinary erosion caption at the same seam.
+          feedback = feedback.filter((item) => item.text !== "CARVED");
+          label(
+            `CLEARANCE / ${event.removedTargetIds.length} CLEARED`,
+            event.position.x,
+            event.position.y - 48,
+            "#dcfff1",
+          );
+          break;
+        case "unstable_split":
+          label("FUSE SPLIT", event.position.x, event.position.y - 34, "#fff0d9");
+          break;
         case "tissue_eroded":
           if (event.cause === "projectile")
             label("CARVED", event.position.x, event.position.y - 16, "#ffe4df");
@@ -209,6 +224,73 @@ export function createRemixRendering(
   function drawDevices(state: Readonly<SimulationState>): void {
     const flow = state.remix.flow;
     ctx.save();
+    const seam = state.level.clearancePulse;
+    if (seam !== undefined && state.remix.clearancePulse !== undefined) {
+      const activated = state.remix.clearancePulse.activated;
+      const { x, y } = seam.position;
+      if (!activated) {
+        // The empty outline is the real effect boundary, beneath every active hazard.
+        ctx.strokeStyle = "#272136";
+        ctx.lineWidth = 4;
+        ctx.setLineDash([9, 9]);
+        ctx.beginPath();
+        ctx.arc(x, y, seam.radius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.strokeStyle = "#c5ffea";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.setLineDash([]);
+        for (const reference of seam.seamCells) {
+          const cell = state.arena.tissue
+            .find((patch) => patch.id === reference.patchId)
+            ?.cells.find((item) => item.id === reference.cellId);
+          if (cell === undefined || !cell.occupied) continue;
+          ctx.strokeStyle = "#272136";
+          ctx.lineWidth = 5;
+          ctx.strokeRect(cell.position.x + 1, cell.position.y + 1, 10, 10);
+          ctx.strokeStyle = "#dcfff1";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(cell.position.x + 1, cell.position.y + 1, 10, 10);
+        }
+        ctx.beginPath();
+        ctx.moveTo(x - 7, y - 6);
+        ctx.lineTo(x, y - 13);
+        ctx.lineTo(x + 7, y - 6);
+        ctx.moveTo(x - 7, y + 6);
+        ctx.lineTo(x, y + 13);
+        ctx.lineTo(x + 7, y + 6);
+        ctx.stroke();
+        caption("CARVE SEAM / CLEAR TINY", x, y - 33);
+      } else {
+        // The permanent used mark is spatially quiet; the area telegraph is gone.
+        caption("SEAM USED", x, y - 22, "#e1d4cb");
+      }
+    }
+    for (const pulse of pulses) {
+      const progress = 1 - pulse.life / 0.8;
+      const radius = pulse.radius * (reducedMotion ? 1 : Math.min(1, progress / 0.6));
+      ctx.globalAlpha = Math.min(1, pulse.life / 0.25);
+      ctx.beginPath();
+      ctx.arc(pulse.x, pulse.y, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = "#272136";
+      ctx.lineWidth = 6;
+      ctx.stroke();
+      ctx.strokeStyle = "#dcfff1";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      // Eight small rays celebrate the opening without filling or hiding it.
+      for (let ray = 0; ray < 8; ray += 1) {
+        const angle = (ray * Math.PI) / 4;
+        ctx.beginPath();
+        ctx.moveTo(
+          pulse.x + Math.cos(angle) * radius * 0.86,
+          pulse.y + Math.sin(angle) * radius * 0.86,
+        );
+        ctx.lineTo(pulse.x + Math.cos(angle) * radius, pulse.y + Math.sin(angle) * radius);
+        ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
     if (flow.kind === "active") {
       const active = state.level.flowSwitches?.find((item) => item.id === flow.switchId);
       if (active !== undefined) {
@@ -347,12 +429,15 @@ export function createRemixRendering(
   return {
     clear: (): void => {
       feedback = [];
+      pulses = [];
       lastHitProjectile = undefined;
       consecutiveHits = 0;
     },
     advance: (dt: number): void => {
       for (const item of feedback) item.life -= dt;
       feedback = feedback.filter((item) => item.life > 0);
+      for (const pulse of pulses) pulse.life -= dt;
+      pulses = pulses.filter((pulse) => pulse.life > 0);
     },
     consumeEvents,
     drawRestoration,

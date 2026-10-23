@@ -118,7 +118,7 @@ h2 { margin: 0 0 24px; max-width: 750px; font-size: clamp(2rem, 4.5vw, 3.7rem); 
 .hud_objective strong { color: #ffbf69; font-size: .8rem; }
 .hud_weapon { grid-column: 4 / -1; display: flex; gap: 8px; align-items: baseline; justify-content: end; }
 .hud_weapon .small_label { margin: 0; }
-.hud_weapon strong { color: var(--teal); font-size: .75rem; }
+.hud_weapon strong { color: var(--teal); font-size: .8rem; }
 .hud_tactics { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
 .tactic_badge { display: inline-block; padding: 3px 7px; border: 1px solid #928099; border-radius: 5px; color: #eee4f2; background: #15152b; font-size: .7rem; font-weight: 700; line-height: 1.4; font-variant-numeric: tabular-nums; }
 .phase_badge { border-left: 4px solid var(--gold); }
@@ -248,11 +248,12 @@ h2 { margin: 0 0 24px; max-width: 750px; font-size: clamp(2rem, 4.5vw, 3.7rem); 
   .score_readout { flex-wrap: wrap; gap: 0 4px; }
   .hud_score .small_label { font-size: .5rem; letter-spacing: .02em; }
   .hud_time { grid-column: 3 / -1; }
+  .hud_time .small_label { font-size: .5rem; letter-spacing: .02em; }
   .game_hud strong { font-size: 1rem; }
-  .hud_objective { grid-column: 1 / -1; gap: 2px; font-size: .68rem; line-height: 1.35; }
-  .hud_objective strong { font-size: .68rem; }
+  .hud_objective { grid-column: 1 / -1; gap: 2px; font-size: .8rem; line-height: 1.35; }
+  .hud_objective strong { font-size: .8rem; }
   .hud_weapon { grid-column: 1 / -1; justify-content: start; gap: 6px; }
-  .hud_weapon strong { font-size: .65rem; }
+  .hud_weapon strong { font-size: .8rem; }
   .hud_weapon .small_label { font-size: .5rem; }
   .hud_tactics { gap: 4px; }
   .tactic_badge { padding: 2px 5px; font-size: .62rem; }
@@ -264,6 +265,13 @@ h2 { margin: 0 0 24px; max-width: 750px; font-size: clamp(2rem, 4.5vw, 3.7rem); 
   .fire_button { flex: 1.5; justify-content: center; }
   .orientation_hint { display: block; }
   .result_panel { min-height: 0; }
+}
+@media (max-width: 620px) and (max-height: 620px) {
+  /* Short portrait screens reserve their height for readable status, arena and controls. */
+  .game_shell:has(.gameplay:not([hidden])) { padding-block: 6px; }
+  .game_shell:has(.gameplay:not([hidden])) > .game_header,
+  .game_shell:has(.gameplay:not([hidden])) > .game_footer { display: none; }
+  .gameplay .orientation_hint { display: none; }
 }
 @media (min-width: 621px) and (max-height: 500px) {
   .game_header { padding-block: 12px; }
@@ -290,24 +298,25 @@ h2 { margin: 0 0 24px; max-width: 750px; font-size: clamp(2rem, 4.5vw, 3.7rem); 
   .game_shell:has(.gameplay:not([hidden])) { width: calc(100% - 16px); padding-block: 6px; }
   .game_shell:has(.gameplay:not([hidden])) > .game_header,
   .game_shell:has(.gameplay:not([hidden])) > .game_footer { display: none; }
-  .gameplay { width: 100%; grid-template-columns: 216px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 44px; gap: 6px 8px; }
+  .gameplay { width: 100%; grid-template-columns: 260px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 44px; gap: 6px 8px; }
   .game_hud { grid-column: 1; grid-row: 1 / -1; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; }
   /* Status scrolls independently so Pause always owns a visible, unobstructed row. */
-  .hud_content { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-self: stretch; align-content: start; align-items: center; gap: 8px; min-height: 0; overflow-y: auto; }
+  .hud_content { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-self: stretch; align-content: start; align-items: center; gap: 3px; min-height: 0; overflow-y: auto; }
   .game_hud .small_label { font-size: .65rem; letter-spacing: .03em; }
   .hud_level { grid-column: 1 / -1; }
+  .hud_level > .small_label { display: none; }
   .hud_level strong { font-size: .85rem; line-height: 1.4; }
   .hud_lives { grid-column: 1; grid-row: 2; }
   .hud_time { grid-column: 2; grid-row: 2; }
   .hud_score { grid-column: 1 / -1; grid-row: 3; }
-  .hud_objective { grid-column: 1 / -1; grid-row: 4; gap: 4px; font-size: .75rem; }
-  .hud_objective strong { font-size: .75rem; }
+  .hud_objective { grid-column: 1 / -1; grid-row: 4; gap: 4px; font-size: .8rem; }
+  .hud_objective strong { font-size: .8rem; }
   .hud_weapon { grid-column: 1 / -1; grid-row: 5; justify-content: start; }
-  .hud_weapon strong { font-size: .75rem; }
+  .hud_weapon strong { font-size: .8rem; }
   .hud_tactics { grid-column: 1 / -1; grid-row: 6; gap: 4px; }
   .tactic_badge { font-size: .75rem; }
   .game_hud > #pause_button { grid-column: 1; grid-row: 2; min-height: 44px; padding: 8px; }
-  .arena_frame { grid-column: 2; grid-row: 1; max-height: calc((100cqw - 228px) * 5 / 8); border-radius: 8px; }
+  .arena_frame { grid-column: 2; grid-row: 1; max-height: calc((100cqw - 272px) * 5 / 8); border-radius: 8px; }
   .play_controls { grid-column: 2; grid-row: 2; justify-content: center; padding: 0; }
   .desktop_hint { display: none; }
   .touch_controls { width: 100%; max-width: 530px; gap: 8px; }

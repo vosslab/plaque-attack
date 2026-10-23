@@ -1,6 +1,8 @@
 # Playtest results
 
-Independent agent assessments of the current local build, 2026-10-23. The gameplay review used
+## Baseline assessment - 2026-10-23
+
+Independent agent assessments of the baseline local build, 2026-10-23. The gameplay review used
 ordinary browser controls plus a predictive planner in some later stages; the usability review used
 fresh browser contexts for its task walkthrough. Both reports compare the game with
 [PLAYTEST_RUBRICS.md](PLAYTEST_RUBRICS.md). These are bounded expert observations, not a human
@@ -13,7 +15,9 @@ play. The usability review also sampled 844x390 landscape, 390x844 portrait, and
 Both reports give the same `dist/main.js` SHA-256:
 `7bd8bc2518e5ca3d1cead433ccd28092ffa343ebc12b963e9652871abb909b8a`. Each confirms that all 32
 bundled source-map contents match current source and that source/build files remained unchanged
-during review. This identifies the reviewed local artifact; it is not a deployment claim.
+during review. This identifies the reviewed local artifact; it is not a deployment claim. The
+findings and ratings below remain the baseline for this artifact; subsequent fixes do not rewrite
+these observations.
 
 Gameplay sampled fresh practice routes for stages 1, 2, 3, 5, 6, 8, 23, and 24, including one
 terminal loss, several clears, and a maintenance clear. The later-stage planner used read-only
@@ -62,3 +66,26 @@ a harness issue; the corrected route completed a real loss and retry. These even
 into product findings. No P1 or P2 issue was supported, no forced pass was applied, and no fix or
 human enjoyment claim is made here. Unplayed encounters, physical touch hardware, assistive
 technology, full-campaign completion, and representative human response remain outside this sample.
+
+## Current fix status
+
+The rebuilt artifact was independently reassessed on 2026-10-23. Its `dist/main.js` SHA-256 is
+`da06cab168a4543ffdcfa215e396bb956523e37dfd090a68920d03d4467b7527`; all 33 source-map contents
+match current source. This is local browser evidence, not a deployment claim. The original ratings
+above remain tied to baseline hash `7bd8bc...` and are retained as historical observations.
+
+| Criterion | Baseline | Rebuilt reassessment | Evidence |
+| --- | --- | --- | --- |
+| G5 Cleanup and pacing | Concern | **Concern** | Cue-following actual-control routes clear in 4.583s (300ms observation) and 7.067s (500ms), with maximum hit intervals of 2.100s and 2.000s. The unchanged center held-fire route remains 32.617s with a 15.433s maximum hit interval, so passive waiting remains a localized concern. |
+| G6 Feedback and payoff | Concern | **Meets** | Actual stage-23 completion shows `REMAINING 00:00` with the clear message at the accepted maintenance boundary; active countdown retains positive ceiling behavior. |
+| U5 Responsive readability | Concern | **Meets** | Essential tool/objective text measures 12.8px. The complete arena, required HUD and controls fit the five sampled viewports from 320x568 through 1280x800. |
+
+The stage-one guide teaches movement while firing but does not move, aim, or fire for the player.
+The measured benefit applies to the sampled cue-following routes; it does not remove passive
+waiting when the player stays centered and ignores the cue. Keep G5 at Concern without forcing a
+pass. The G6 and U5 resolutions are bounded to the scenarios and viewports in the independent
+[reassessment report](active_plans/reports/playtest_improvements_reassessment.md). That report
+records artifact identity, actual inputs, route telemetry, measured bounds, screenshots, and
+limits. The completed [playtest improvements plan](archive/playtest_improvements_plan.md)
+records implementation and final integration closeout. Human enjoyment and comfortable physical-
+phone play remain unmeasured.

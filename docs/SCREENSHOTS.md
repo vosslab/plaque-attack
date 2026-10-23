@@ -6,15 +6,17 @@ production build hashes, dimensions, byte sizes, image hashes and scene provenan
 
 ## Current production UI refresh
 
-The 2026-10-22 refresh replaces all thirteen managed views with quality-90 WebPs from the
+The 2026-10-23 refresh replaces all thirteen managed views with quality-90 WebPs from the
 production build recorded in [screenshots/manifest.json](screenshots/manifest.json). The set
-totals 647,202 bytes, with no capture/browser errors or PNG intermediates. The capture owner
+totals 652,986 bytes, with no capture/browser errors or PNG intermediates. The capture owner
 inspected the encoded menu, chooser, recovery comparison, gameplay, terrain and clear-sequence views
-for coherence and readability. The build includes the accepted lipid orbit motion. Staged-save and fixture
+for coherence and readability. The build includes the playtest fixes for opening guidance, streak HUD
+refresh and pointer-cancel cleanup. The current gameplay frame shows the opening guide and HUD.
+Staged-save and fixture
 descriptions remain separate from actual-input play provenance.
 
 The manifest SHA-256 is
-`17809f29a0cbb7add90adf173b8d5b1edacc6ca261fb0ccad7dafe3364f1126e`.
+`e45fdca0bdc171ede187358904d9a9acae95483575ba2cce9c457f1e84ab10d3`.
 The refresh used a bundled equivalent of the command below, with an explicit workspace root
 to preserve the no-Git-command scope. Its exact execution is recorded in the manifest, including
 `PLAYWRIGHT_BROWSERS_PATH=/private/tmp/plaque-attack-playwright-browsers`; no rebuild intervened.
