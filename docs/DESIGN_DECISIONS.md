@@ -7,6 +7,125 @@ the reasoning a later reader needs. Guidance Neil Voss states belongs in
 `docs/active_plans/decisions/`. [PROPAGATED HEADER - ENTRIES BELOW ARE YOURS]
 <!-- VENDORED HEADER: END -->
 
+
+### Same-patient recovery continuity
+
+**Decision.** Show the existing authored first-stage brief with the same patient and earned territory
+that continue through clear and results. Keep its concise core, offer optional detail after Start,
+and pass the earned state into a new result route without pre-clearing its DOM. Practice does not
+change campaign recovery.
+
+**Why.** The reviewed flow lacked continuity between the pre-play patient, an earned clear, and the
+settled result. Reusing the existing recovery state keeps that continuity attached to its owner.
+
+**Consequence.** Preserve the authored brief verbatim. Clear transition DOM remains visible without
+occluding play. A practice route does not credit or animate campaign recovery.
+
+**Owner.** `src/ui.ts`, `src/main.ts`, recovery types, and
+[GAMEWIDE_CONTINUITY_READABILITY.md](active_plans/active/GAMEWIDE_CONTINUITY_READABILITY.md).
+
+### Split and terminal hit outcomes
+
+**Decision.** Distinguish continuing split targets from terminal removals through different shape
+and motion in the existing hit/render path. Reduced motion keeps distinct static forms; no captions
+are added.
+
+**Why.** Sampled play made the two outcomes hard to tell apart. The existing event path can make the
+result clear without introducing a general effects system.
+
+**Consequence.** The distinction remains available when motion is reduced and does not depend on
+caption text.
+
+**Owner.** Hit and rendering modules and
+[GAMEWIDE_CONTINUITY_READABILITY.md](active_plans/active/GAMEWIDE_CONTINUITY_READABILITY.md).
+
+### Earned-result hierarchy
+
+**Decision.** For an actual early maintenance clear, place the existing time-saved/mastery-bonus
+sentence directly below the result title. Clear or hide that sentence on every other result.
+
+**Why.** The earned result copy sat below the action row; the actual Stage 23 practice capture
+placed it near y=750. Repositioning existing copy makes the reward visible without adding a new
+system. Fresh source, fixture, focused quality, and integration reviews accept the bounded change.
+
+**Consequence.** Preserve the qualifying early-clear condition and exact sentence. Fresh desktop and
+390px portrait result captures show it below the title and keep retry visible without overflow. The
+actual practice route uses only practice-unlock setup and does not credit campaign recovery. Do not
+change score, recovery state, simulation behavior, or result actions.
+
+**Owner.** `src/ui.ts`, `src/index.html`, narrowly scoped styles, and
+[GAMEWIDE_CONTINUITY_READABILITY.md](active_plans/active/GAMEWIDE_CONTINUITY_READABILITY.md).
+
+### Full-world portrait scale
+
+**Decision.** Treat the authoritative world as 960x540 (16:9) and use uniform fit to keep all
+threats visible without distortion or camera movement. The prior 8:5 ratio came from decorative CSS
+margins and test history, not simulation geometry. Keep the renderer fit rule unchanged. Use a compact
+arena/control layout, keep controls reachable, and retain desktop behavior.
+
+**Why.** The portrait arena rendered mechanic objects too small, while height-limited landscape left
+useful horizontal space around the world. Matching the world ratio removes that letterbox without
+cropping or distorting it.
+
+**Consequence.** Height-limited landscape is expected to gain about 11.1% world width (441.5px to
+490.6px); portrait retains 386px width and 217.125px world height. Request fullscreen landscape
+when appropriate and provide an honest fallback when it is unavailable. Measured full-world sizes are
+386x217.125px at 390x844, 490.547x275.938px at 844x390, and 893.58x502.64px at 1280x800.
+
+**Owner.** Responsive presentation and input/fullscreen wiring in `src/main.ts` and styles, with
+[GAMEWIDE_CONTINUITY_READABILITY.md](active_plans/active/GAMEWIDE_CONTINUITY_READABILITY.md).
+
+### Stage-13 clopidogrel refresh
+
+**Decision.** Keep stage 13 at stable ID 8 with six small and six tiny targets. Begin with three
+vertically aligned small targets, then schedule three small and six tiny targets over nine arrivals,
+using the configured 2.5-second cadence through 24 seconds.
+
+**Why.** The persistent-shot demonstration creates an opening shot window; a long empty interval
+would outlast it before the remaining encounter begins.
+
+**Consequence.** Retain all 12 targets and existing stage identity, weapons, scoring, unlock, tissue,
+and restoration contracts. The actual-control evidence remains a separate gate.
+
+**Owner.** Stage-13 authored configuration and
+[GAMEWIDE_CONTINUITY_READABILITY.md](active_plans/active/GAMEWIDE_CONTINUITY_READABILITY.md).
+
+### Transient damage cause
+
+**Decision.** Pass the actual lives-zero contact or overload `DamageEvent` directly through `finish`
+to `showResult` and show one actionable cause sentence. Keep the event transient; retry clears it
+naturally.
+
+**Why.** The result can explain the actionable cause using the event already produced by the
+simulation, without storing duplicate cause state.
+
+**Consequence.** Do not add generic tips, retained state, or simulation/save-schema changes.
+
+**Owner.** `src/main.ts` and
+[GAMEWIDE_CONTINUITY_READABILITY.md](active_plans/active/GAMEWIDE_CONTINUITY_READABILITY.md).
+
+### Player-owned clearance payoff
+
+**Decision.** Only projectile-caused erosion activates a clearance seam. Target contact continues
+to reflect and leaves the seam cells shootable. Compose display 18's existing current, seam, and
+target phases into a deliberate setup and release; retain weapon-only completion and leave display
+24's recovery finale unchanged. Device action cues reuse existing state and remain readable at
+phone size.
+
+**Why.** Independent reviews found non-firing target contact could consume the seam with no clears,
+while the seam also offered no reliable player-controlled setup. The six reviews support preserving
+the existing controls, campaign scale, and recovery identity while combining mechanics already in
+the game. They are bounded agent assessments, not human enjoyment or accessibility studies.
+
+**Consequence.** The source boundary now preserves designated seam cells under target erosion and
+activates the pulse only for projectile erosion. No-key simulations of displays 9, 18, and 24
+preserve all three trigger cells without activating a pulse. The display-18 player-controlled
+composition route is still under authoring; clearability, retry, responsive cues, and integrated
+quality acceptance remain pending in [GAMEWIDE_PLAYFUL_PAYOFF.md](active_plans/active/GAMEWIDE_PLAYFUL_PAYOFF.md).
+
+**Owner.** [GAME_SPEC.md](GAME_SPEC.md), [GAMEWIDE_PLAYFUL_PAYOFF.md](active_plans/active/GAMEWIDE_PLAYFUL_PAYOFF.md),
+`src/tissue.ts`, and `src/lipid_behaviors.ts`.
+
 ### Gameplay variety behaviors and clearance seam
 
 **Decision.** Add three authored plaque behaviors and a one-use tissue clearance pulse while
@@ -503,18 +622,18 @@ the approved early-weapon plan.
 
 **Owner.** `src/constants.ts` and [DIFFICULTY_REVIEW.md](DIFFICULTY_REVIEW.md).
 
-### Taller play presentation
+### Full-world play presentation
 
-**Decision.** Present the existing 960x540 simulation in a 16:10 canvas using uniform scale and
-centering. Fill the extra margins with organic artery-wall decoration. Keep dialogs bounded to
-the viewport; use a compact two-column recovery view on wide screens and stack it on narrow ones.
+**Decision.** Present the authoritative 960x540 world in a matching 16:9 canvas with uniform scale.
+Keep dialogs bounded to the viewport; use a compact two-column recovery view on wide screens and
+stack it on narrow ones.
 
-**Why.** The requested taller play view and smaller popups improve presentation without changing
-target shapes, collision coordinates or the authored level geometry.
+**Why.** Matching the canvas to the world removes decorative letterboxing without changing target
+shapes, collision coordinates, or authored level geometry.
 
-**Consequence.** Canvas resize affects presentation only. Circles remain circular, and decorative
-margins add no playable space. The recovery header and Close footer stay visible around an internally scrolling map; all 24
-stages need not be visible at once.
+**Consequence.** Canvas resize affects presentation only and circles remain circular. The recovery
+header and Close footer stay visible around an internally scrolling map; all 24 stages need not be
+visible at once.
 
 **Owner.** `src/renderer.ts` and `src/style.css`.
 
@@ -594,7 +713,7 @@ is an arcade tissue abstraction; no claim that high or low ground is always safe
 **Decision.** Give every dialog a heading, scrollable content region and persistent action footer.
 Dialog builders explicitly place closing, resume, restart and leave actions in that footer.
 Use a 900px desktop width ceiling and 560px height ceiling with viewport gutters. The recovery
-map keeps its wider specialized layout within viewport bounds. The game arena remains 16:10.
+map keeps its wider specialized layout within viewport bounds. The game arena uses the authoritative 16:9 world ratio.
 
 **Why.** Whole-dialog scrolling hid Done and Close below the viewport. A shared layout fixes
 Settings, pause, help and medicine at the owning boundary instead of adding per-panel exceptions.
@@ -800,3 +919,26 @@ the rebuilt browser evidence and remain bounded to the sampled artifact and view
 **Owner.** `src/opening_guide.ts`, `src/renderer.ts`, `src/ui.ts`, `src/style.css`, and
 [PLAYTEST_RESULTS.md](PLAYTEST_RESULTS.md), with delivery status in
 [archive/playtest_improvements_plan.md](archive/playtest_improvements_plan.md).
+
+### Earned maintenance mastery
+
+**Decision.** Offer an optional early finish on the three maintenance stages after the midpoint:
+keep hazards at or below half the safe maximum for six continuous active-play seconds without
+damage. For an encounter with a shifted entry stream, mastery becomes eligible after its first
+actual new-stream spawn. Preserve the ordinary timed clear as fallback.
+
+**Why.** Fresh play evidence shows active movement and shooting throughout maintenance, so the
+change rewards sustained control rather than addressing a waiting defect. A threshold tied to the
+safe cap makes the skill goal scale across the three encounters. The actual spawn establishes that
+the encounter has shifted; a warning selected before the shift does not.
+
+**Consequence.** Show progress and its threshold when eligible, then close future unannounced
+entries on mastery while resolving already announced entries and pending releases normally. Use
+the existing clear and recovery flow, show `Flow restored` and actual time saved, and add a one-time
+score bonus for parity with full-duration survival points. Unplayed seconds remain uncounted as
+survival. Retry resets mastery; pause and terminal time do not advance it. The sampled route
+supports reachability, not human enjoyment or a claim that prior maintenance was dull.
+
+**Owner.** `src/simulation.ts`, `src/waves.ts`, `src/scoring.ts`, `src/ui.ts`, and
+[GAME_SPEC.md](GAME_SPEC.md), with bounded implementation and play evidence in
+`output/whole_game_review/`.

@@ -19,7 +19,7 @@ for (const viewport of [
   { width: 844, height: 390 },
   { width: 320, height: 568 },
 ]) {
-  test(`dialog actions stay visible and gameplay stays 16:10 at ${viewport.width}x${viewport.height}`, async ({
+  test(`dialog actions stay visible and gameplay stays 16:9 at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -74,7 +74,7 @@ for (const viewport of [
     const arena = await page.locator("#arena").boundingBox();
     expect(arena).not.toBeNull();
     if (arena === null) throw new Error("Missing arena");
-    expect(arena.width / arena.height).toBeCloseTo(1.6, 2);
+    expect(arena.width / arena.height).toBeCloseTo(16 / 9, 2);
     await expectInViewport(page, page.locator("#arena"));
     await page.keyboard.press("p");
     await checkPinned("Resume game");

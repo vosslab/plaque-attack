@@ -20,19 +20,12 @@ import { celebrationMotion, idleBodyAngle } from "./surgeon_motion";
 import { createRemixRendering } from "./remix_rendering";
 import { openingInterceptGuide } from "./opening_guide";
 import { drawLipidBehavior } from "./lipid_rendering";
+import { createHitEffect, drawHitEffect, type HitEffect } from "./hit_effects";
 import type { TargetId } from "./brands";
 
 type Particle = { x: number; y: number; vx: number; vy: number; life: number; color: string };
-type HitEffect = {
-  kind: "plaque" | "platelet";
-  x: number;
-  y: number;
-  radius: number;
-  life: number;
-};
 const PARTICLE_LIMIT = 160;
 const HIT_EFFECT_LIMIT = 32;
-const HIT_EFFECT_DURATION = 0.48;
 const POINT_LABEL_LIMIT = 12;
 const POINT_LABEL_DURATION = 0.85;
 const STREAK_CALLOUT_DURATION = 1.6;
@@ -134,18 +127,11 @@ export function createRenderer(
             life: STREAK_CALLOUT_DURATION,
           };
         if (hitEffects.length >= HIT_EFFECT_LIMIT) hitEffects.shift();
-        hitEffects.push({
-          kind: event.targetKind,
-          x: event.position.x,
-          y: event.position.y,
-          radius: TARGET_PRESETS[event.size].radius,
-          life: HIT_EFFECT_DURATION,
-        });
+        hitEffects.push(createHitEffect(event, TARGET_PRESETS[event.size].radius));
       }
-      if (reducedMotion || (event.type !== "target_hit" && event.type !== "damage")) continue;
-      const color =
-        event.type === "damage" ? "#fff5e8" : event.targetKind === "plaque" ? "#ffce55" : "#d4afff";
-      const count = event.type === "damage" ? 12 : 8;
+      if (reducedMotion || event.type !== "damage") continue;
+      const color = "#fff5e8";
+      const count = 12;
       for (let index = 0; index < count && particles.length < PARTICLE_LIMIT; index += 1) {
         const angle = (index / count) * Math.PI * 2;
         particles.push({
@@ -499,8 +485,7 @@ export function createRenderer(
     }
     applyEvents(pendingEvents);
     pendingEvents = [];
-    // Keep the physics world uniform inside the taller canvas. At 16:10 this
-    // exposes 30 logical pixels of artery wall above and below the 960x540 world.
+    // Fit the fixed logical world uniformly; extra canvas space becomes wall fill.
     const scale = Math.min(canvas.width / ARENA_WIDTH, canvas.height / ARENA_HEIGHT);
     const offsetX = (canvas.width - ARENA_WIDTH * scale) / 2;
     const offsetY = (canvas.height - ARENA_HEIGHT * scale) / 2;
@@ -587,6 +572,9 @@ export function createRenderer(
         ctx.drawImage(images.stent, 0, 3, 32, 116, 0, offset, 28, 104);
       ctx.restore();
     }
+    // Outcome marks stay beneath live hazards, shots and the surgeon.
+    hitEffects = hitEffects.filter((effect): boolean => effect.life > 0);
+    for (const effect of hitEffects) drawHitEffect(ctx, effect, reducedMotion);
     const alpha = state.phase === "playing" ? Math.max(0, Math.min(1, interpolation)) : 1;
     for (const projectile of state.projectiles) {
       const x =
@@ -659,41 +647,6 @@ export function createRenderer(
       ctx.restore();
       if (target.kind === "plaque") drawLipidBehavior(ctx, target, x, y);
     }
-    for (const effect of hitEffects) {
-      const progress = Math.min(1, 1 - effect.life / HIT_EFFECT_DURATION);
-      ctx.save();
-      ctx.translate(effect.x, effect.y);
-      ctx.globalAlpha = Math.max(0, (1 - progress) * 0.7);
-      if (effect.kind === "platelet") {
-        // Inactive remnants live only here and never participate in collision.
-        const radius = effect.radius * (reducedMotion ? 1 : 1 - progress * 0.2);
-        ctx.drawImage(images.platelet, -radius, -radius, radius * 2, radius * 2);
-        ctx.strokeStyle = "#e5d9f3";
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(-radius * 0.4, 0);
-        ctx.lineTo(-radius * 0.1, radius * 0.3);
-        ctx.lineTo(radius * 0.5, -radius * 0.35);
-        ctx.stroke();
-      } else {
-        const radius = effect.radius * (reducedMotion ? 1 : 0.55 + progress * 0.65);
-        ctx.strokeStyle = "#ffce55";
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(0, 0, radius, 0, Math.PI * 2);
-        ctx.stroke();
-        if (!reducedMotion) {
-          // Expansion describes the impact without delaying the simulation's split.
-          ctx.beginPath();
-          ctx.arc(0, 0, radius - 3, 0, Math.PI * 2);
-          ctx.clip();
-          for (let offset = -radius; offset < radius; offset += 18)
-            ctx.drawImage(images.stent, offset - 6, -radius, 12, radius * 2);
-        }
-      }
-      ctx.restore();
-    }
-    hitEffects = hitEffects.filter((effect): boolean => effect.life > 0);
     for (const effect of arenaEffects) {
       const progress = Math.max(0, Math.min(1, 1 - effect.life / 0.6));
       ctx.save();
@@ -810,7 +763,7 @@ export function createRenderer(
     }
     ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
     if (streakCallout !== undefined) {
-      // The 16:10 canvas provides decorative wall above the playable world.
+      // When the canvas is taller than the world, use its extra top margin as wall space.
       // Keep this stationary and separate from incoming warnings and the surgeon.
       const wallHeight = offsetY / scale;
       const y = wallHeight >= 24 ? -wallHeight / 2 : 16;

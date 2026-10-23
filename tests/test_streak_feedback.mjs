@@ -84,8 +84,15 @@ test("hit events carry their own awarded streak and points; misses and pause pre
 function canvasRecorder() {
   const texts = [];
   const noop = () => {};
+  const canvas = {
+    width: 960,
+    height: 600,
+    getBoundingClientRect: () => ({ width: 960, height: 600 }),
+    getContext: () => context,
+  };
   const context = new Proxy(
     {
+      canvas,
       fillText: (text, x, y) => texts.push({ text, x, y }),
       measureText: (text) => ({ width: text.length * 9 }),
       createLinearGradient: () => ({ addColorStop: noop }),
@@ -93,12 +100,6 @@ function canvasRecorder() {
     },
     { get: (object, key) => object[key] ?? noop },
   );
-  const canvas = {
-    width: 960,
-    height: 600,
-    getBoundingClientRect: () => ({ width: 960, height: 600 }),
-    getContext: () => context,
-  };
   return { canvas, texts };
 }
 

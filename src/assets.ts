@@ -24,6 +24,7 @@ export const ASSET_SOURCES = {
   "flow-switch": "assets/flow_switch.svg",
   "support-capsule": "assets/support_capsule.svg",
   "restored-flow": "assets/restored_flow.svg",
+  "cardiac-recovery": "assets/cardiac_recovery.svg",
   "scene-endothelium": "assets/scene-endothelium.svg",
   "scene-fatty-streak": "assets/scene-fatty-streak.svg",
   "scene-fibrous-cap": "assets/scene-fibrous-cap.svg",

@@ -30,6 +30,7 @@ export type AssetId =
   | "flow-switch"
   | "support-capsule"
   | "restored-flow"
+  | "cardiac-recovery"
   | SceneId
   | LipidVariant;
 export type AssetImages = Readonly<Record<AssetId, HTMLImageElement>>;

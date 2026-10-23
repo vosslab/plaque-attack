@@ -16,11 +16,142 @@ import {
   createSimulation,
   pauseSimulation,
   resumeSimulation,
+  retryLevel,
 } from "../src/game_state.ts";
+import { STEADY_FLOW_DURATION, steadyFlowMaximum } from "../src/steady_flow.ts";
 import { stepSimulation } from "../src/simulation.ts";
 import { synchronizeTargetMotion } from "../src/motion.ts";
 
 const idle = { left: false, right: false, fire: false };
+
+function steadyAttempt() {
+  const level = getLevel(11);
+  const state = playing(11, "practice", {
+    initialTargets: [],
+    arena: { ...level.arena, tissue: [], pockets: [], supportPockets: [] },
+    flowSwitches: [],
+  });
+  state.elapsed = state.level.objective.duration / 2;
+  state.waves.nextSpawnAt = Infinity;
+  return state;
+}
+
+function runSeconds(state, seconds) {
+  const events = [];
+  for (let tick = 0; tick < Math.round(seconds / FIXED_STEP); tick++)
+    events.push(...stepSimulation(state, idle, FIXED_STEP));
+  return events;
+}
+
+test("steady maintenance rewards continuous control and preserves full-duration scoring exactly once", () => {
+  const early = steadyAttempt();
+  const full = steadyAttempt();
+  early.elapsed -= FIXED_STEP;
+  stepSimulation(early, idle, FIXED_STEP);
+  assert.equal(early.steadyFlowSeconds, 0, "pre-midpoint time cannot count");
+  const events = runSeconds(early, STEADY_FLOW_DURATION);
+  assert.equal(early.phase, "level_complete");
+  const completion = events.find((event) => event.type === "level_complete");
+  assert.ok(completion.masteryPoints > 0);
+  assert.equal(early.survivalSecondsAwarded, Math.floor(early.elapsed + 1e-9));
+  full.elapsed = full.level.objective.duration;
+  const timedEvents = stepSimulation(full, idle, FIXED_STEP);
+  assert.equal(full.phase, "level_complete");
+  assert.equal(timedEvents.find((event) => event.type === "level_complete").masteryPoints, 0);
+  assert.equal(early.score, full.score);
+  assert.deepEqual(stepSimulation(early, idle, FIXED_STEP), []);
+  assert.equal(events.filter((event) => event.type === "level_complete").length, 1);
+});
+
+test("steady control resets above its threshold or on damage; paused time freezes and retry is fresh", () => {
+  const state = steadyAttempt();
+  runSeconds(state, 1);
+  const bank = state.steadyFlowSeconds;
+  pauseSimulation(state);
+  assert.deepEqual(stepSimulation(state, idle, 20), []);
+  assert.equal(state.steadyFlowSeconds, bank);
+  resumeSimulation(state);
+  state.targets = Array.from({ length: steadyFlowMaximum(state.level) + 1 }, () => target(state));
+  stepSimulation(state, idle, FIXED_STEP);
+  assert.equal(state.steadyFlowSeconds, 0);
+  state.targets = [];
+  runSeconds(state, 1);
+  state.targets = [
+    target(state, "platelet", "tiny", state.player.position.x, state.player.position.y),
+  ];
+  const events = stepSimulation(state, idle, FIXED_STEP);
+  assert.ok(events.some((event) => event.type === "damage"));
+  assert.equal(state.steadyFlowSeconds, 0);
+  state.waves.shiftedArrivalSpawned = true;
+  const retry = retryLevel(state);
+  assert.equal(retry.steadyFlowSeconds, 0);
+  assert.equal(retry.waves.shiftedArrivalSpawned, false);
+  assert.equal(retry.elapsed, 0);
+});
+
+test("a full steady meter honors warnings and pending releases, then shuts unannounced entries", () => {
+  const state = steadyAttempt();
+  state.steadyFlowSeconds = STEADY_FLOW_DURATION - FIXED_STEP;
+  state.waves.warning = { target: state.level.objective.entries[0], remaining: 0.1 };
+  stepSimulation(state, idle, FIXED_STEP);
+  assert.equal(state.steadyFlowSeconds, STEADY_FLOW_DURATION);
+  assert.equal(state.phase, "playing");
+  const events = runSeconds(state, 0.1);
+  assert.equal(events.filter((event) => event.type === "spawn").length, 1);
+  assert.equal(state.phase, "level_complete");
+
+  const pending = steadyAttempt();
+  pending.steadyFlowSeconds = STEADY_FLOW_DURATION;
+  pending.arena.pockets = [
+    { id: "waiting", status: "pending", warningRemaining: 10, nextContentIndex: 0 },
+  ];
+  pending.waves.nextSpawnAt = pending.elapsed;
+  stepSimulation(pending, idle, FIXED_STEP);
+  assert.equal(pending.phase, "playing");
+  assert.equal(pending.waves.warning, undefined, "full meter closes unannounced arrivals");
+  pending.targets = Array.from({ length: steadyFlowMaximum(pending.level) + 1 }, () =>
+    target(pending),
+  );
+  stepSimulation(pending, idle, FIXED_STEP);
+  assert.equal(pending.steadyFlowSeconds, 0);
+  stepSimulation(pending, idle, FIXED_STEP);
+  assert.ok(pending.waves.warning, "broken control reopens the stream");
+  pending.targets = [];
+  pending.waves.warning = undefined;
+  pending.steadyFlowSeconds = STEADY_FLOW_DURATION;
+  pending.arena.pockets = [];
+  stepSimulation(pending, idle, FIXED_STEP);
+  assert.equal(pending.phase, "level_complete");
+});
+
+test("loss wins over a nearly earned steady finish", () => {
+  const state = steadyAttempt();
+  state.steadyFlowSeconds = STEADY_FLOW_DURATION - FIXED_STEP;
+  state.player.lives = 1;
+  state.targets = [
+    target(state, "platelet", "tiny", state.player.position.x, state.player.position.y),
+  ];
+  const events = stepSimulation(state, idle, FIXED_STEP);
+  assert.equal(state.phase, "game_over");
+  assert.equal(state.steadyFlowSeconds, 0);
+  assert.equal(
+    events.some((event) => event.type === "level_complete"),
+    false,
+  );
+});
+
+test("deferred insertions join the arena before a steady finish and can break control", () => {
+  const state = steadyAttempt();
+  state.steadyFlowSeconds = STEADY_FLOW_DURATION;
+  state.targets = Array.from({ length: steadyFlowMaximum(state.level) }, () => target(state));
+  const deferred = target(state);
+  state.arena.pendingInsertions = [{ kind: "split", sourceId: deferred.id, target: deferred }];
+  stepSimulation(state, idle, FIXED_STEP);
+  assert.ok(state.targets.includes(deferred));
+  assert.equal(state.arena.pendingInsertions.length, 0);
+  assert.equal(state.steadyFlowSeconds, 0);
+  assert.equal(state.phase, "playing");
+});
 
 function playing(id = 1, mode = "campaign", overrides = {}) {
   const state = createSimulation({ ...getLevel(id), ...overrides }, mode);

@@ -69,8 +69,9 @@ export function resolveClearancePulse(
   const runtime = state.remix.clearancePulse;
   if (definition === undefined || runtime === undefined || runtime.activated) return;
   if (
-    !definition.seamCells.some((cell) =>
-      tissue.erosion.has(JSON.stringify([cell.patchId, cell.cellId])),
+    !definition.seamCells.some(
+      (cell) =>
+        tissue.erosion.get(JSON.stringify([cell.patchId, cell.cellId]))?.cause === "projectile",
     )
   )
     return;

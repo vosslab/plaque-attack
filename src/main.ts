@@ -19,6 +19,7 @@ import {
   retryLevel,
 } from "./game_state";
 import { createInputController } from "./input";
+import { installGameplayPresentation } from "./gameplay_presentation";
 import { createRecoveryMap } from "./recovery";
 import { createRenderer } from "./renderer";
 import { hasOpeningGuide } from "./opening_guide";
@@ -36,6 +37,7 @@ import {
   updateHud,
 } from "./ui";
 import type { LevelId } from "./types/level";
+import type { DamageEvent } from "./types/events";
 import type {
   ArenaRenderer,
   AppScreen,
@@ -96,6 +98,7 @@ function main(): void {
     { left: button("touch_left"), right: button("touch_right"), fire: button("touch_fire") },
     isActive,
   );
+  installGameplayPresentation();
   function screen(next: AppScreen, focus?: HTMLElement): void {
     input.clear();
     pendingAdvance = undefined;
@@ -103,6 +106,7 @@ function main(): void {
     showScreen(next);
     element("celebration_status").hidden =
       celebration === undefined || (next.kind !== "celebration" && next.kind !== "pause");
+    element("celebration_recovery").hidden = next.kind !== "celebration";
     audio.setPaused(
       next.kind !== "gameplay",
       next.kind === "celebration" ||
@@ -188,7 +192,7 @@ function main(): void {
     celebration = undefined;
     runtime.simulation = createSimulation(getLevel(level), mode);
     screen({ kind: "briefing", levelId: level });
-    showBriefing(getLevel(level), mode === "practice");
+    showBriefing(getLevel(level), mode === "practice", runtime.save);
   }
   function begin(): void {
     if (assets.kind !== "ready" || runtime.screen.kind !== "briefing") return;
@@ -225,7 +229,9 @@ function main(): void {
       (body, close, footer): void => {
         paragraph(
           body,
-          "Game paused. Press P or Escape to resume. Move with A/D or arrows; hold Space to fire.",
+          window.matchMedia("(pointer: coarse)").matches
+            ? "Game paused. Tap Resume game to continue. Hold a direction and Fire together to move while shooting."
+            : "Game paused. Press P or Escape to resume. Move with A/D or arrows; hold Space to fire.",
         );
         footer.append(action("Resume game", close, true));
         if (state.mode === "practice")
@@ -366,7 +372,7 @@ function main(): void {
     if (state.phase === "campaign_complete") finalizeCampaign();
     else if (changed) persist();
   }
-  function finish(): void {
+  function finish(finalDamage?: DamageEvent): void {
     const state = runtime.simulation;
     if (
       state === undefined ||
@@ -382,7 +388,7 @@ function main(): void {
             ? "campaign_result"
             : "level_result",
     });
-    showResult(state, recordRank);
+    showResult(state, recordRank, finalDamage);
     const successful = state.phase !== "game_over";
     const recovery = element("result_recovery");
     recovery.replaceChildren();
@@ -393,6 +399,7 @@ function main(): void {
           completedLevelIds: runtime.save.completedLevelIds,
           unlockedLevel: runtime.save.unlockedLevel,
           selectedLevelId: state.mode === "campaign" ? state.level.id : undefined,
+          newlyCompletedLevelId: newlyRestoredLevelId,
           presentation: "result",
           onStageSelected: (): void => {},
         }),
@@ -431,9 +438,33 @@ function main(): void {
       }
       if (state.phase === "game_over") {
         renderer?.render(state, 0, runtime.save.settings.surgeonId);
-        finish();
+        finish(
+          events.find(
+            (event): event is DamageEvent => event.type === "damage" && event.lives === 0,
+          ),
+        );
       } else if (state.phase === "level_complete" || state.phase === "campaign_complete") {
         commitClearProgress();
+        const recovery = createRecoveryMap({
+          completedLevelIds: runtime.save.completedLevelIds,
+          unlockedLevel: runtime.save.unlockedLevel,
+          selectedLevelId: state.mode === "campaign" ? state.level.id : undefined,
+          newlyCompletedLevelId: newlyRestoredLevelId,
+          presentation: "result",
+          onStageSelected: (): void => {},
+        });
+        const heading = recovery.querySelector("h2");
+        if (heading !== null)
+          heading.textContent =
+            state.mode === "practice"
+              ? "Practice clear"
+              : newlyRestoredLevelId === undefined
+                ? "Route remains open"
+                : `Route ${campaignPosition(state.level.id)} restored`;
+        const vitality = recovery.querySelector(".recovery_vitality");
+        if (vitality !== null && state.mode === "practice")
+          vitality.textContent = "Patient recovery unchanged.";
+        element("celebration_recovery").replaceChildren(recovery);
         celebration = { elapsed: 0, duration: 2.2 };
         celebrationRendered = false;
         screen({ kind: "celebration" }, arena);
@@ -497,7 +528,7 @@ function main(): void {
     newlyRestoredLevelId = undefined;
     celebration = undefined;
     screen({ kind: "briefing", levelId: next.level.id });
-    showBriefing(next.level, false);
+    showBriefing(next.level, false, runtime.save);
   });
   button("retry_button").addEventListener("click", (): void => {
     const state = runtime.simulation;

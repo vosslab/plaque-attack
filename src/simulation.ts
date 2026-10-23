@@ -13,6 +13,7 @@ import {
 import { advanceTarget } from "./motion";
 import { advanceUnstable, resolveClearancePulse } from "./lipid_behaviors";
 import { awardSurvival, completeLevel, endRun } from "./scoring";
+import { canBankSteadyFlow, STEADY_FLOW_DURATION } from "./steady_flow";
 import type { SimulationEvent } from "./types/events";
 import type { SimulationState, SimulationStep } from "./types/simulation";
 import {
@@ -85,6 +86,7 @@ export const stepSimulation: SimulationStep = (state, input, dt) => {
     return events;
   }
   state.tick += 1;
+  const steadyAtStart = canBankSteadyFlow(state);
   const previouslyOverloaded =
     state.level.objective.kind === "maintenance" &&
     state.targets.length > state.level.objective.safeMaximum;
@@ -131,6 +133,14 @@ export const stepSimulation: SimulationStep = (state, input, dt) => {
   advancePocketReleases(state, dt, events);
   advanceOverload(state, dt, contactDamage, previouslyOverloaded, events);
   advanceFinale(state, dt, events);
+  if (state.level.objective.kind === "maintenance") {
+    state.steadyFlowSeconds =
+      canBankSteadyFlow(state) && !events.some((event) => event.type === "damage")
+        ? Math.min(STEADY_FLOW_DURATION, state.steadyFlowSeconds + (steadyAtStart ? dt : 0))
+        : 0;
+    if (state.steadyFlowSeconds + 1e-9 >= STEADY_FLOW_DURATION)
+      state.steadyFlowSeconds = STEADY_FLOW_DURATION;
+  }
   awardSurvival(state, events);
   if (state.player.lives <= 0) {
     state.phase = "game_over";
@@ -138,7 +148,8 @@ export const stepSimulation: SimulationStep = (state, input, dt) => {
   } else if (
     clearObjectiveSatisfied(state) ||
     (state.level.objective.kind === "maintenance" &&
-      state.elapsed + 1e-9 >= state.level.objective.duration &&
+      (state.elapsed + 1e-9 >= state.level.objective.duration ||
+        (state.steadyFlowSeconds >= STEADY_FLOW_DURATION && state.waves.warning === undefined)) &&
       !hasPendingTargets(state) &&
       state.targets.length <= state.level.objective.safeMaximum)
   ) {

@@ -9,7 +9,12 @@ import { advanceTarget } from "../src/motion.ts";
 import { resolveClearancePulse, splitTarget } from "../src/lipid_behaviors.ts";
 import { steerCurrent } from "../src/remix_mechanics.ts";
 import { stepSimulation } from "../src/simulation.ts";
-import { advancePocketReleases, freezeTissue } from "../src/tissue.ts";
+import {
+  advancePocketReleases,
+  commitTissueErosion,
+  freezeTissue,
+  resolveTargetTissue,
+} from "../src/tissue.ts";
 
 const idle = { left: false, right: false, fire: false };
 const point = (x, y) => ({ x: logicalCoordinate(x), y: logicalCoordinate(y) });
@@ -233,6 +238,11 @@ test("seam pulse scores active tiny bodies once, preserves larger/newborn bodies
   });
   const events = [];
   resolveClearancePulse(state, tissue, events);
+  assert.equal(state.remix.clearancePulse.activated, false);
+  assert.equal(events.length, 0);
+  assert.equal(state.targets.length, 5);
+  tissue.erosion.get(JSON.stringify(["patch", "cell"])).cause = "projectile";
+  resolveClearancePulse(state, tissue, events);
   assert.deepEqual(
     state.targets.map((target) => target.id),
     [larger.id, newborn.id, distant.id],
@@ -246,6 +256,58 @@ test("seam pulse scores active tiny bodies once, preserves larger/newborn bodies
   assert.equal(state.score, score);
   assert.equal(events.length, 1);
   assert.equal(retryLevel(state).remix.clearancePulse.activated, false);
+});
+
+test("target contact preserves a shootable seam while ordinary tissue still erodes", () => {
+  for (const protectedSeam of [true, false]) {
+    const base = getLevel(1);
+    const state = playing({
+      arena: {
+        ...base.arena,
+        tissue: [{ id: "patch", cells: [{ id: "cell", position: point(100, 300) }] }],
+      },
+      clearancePulse: protectedSeam
+        ? {
+            id: "seam",
+            seamCells: [{ patchId: "patch", cellId: "cell" }],
+            position: point(106, 306),
+            radius: 180,
+          }
+        : undefined,
+    });
+    const target = createTarget(
+      { kind: "platelet", size: "tiny", direction: 1, position: point(106, 260) },
+      targetId(1),
+      1,
+    );
+    target.previousPosition = point(106, 260);
+    target.position = point(106, 310);
+    target.motionSegments = [
+      { startTime: 0, endTime: 1, start: target.previousPosition, end: target.position },
+    ];
+    state.targets = [target];
+    const tissue = freezeTissue(state);
+    resolveTargetTissue(state, 0.1, tissue);
+    const events = [];
+    commitTissueErosion(state, tissue, events);
+    resolveClearancePulse(state, tissue, events);
+    assert.ok(target.velocity.y < 0, "target reflects naturally from the cell");
+    assert.equal(state.arena.tissue[0].cells[0].occupied, protectedSeam);
+    assert.equal(
+      events.some((event) => event.type === "clearance_pulse"),
+      false,
+    );
+    if (!protectedSeam) continue;
+    assert.equal(tissue.erosion.size, 0);
+    assert.equal(state.remix.clearancePulse.activated, false);
+    state.projectiles = [shot(106, 312)];
+    const shotEvents = stepSimulation(state, idle, FIXED_STEP);
+    assert.equal(state.remix.clearancePulse.activated, true);
+    assert.equal(state.arena.tissue[0].cells[0].occupied, false);
+    const pulses = shotEvents.filter((event) => event.type === "clearance_pulse");
+    assert.equal(pulses.length, 1);
+    assert.deepEqual(pulses[0].removedTargetIds, [target.id]);
+  }
 });
 
 test("committed projectile carving pulses after contact damage and can complete the stage", () => {

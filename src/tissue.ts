@@ -56,7 +56,12 @@ export function queueProjectileErosion(tick: TissueTick, cell: FrozenTissueCell)
   }
 }
 
-function queueTargetErosion(tick: TissueTick, cell: FrozenTissueCell, normal: Velocity): void {
+function queueTargetErosion(
+  state: SimulationState,
+  tick: TissueTick,
+  cell: FrozenTissueCell,
+  normal: Velocity,
+): void {
   const horizontal = Math.abs(normal.x) >= Math.abs(normal.y);
   // The neighboring cell lies farther into the solid, opposite its outward contact normal.
   const x = cell.position.x - (horizontal ? Math.sign(normal.x) * CELL_SIZE : 0);
@@ -67,6 +72,14 @@ function queueTargetErosion(tick: TissueTick, cell: FrozenTissueCell, normal: Ve
       !(
         candidate.cellId === cell.cellId ||
         (candidate.position.x === x && candidate.position.y === y)
+      )
+    )
+      continue;
+    // The player owns the seam opportunity. Targets reflect from its cells without
+    // carving away a future projectile trigger (including the neighboring cell).
+    if (
+      state.level.clearancePulse?.seamCells.some(
+        (seam) => seam.patchId === candidate.patchId && seam.cellId === candidate.cellId,
       )
     )
       continue;
@@ -207,7 +220,7 @@ export function resolveTargetTissue(state: SimulationState, dt: number, tick: Ti
         state.arena.tissueContacts.push(latch);
       }
       if (!latch.touching && state.elapsed - latch.lastErosionAt >= 0.3) {
-        queueTargetErosion(tick, first.cell, first.normal);
+        queueTargetErosion(state, tick, first.cell, first.normal);
         latch.lastErosionAt = state.elapsed;
       }
       latch.touching = true;

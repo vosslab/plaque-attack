@@ -1,6 +1,10 @@
 import { campaignPosition, getLevel, LEVEL_IDS, nextLevelId, OVERLOAD_DURATION } from "./constants";
-import { hitMultiplier } from "./scoring";
+import { hitMultiplier, masteryBonusPoints } from "./scoring";
+import { STEADY_FLOW_DURATION, steadyFlowMaximum } from "./steady_flow";
 import { getEntryShiftCue } from "./entry_shift";
+import { createRecoveryMap } from "./recovery";
+import type { RecoveryMapOptions } from "./types/recovery";
+import type { DamageEvent } from "./types/events";
 import type { LevelConfig, WeaponMode } from "./types/level";
 import type { AppScreen } from "./types/runtime";
 import type { SimulationState } from "./types/simulation";
@@ -55,7 +59,11 @@ export function showScreen(screen: AppScreen): void {
   element("result_panel").hidden = !["level_result", "game_over", "campaign_result"].includes(kind);
 }
 
-export function showBriefing(level: LevelConfig, practice: boolean): void {
+export function showBriefing(
+  level: LevelConfig,
+  practice: boolean,
+  recovery: Pick<RecoveryMapOptions, "completedLevelIds" | "unlockedLevel">,
+): void {
   element("briefing_act").textContent =
     `Chapter ${level.chapter} / ${CHAPTER_NAMES[level.chapter]}${practice ? " / Practice" : ""}`;
   element("briefing_title").textContent = `Stage ${campaignPosition(level.id)}: ${level.name}`;
@@ -70,21 +78,33 @@ export function showBriefing(level: LevelConfig, practice: boolean): void {
     mechanics.push(
       "Sealed pockets are optional. Breach one to release extra hazards after a short warning.",
     );
-  element("briefing_objective").textContent = [level.briefing, ...mechanics].join(" ");
+  // The authored encounter brief stays authoritative. Repeated rules remain
+  // available below Start rather than expanding every encounter's opening.
+  element("briefing_objective").textContent = level.briefing;
   const tactics = element("briefing_tactics");
   tactics.replaceChildren();
   const instructions: string[] = [];
-  if (level.flowSwitches?.length)
-    instructions.push(
+  if (level.flowSwitches?.length) {
+    mechanics.push(
       "Shoot a ready flow switch with any tool to pull hazards toward its marked lane for 4 seconds. All switches then cool for 6 seconds; shots pass through active or cooling switches.",
     );
-  if (level.arena.supportPockets?.length)
-    instructions.push(
+  }
+  if (level.arena.supportPockets?.length) {
+    mechanics.push(
       "Optional support: carve the marked pocket, then walk to collect its capsule. One shield absorbs one contact; it does not stack. Overload damage bypasses it. Support never blocks a clear.",
     );
-  if (level.objective.kind === "clear" && level.objective.phases)
+  }
+  if (level.objective.kind === "clear" && level.objective.phases) {
     instructions.push(
+      `Clear all ${level.objective.phases.length} groups. Your carved openings carry forward.`,
+    );
+    mechanics.push(
       `Clear each finite group: ${level.objective.phases.map((phase) => phase.name).join(" / ")}. Watch for the next-phase warning; your carved openings, current and shield carry forward.`,
+    );
+  }
+  if (level.objective.kind === "maintenance")
+    instructions.push(
+      `Finish early: after halfway${level.objective.entryShift ? " and the first new-stream arrival" : ""}, hold ${steadyFlowMaximum(level)} or fewer hazards without damage for ${STEADY_FLOW_DURATION} seconds. Otherwise, survive the full timer.`,
     );
   for (const instruction of instructions) {
     const item = document.createElement("li");
@@ -92,6 +112,16 @@ export function showBriefing(level: LevelConfig, practice: boolean): void {
     tactics.append(item);
   }
   tactics.hidden = instructions.length === 0;
+  const details = element("briefing_details");
+  details.removeAttribute("open");
+  details.hidden = mechanics.length === 0;
+  const detailsList = element("briefing_mechanics");
+  detailsList.replaceChildren();
+  for (const mechanic of mechanics) {
+    const item = document.createElement("li");
+    item.textContent = mechanic;
+    detailsList.append(item);
+  }
   const position = campaignPosition(level.id);
   element("briefing_feel").textContent =
     position <= 3
@@ -103,22 +133,32 @@ export function showBriefing(level: LevelConfig, practice: boolean): void {
           : level.objective.kind === "maintenance"
             ? "Keep the rhythm / stay below the safe count"
             : "Find your opening / keep moving";
-  const scene = element("briefing_scene");
-  if (scene instanceof HTMLImageElement) scene.src = `assets/${level.scene}.svg`;
+  const patient = createRecoveryMap({
+    ...recovery,
+    selectedLevelId: level.id,
+    presentation: "briefing",
+    onStageSelected: (): void => {},
+  });
+  if (practice) {
+    const note = document.createElement("p");
+    note.className = "recovery_route_focus";
+    note.textContent = "Practice leaves this patient's earned recovery unchanged.";
+    patient.append(note);
+  }
+  element("briefing_recovery").replaceChildren(patient);
   element("briefing_weapon").textContent = TOOL_NAMES[level.weapon];
   element("briefing_tool_description").textContent = TOOL_DETAILS[level.weapon];
-  element("briefing_caption").textContent =
-    instructions.length > 0
+  const caption = element("briefing_caption");
+  caption.textContent =
+    level.flowSwitches?.length || level.arena.supportPockets?.length || level.clearancePulse
       ? "Arcade fiction: flow switches, carving and contact shields are game mechanics, not cardiovascular treatments."
       : level.act === 1
         ? "Arcade model: real stents hold arteries open."
         : "New target: platelet activation. Antiplatelet drugs help prevent clot formation.";
+  caption.hidden = level.briefing.includes(caption.textContent);
   const tool = element("briefing_tool_art");
-  const target = element("briefing_target_art");
   if (tool instanceof HTMLImageElement)
     tool.src = `assets/${level.weapon === "dual" ? "aspirin" : level.weapon}.svg`;
-  if (target instanceof HTMLImageElement)
-    target.src = `assets/${level.act === 1 ? level.lipidVariants[0] : "platelet"}.svg`;
   element("briefing_title").focus();
 }
 
@@ -190,6 +230,12 @@ export function updateHud(state: Readonly<SimulationState>): void {
       ? `${entrySide}-side arrivals coming: cross to gather, or keep carving shelter`
       : `New arrivals: ${entrySide.toLowerCase()}`
     : "";
+  const steadyVisible = objective.kind === "maintenance" && state.elapsed >= objective.duration / 2;
+  const steadyText = steadyVisible
+    ? objective.entryShift && !state.waves.shiftedArrivalSpawned
+      ? "Steady flow starts after the first new-stream arrival"
+      : `Steady flow: ${state.steadyFlowSeconds.toFixed(1)}/${STEADY_FLOW_DURATION}s / Hold ${steadyFlowMaximum(level)} or fewer; no damage${state.steadyFlowSeconds >= STEADY_FLOW_DURATION && !completed ? " / Finish incoming releases" : ""}`
+    : "";
   const phaseText =
     phase && finale
       ? finale.transitionRemaining > 0 && nextPhase
@@ -202,7 +248,7 @@ export function updateHud(state: Readonly<SimulationState>): void {
         : "";
   if (finale && finale.transitionRemaining > 0 && nextPhase)
     warnings.push(`Next group: ${nextPhase.name} - get ready`);
-  tactic("hud_phase", phaseText);
+  tactic("hud_phase", steadyText || phaseText);
   const flow = state.remix.flow;
   const hasFlow = (level.flowSwitches?.length ?? 0) > 0;
   const lane =
@@ -211,32 +257,46 @@ export function updateHud(state: Readonly<SimulationState>): void {
       : 0;
   const flowLabel =
     flow.kind === "ready"
-      ? "Flow ready"
+      ? "\u2194 Current: shoot switch"
       : flow.kind === "active"
-        ? `Current: lane ${lane}`
-        : "Flow cooling";
+        ? `\u2194 Current: gathering / lane ${lane}`
+        : "\u2194 Current: cooling / shots pass";
   tactic(
     "hud_flow",
     hasFlow ? `${flowLabel}${flow.kind === "ready" ? "" : ` / ${Math.ceil(flow.remaining)}s`}` : "",
   );
   element("hud_flow").dataset.state = flow.kind;
+  const seam = state.remix.clearancePulse;
+  const seamText =
+    seam === undefined
+      ? ""
+      : seam.activated
+        ? "\u25c7 Seam: spent"
+        : "\u25c7 Seam: shoot to clear nearby tiny targets";
+  tactic("hud_seam", seamText);
+  element("hud_seam").dataset.state = seam?.activated ? "spent" : "ready";
   const hasSupport = state.remix.supportPockets.length > 0 || state.remix.contactShield;
   const supportReleased = state.remix.supportPockets.some((pocket) => pocket.status === "released");
+  const supportSealed = state.remix.supportPockets.some((pocket) => pocket.status === "sealed");
   const shieldText = state.remix.contactShield
-    ? "Shield: 1 contact"
+    ? "+ Shield: 1 contact ready"
     : supportReleased
-      ? "Support: walk to collect"
-      : "Shield: empty";
+      ? "+ Support: walk to shield"
+      : supportSealed
+        ? "+ Support: carve marked pocket"
+        : "+ Support collected / shield spent";
   tactic("hud_shield", hasSupport ? shieldText : "");
   element("hud_shield").dataset.state = state.remix.contactShield ? "armed" : "empty";
   const retries = state.remix.retry.retryCount;
   tactic("hud_retries", retries > 0 ? `Retries: ${retries}` : "");
-  element("hud_tactics").hidden = !phaseText && !hasFlow && !hasSupport && retries === 0;
+  element("hud_tactics").hidden =
+    !phaseText && !steadyText && !hasFlow && !seamText && !hasSupport && retries === 0;
   element("hud_warning").textContent = warnings.join(" / ");
   // Live announcements describe changes, not the visual clocks or target counts.
   const status = [
     entryCue ? entryStatus : phaseText,
     hasFlow ? flowLabel : "",
+    seamText,
     hasSupport ? shieldText : "",
     state.overloadElapsed > 0 ? "Overload: reduce hazards" : "",
     ...warnings.filter((warning) => warning !== countdown),
@@ -247,9 +307,18 @@ export function updateHud(state: Readonly<SimulationState>): void {
   if (statusNode.textContent !== status) statusNode.textContent = status;
 }
 
-export function showResult(state: Readonly<SimulationState>, recordRank?: number): void {
+export function showResult(
+  state: Readonly<SimulationState>,
+  recordRank?: number,
+  finalDamage?: DamageEvent,
+): void {
   const lost = state.phase === "game_over";
   const final = state.phase === "campaign_complete";
+  const restored =
+    !lost &&
+    state.level.objective.kind === "maintenance" &&
+    state.elapsed < state.level.objective.duration &&
+    state.steadyFlowSeconds >= STEADY_FLOW_DURATION;
   element("result_eyebrow").textContent =
     state.mode === "practice"
       ? "Practice / Unranked"
@@ -260,19 +329,27 @@ export function showResult(state: Readonly<SimulationState>, recordRank?: number
     ? "Run ended"
     : final && state.mode !== "practice"
       ? "Circulation restored!"
-      : state.level.objective.kind === "maintenance"
-        ? "Maintenance complete!"
-        : state.level.act === 1
-          ? "Plaque cleared!"
-          : state.level.act === 2
-            ? "Platelet activity controlled!"
-            : "Stage cleared!";
+      : restored
+        ? "Flow restored"
+        : state.level.objective.kind === "maintenance"
+          ? "Maintenance complete!"
+          : state.level.act === 1
+            ? "Plaque cleared!"
+            : state.level.act === 2
+              ? "Platelet activity controlled!"
+              : "Stage cleared!";
   element("result_summary").textContent =
     `Stage ${campaignPosition(state.level.id)}: ${state.level.name}. Points earned this level: ${(state.score - state.levelStartScore).toLocaleString()}. Total score: ${state.score.toLocaleString()}. Lives remaining: ${state.player.lives} / 3. Retries: ${state.remix.retry.retryCount}.${lost ? ` Retry this stage from its entry score of ${state.levelStartScore.toLocaleString()} with 3 lives and the same opening. Each retry adds to the run retry count; this failure saves no record.` : ""}${recordRank === undefined ? "" : ` High-score rank: ${recordRank} / 5.`}`;
   element("result_fact").textContent =
     state.level.fact ??
     getLevel(state.level.act === 1 ? 3 : state.level.act === 2 ? 6 : 11).fact ??
     "";
+  const masterySummary = element("result_mastery");
+  masterySummary.hidden = !restored;
+  masterySummary.textContent =
+    restored && state.level.objective.kind === "maintenance"
+      ? `Finished ${(state.level.objective.duration - state.elapsed).toFixed(1)}s early. Mastery bonus: ${masteryBonusPoints(state).toLocaleString()} points.`
+      : "";
   button("continue_button").hidden = lost || final || state.mode === "practice";
   const next = nextLevelId(state.level.id);
   button("continue_button").textContent =
@@ -290,5 +367,12 @@ export function showResult(state: Readonly<SimulationState>, recordRank?: number
         : lost
           ? "Press Enter or Space to retry this stage. Release, then press again when ready."
           : "Press Enter or Space for the next stage.";
+  if (lost && finalDamage?.lives === 0) {
+    const nextAttempt =
+      finalDamage.cause === "contact"
+        ? "A hazard hit you. Move clear of its path before lining up your next shot."
+        : "Overload cost the last life. Reduce the hazard count to the safe maximum or below before the overload timer fills.";
+    element("result_keyboard_hint").textContent += ` ${nextAttempt}`;
+  }
   element("result_title").focus();
 }

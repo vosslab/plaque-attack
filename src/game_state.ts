@@ -49,6 +49,7 @@ export function createSimulation(
     fireCooldown: 0,
     nextDrug: "aspirin",
     overloadElapsed: 0,
+    steadyFlowSeconds: 0,
     survivalSecondsAwarded: 0,
     score,
     levelStartScore: score,
@@ -56,7 +57,7 @@ export function createSimulation(
     levelLivesLost: 0,
     completionAwarded: false,
     recordCommitted: false,
-    waves: { spawned: 0, nextSpawnAt: firstWave, warning: undefined },
+    waves: { spawned: 0, nextSpawnAt: firstWave, warning: undefined, shiftedArrivalSpawned: false },
     arena: {
       tissue: level.arena.tissue.map((patch) => ({
         id: patch.id,

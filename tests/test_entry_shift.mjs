@@ -1,10 +1,42 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { logicalCoordinate } from "../src/brands.ts";
-import { getLevel, SPAWN_WARNING_DURATION } from "../src/constants.ts";
+import { FIXED_STEP, getLevel, SPAWN_WARNING_DURATION } from "../src/constants.ts";
 import { getEntryShiftCue } from "../src/entry_shift.ts";
 import { createSimulation, retryLevel } from "../src/game_state.ts";
 import { advanceWaves } from "../src/waves.ts";
+import { stepSimulation } from "../src/simulation.ts";
+import { canBankSteadyFlow } from "../src/steady_flow.ts";
+
+test("steady flow waits for an actual postshift-selected arrival, then starts its full interval", () => {
+  const state = shiftedState("cycle");
+  state.level = { ...state.level, objective: { ...state.level.objective, duration: 20 } };
+  state.targets = [];
+  state.phase = "playing";
+  state.elapsed = 10 - SPAWN_WARNING_DURATION / 2;
+  state.waves.nextSpawnAt = state.elapsed;
+  advanceWaves(state, 0, []);
+  assert.equal(state.waves.warning.selectedAfterShift, false);
+  state.elapsed = 10;
+  advanceWaves(state, SPAWN_WARNING_DURATION, []);
+  assert.equal(state.waves.shiftedArrivalSpawned, false);
+  assert.equal(
+    canBankSteadyFlow(state),
+    false,
+    "an old warning arriving after the shift is insufficient",
+  );
+  state.elapsed = state.waves.nextSpawnAt;
+  advanceWaves(state, 0, []);
+  assert.equal(state.waves.warning.selectedAfterShift, true);
+  assert.equal(canBankSteadyFlow(state), false, "announcing the new stream is insufficient");
+  state.targets = [];
+  const input = { left: false, right: false, fire: false };
+  stepSimulation(state, input, SPAWN_WARNING_DURATION);
+  assert.equal(state.waves.shiftedArrivalSpawned, true);
+  assert.equal(state.steadyFlowSeconds, 0, "the tick preceding the actual spawn cannot count");
+  stepSimulation(state, input, FIXED_STEP);
+  assert.equal(state.steadyFlowSeconds, FIXED_STEP);
+});
 
 function shiftedState(entryOrder) {
   const level = getLevel(11);

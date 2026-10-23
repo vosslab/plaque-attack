@@ -6,6 +6,7 @@ import {
 } from "./constants";
 import type { SimulationEvent } from "./types/events";
 import type { SimulationState, Target } from "./types/simulation";
+import { STEADY_FLOW_DURATION } from "./steady_flow";
 
 export function hitMultiplier(streak: number): 1 | 2 | 3 {
   return streak >= 10 ? 3 : streak >= 5 ? 2 : 1;
@@ -33,14 +34,25 @@ export function awardSurvival(state: SimulationState, events: SimulationEvent[])
   events.push({ type: "survival_points", points });
 }
 
+export function masteryBonusPoints(state: Readonly<SimulationState>): number {
+  const objective = state.level.objective;
+  if (objective.kind !== "maintenance" || state.steadyFlowSeconds < STEADY_FLOW_DURATION) return 0;
+  return (
+    Math.max(0, Math.floor(objective.duration + 1e-9) - Math.floor(state.elapsed + 1e-9)) *
+    SURVIVAL_POINTS_PER_SECOND
+  );
+}
+
 export function completeLevel(state: SimulationState, events: SimulationEvent[]): void {
   if (state.completionAwarded) return;
   state.completionAwarded = true;
-  const points = LEVEL_COMPLETION_POINTS + (state.levelLivesLost === 0 ? NO_DAMAGE_POINTS : 0);
+  const masteryPoints = masteryBonusPoints(state);
+  const points =
+    LEVEL_COMPLETION_POINTS + (state.levelLivesLost === 0 ? NO_DAMAGE_POINTS : 0) + masteryPoints;
   state.score += points;
   state.phase =
     state.mode === "campaign" && state.level.id === 15 ? "campaign_complete" : "level_complete";
-  events.push({ type: "level_complete", levelId: state.level.id, points });
+  events.push({ type: "level_complete", levelId: state.level.id, points, masteryPoints });
   if (state.phase === "campaign_complete") endRun(state, "completed", events);
 }
 

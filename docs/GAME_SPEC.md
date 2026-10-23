@@ -10,6 +10,10 @@ The approved early-weapon progression keeps the stable display order and stage 1
 introduces aspirin at display 2 and clopidogrel at display 3, then builds mastery and combinations.
 The remix also adds shootable flow switches, optional contact shields, finite phase finales, quick
 stage retries and distinct earned restoration.
+The settled clearance-seam contract is player-owned: only a projectile hit activates its pulse;
+target contact reflects and preserves the shootable seam. Integrated verification is recorded in
+[GAMEWIDE_PLAYFUL_PAYOFF.md](active_plans/active/GAMEWIDE_PLAYFUL_PAYOFF.md) and remains in
+progress.
 [archive/remix_campaign_plan.md](archive/remix_campaign_plan.md) owns the existing remix contract;
 [active_plans/active/early_weapon_discovery.md](active_plans/active/early_weapon_discovery.md)
 owns the approved opening and mastery update. `src/constants.ts` and `src/remix_levels.ts` own
@@ -48,7 +52,8 @@ Miniclip hosting or affiliation is not part of the delivery requirement.
 The game should feel immediately understandable and increasingly demanding. The interesting
 decision is where to stand and when to fire: a split removes a large obstacle but creates two
 smaller ones. Later, rapid aspirin shots and persistent clopidogrel shots reward different timing.
-Maintenance asks the player to sustain control rather than chase a permanently empty screen.
+Maintenance asks the player to sustain control rather than chase a permanently empty screen; an
+optional earned finish rewards especially steady play.
 
 1. Read a short objective and see the equipped tool.
 2. Move left or right and fire upward while reading the fluid drift patterns.
@@ -231,14 +236,17 @@ Displays 1-3 keep flat arenas and gentle movement while introducing the three to
 retains its original stent workload; displays 2-3 use platelet encounters. The remix introduces a
 sticky plaque at stage 4, a heavy plaque and optional support at stage 5, then practices both
 before an unstable plaque in stage 6's second phase. Stage 9 introduces a marked clearance seam
-among tiny platelets; its first committed seam erosion triggers one local pulse against nearby
-tiny plaques and platelets, awarding the existing removal points. Larger hazards remain. The seam
-can return selectively in later encounters. The pulse activates once per attempt and its telegraph
-shows the authored radius. It is a helpful arcade effect, not a modeled biological or clinical
-process. Displays 4-6 retain the plaque behavior sequence, so old later-stage hit totals are not
-current metrics. Authored
-placement is in `src/remix_levels.ts`; behavior and reach estimates have explicit bounds in the
-local report `output/gameplay_variety/metrics.md`.
+among tiny platelets; projectile-caused seam erosion triggers one local pulse against nearby tiny
+plaques and platelets, awarding the existing removal points. Target contact reflects from the
+seam and cannot consume the opportunity or destroy its shootable trigger. Larger hazards remain.
+The seam can return selectively in later encounters. The pulse activates once per attempt and its
+telegraph shows the authored radius. It is a helpful arcade effect, not a modeled biological or
+clinical process. Displays 4-6 retain the plaque behavior sequence, so old later-stage hit totals
+are not current metrics. Display 18 is selected for a focused current-to-seam composition using its
+existing phases and devices; display 24 keeps its current recovery finale. Weapon-only completion
+remains viable if a player spends or misses the seam. Authored placement is in
+`src/remix_levels.ts`; behavior and reach estimates have explicit bounds in the local report
+`output/gameplay_variety/metrics.md`.
 
 ### Flow and optional support
 
@@ -403,8 +411,24 @@ is added to these finales. Final victory remains an arcade recovery story, not a
 - During this final recovery, show "Time complete - reduce hazards to finish". Survival points
   stop at the nominal duration. Do not reset the warning or grant extra time at the timer boundary.
 
+Displays 19, 21, and 23 also offer an optional earned finish. After the midpoint, and after
+the first actual spawn from a shifted entry stream when that encounter has one, keep active hazards
+at or below half the safe maximum for six continuous active-play seconds without taking damage.
+Going above that threshold or taking damage resets the interval. Once eligible, show the progress
+label `Steady flow: x/6s` and its target threshold; the briefing explains the optional route. This
+rewards sustained control during active play and does not imply that ordinary timed maintenance
+requires waiting.
+Reaching the goal closes future unannounced entries, while already announced entries and pending
+releases still resolve through their normal rules. The ordinary timed clear remains available.
+An earned clear uses the existing result and recovery flow, names the result `Flow restored`, and
+shows the actual time saved. Its explicit one-time mastery bonus brings survival points to the
+normal full-duration amount; it does not count unplayed seconds as survived. Existing clear and
+no-damage bonuses remain unchanged. Pause, ready countdowns and terminal time do not advance the
+interval, and retry resets it.
+
 The objective is sustained management with recoverable overload, not a requirement to keep at
-least one hazard alive. Clearing everything is always safe; the next scheduled wave still arrives.
+least one hazard alive. Clearing everything is always safe; during ordinary maintenance the next
+scheduled wave still arrives.
 
 Display stage 23 (stable ID 24) keeps its 50-second maintenance duration and safe maximum of five.
 Its opening entries favor the left; at 25 seconds, newly selected entries shift right. Forecast the
@@ -461,6 +485,10 @@ same attempt. An active run remains in memory only and does not resume after rel
 | Complete a level | 1,000 |
 | Complete a level without life loss | 500 additional |
 | Maintenance survival | 10 per completed second of the nominal timer |
+
+An earned maintenance finish awards an explicit one-time mastery bonus equal to the survival points
+that a normal full-duration clear would still earn. This preserves score parity without recording
+unplayed seconds as survival.
 
 Consecutive successful target hits build the multiplier. Hits 1-4 use x1, hits 5-9 use x2, and
 hit 10 onward uses x3. Contact or overload damage resets the streak before later hits are counted.

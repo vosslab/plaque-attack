@@ -481,9 +481,26 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     arena: ARENA_LAYOUTS[8],
     merge: MERGE_RULES[8],
     briefing:
-      "Build on the early persistent-shot lesson: line up clopidogrel through platelet lanes. Each shot can inactivate three distinct hazards; clear all 12.",
-    initialTargets: platelets(6, "small"),
-    objective: { kind: "clear", reinforcements: reinforcements(6, 4, entries([480])) },
+      "Remember the persistent shot: step beneath the opening column and inactivate three hazards with one clopidogrel shot. Then track the incoming lanes and clear all 12.",
+    // The lower body's ascending orbit keeps the opening column within one slow shot.
+    initialTargets: [150, 360, 255].map((y): TargetSpawn => ({
+      kind: "platelet",
+      size: "small",
+      position: { x: logicalCoordinate(480), y: logicalCoordinate(y) },
+      direction: 1,
+    })),
+    objective: {
+      kind: "clear",
+      reinforcements: Array.from({ length: 9 }, (_, index): ScheduledSpawn => ({
+        at: 2.5 + (index * (24 - 2.5)) / 8,
+        target: {
+          kind: "platelet",
+          size: index < 3 ? "small" : "tiny",
+          position: { x: logicalCoordinate(480), y: logicalCoordinate(100) },
+          direction: 1,
+        },
+      })),
+    },
     fact: undefined,
   },
   21: {

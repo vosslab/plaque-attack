@@ -106,7 +106,9 @@ export function createRecoveryMap(options: Readonly<RecoveryMapOptions>): HTMLEl
   const completed = new Set<LevelId>(options.completedLevelIds);
   const section = html("section", "recovery_map");
   const result = options.presentation === "result";
+  const briefing = options.presentation === "briefing";
   if (result) section.classList.add("recovery_result");
+  if (briefing) section.classList.add("recovery_briefing");
   section.setAttribute("aria-label", "Coronary recovery map");
   section.dataset.recoveryTier = String(recoveryTier(completed.size));
 
@@ -114,7 +116,11 @@ export function createRecoveryMap(options: Readonly<RecoveryMapOptions>): HTMLEl
   const eyebrow = html("p", "eyebrow");
   eyebrow.textContent = "Restore the rhythm";
   const title = html("h2");
-  title.textContent = result ? "Patient recovery" : "Restore the coronary routes.";
+  title.textContent = briefing
+    ? "Your patient. This route."
+    : result
+      ? "Patient recovery"
+      : "Restore the coronary routes.";
   const vitality = html("p", "recovery_vitality");
   vitality.setAttribute("role", "status");
   vitality.textContent = completionText(completed.size);
@@ -128,7 +134,12 @@ export function createRecoveryMap(options: Readonly<RecoveryMapOptions>): HTMLEl
     ledger.append(item);
   }
   intro.append(eyebrow, title, vitality);
-  if (!result) intro.append(ledger);
+  if (!result && !briefing) intro.append(ledger);
+  if (briefing && options.selectedLevelId !== undefined) {
+    const focus = html("p", "recovery_route_focus");
+    focus.textContent = `Stage ${campaignPosition(options.selectedLevelId)} route: ${completed.has(options.selectedLevelId) ? "already restored" : "awaiting clearance"}.`;
+    intro.append(focus);
+  }
 
   const art = html("div", "recovery_map_art");
   const illustration = document.createElement("img");
@@ -169,13 +180,21 @@ export function createRecoveryMap(options: Readonly<RecoveryMapOptions>): HTMLEl
     const territory = svg("path", "recovery_territory");
     territory.dataset.stage = String(levelId);
     territory.dataset.completed = String(completed.has(levelId));
-    territory.dataset.highlighted = String(result && options.selectedLevelId === levelId);
+    territory.dataset.highlighted = String(
+      (result || briefing) && options.selectedLevelId === levelId,
+    );
+    territory.dataset.newlyCompleted = String(
+      result && completed.has(levelId) && options.newlyCompletedLevelId === levelId,
+    );
     territory.setAttribute("d", territoryPath(slot, index));
     overlay.append(territory);
     const vessel = svg("path", "recovery_territory_vessel");
     vessel.dataset.stage = String(levelId);
     vessel.dataset.completed = String(completed.has(levelId));
-    vessel.dataset.highlighted = String(result && options.selectedLevelId === levelId);
+    vessel.dataset.highlighted = String(
+      (result || briefing) && options.selectedLevelId === levelId,
+    );
+    vessel.dataset.newlyCompleted = territory.dataset.newlyCompleted;
     vessel.setAttribute("d", territoryVesselPath(slot, index));
     overlay.append(vessel);
     const marker = svg("circle", "recovery_marker");
@@ -187,13 +206,14 @@ export function createRecoveryMap(options: Readonly<RecoveryMapOptions>): HTMLEl
     const lesion = svg("circle", "recovery_lesion");
     lesion.dataset.stage = String(levelId);
     lesion.dataset.completed = String(completed.has(levelId));
+    lesion.dataset.newlyCompleted = territory.dataset.newlyCompleted;
     lesion.setAttribute("cx", String(slot.x + (index % 2 === 0 ? 1.4 : -1.4)));
     lesion.setAttribute("cy", String(slot.y - 0.7));
     lesion.setAttribute("r", "1.65");
     overlay.append(lesion);
   }
 
-  if (result) {
+  if (result || briefing) {
     art.append(illustration, patient, overlay);
     section.append(art, intro);
     return section;

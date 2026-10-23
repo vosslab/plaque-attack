@@ -104,18 +104,12 @@
             ><button id="briefing_surgeon" class="quiet_button" type="button">Choose surgeon</button
             ><button id="back_menu" class="quiet_button" type="button">Back to menu</button>
           </div>
+          <details id="briefing_details" class="briefing_details" hidden>
+            <summary>Mechanics and timing</summary>
+            <ul id="briefing_mechanics"></ul>
+          </details>
         </div>
-        <div class="briefing_art" aria-hidden="true">
-          <img
-            id="briefing_scene"
-            class="briefing_scene"
-            src="assets/scene-endothelium.svg"
-            alt=""
-          /><span class="target_ring"></span
-          ><img id="briefing_target_art" src="assets/plaque.svg" alt="" /><span class="small_label"
-            >Meet your first challenge</span
-          >
-        </div>
+        <div id="briefing_recovery"></div>
       </section>
 
       <section id="practice_select" class="content_panel" aria-labelledby="practice_title" hidden>
@@ -149,8 +143,7 @@
               ><strong id="hud_time">00:00</strong>
             </div>
             <div class="hud_objective">
-              <span id="hud_objective">Clear all plaque</span
-              ><strong id="hud_warning"></strong>
+              <span id="hud_objective">Clear all plaque</span><strong id="hud_warning"></strong>
             </div>
             <div class="hud_weapon">
               <span class="small_label">Tool</span><strong id="hud_weapon">Coronary stent</strong>
@@ -158,6 +151,7 @@
             <div id="hud_tactics" class="hud_tactics" aria-label="Stage tactics" hidden>
               <span id="hud_phase" class="tactic_badge phase_badge" hidden></span>
               <span id="hud_flow" class="tactic_badge flow_badge" hidden></span>
+              <span id="hud_seam" class="tactic_badge seam_badge" hidden></span>
               <span id="hud_shield" class="tactic_badge shield_badge" hidden></span>
               <span id="hud_retries" class="tactic_badge" hidden></span>
             </div>
@@ -177,6 +171,7 @@
             >Your browser needs Canvas support to play Plaque Attack.</canvas
           >
           <div id="overlay" class="arena_overlay" role="status" hidden></div>
+          <div id="celebration_recovery" class="celebration_recovery" hidden></div>
         </div>
         <div class="play_controls">
           <p class="control_hint desktop_hint">
@@ -193,7 +188,9 @@
             </button>
           </div>
         </div>
-        <p id="celebration_status" class="control_hint" role="status" hidden>Stage clear! Nice work.</p>
+        <p id="celebration_status" class="control_hint" role="status" hidden>
+          Stage clear! Nice work.
+        </p>
         <p class="orientation_hint">More room to dodge? Try turning your phone sideways.</p>
       </section>
 
@@ -205,6 +202,7 @@
       >
         <p class="eyebrow" id="result_eyebrow">A little more breathing room</p>
         <h2 id="result_title" tabindex="-1">Plaque cleared!</h2>
+        <p id="result_mastery" class="recovery_outcome" hidden></p>
         <p id="result_recovery_note" class="recovery_outcome" hidden></p>
         <div id="result_recovery" hidden></div>
         <p id="result_keyboard_hint" class="control_hint">Press Enter or Space to continue.</p>
@@ -216,7 +214,8 @@
           ><button id="practice_current" class="quiet_button" type="button">
             Practice this stage</button
           ><button id="result_surgeon" class="quiet_button" type="button">Choose surgeon</button
-          ><button id="result_recovery_details" class="quiet_button" type="button">Patient recovery</button
+          ><button id="result_recovery_details" class="quiet_button" type="button">
+            Patient recovery</button
           ><button id="result_menu" class="quiet_button" type="button">Main menu</button>
         </div>
         <div id="result_summary" class="panel_intro"></div>

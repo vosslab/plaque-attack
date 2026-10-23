@@ -1,5 +1,34 @@
 ## 2026-10-23
 
+### Behavior or Interface Changes
+
+- Record six scoped gamewide contracts: same-patient continuity through earned results; distinct
+  split and terminal-hit forms; full-world presentation; stage-13 clopidogrel reacquisition; an
+  event-grounded damage-cause sentence; and the existing early-maintenance time-saved/mastery-bonus
+  sentence directly below its result title. Retry clears transient cause feedback naturally. Preserve
+  practice recovery, simulation and save schemas, existing controls, and authored target workload as
+  specified in
+  [GAMEWIDE_CONTINUITY_READABILITY.md](active_plans/active/GAMEWIDE_CONTINUITY_READABILITY.md).
+
+- Record the settled player-owned seam contract: only projectile erosion triggers the pulse, and
+  target contact reflects while preserving the shootable seam. Select display 18 for the existing
+  current-to-seam composition, retain weapon-only completion, and leave display 24 unchanged.
+  Complete the deliberate two-target payoff, ordinary/early-spent completion and retry checks;
+  move device action/state cues into the existing readable HUD with matching arena symbols.
+  Correct the phone font override and faithful canvas test fixture; source, quality, browser and
+  responsive acceptance pass within the documented bounded scope. See [GAME_SPEC.md](GAME_SPEC.md),
+  [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md), and
+  [GAMEWIDE_PLAYFUL_PAYOFF.md](active_plans/active/GAMEWIDE_PLAYFUL_PAYOFF.md).
+
+### Earned maintenance mastery
+
+- Add an optional early finish to the three maintenance stages for six seconds of damage-free
+  control at or below half the safe hazard maximum, available after the midpoint and any actual
+  shifted-stream spawn. Preserve the ordinary timed clear and make the reward match full-duration
+  survival scoring without counting unplayed time as survival.
+- Show progress, threshold, `Flow restored`, and actual time saved through the existing HUD and
+  result flow. Record the design basis and evidence limits in [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md).
+
 ### Lipid merge briefing
 
 - Clarify that lipids of matching sizes can merge when they collide.
@@ -95,9 +124,29 @@
 
 ### Decisions and Failures
 
-- Keep criterion ratings separate and categorical. Do not average them into an overall score or
-  treat agent review as human enjoyment evidence; see
-  [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md).
+- Record six gamewide contracts and the authoritative 960x540 (16:9) world in
+  [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md): patient continuity, distinct hit outcomes, full-world
+  presentation, stage-13 reacquisition, transient cause-specific retry guidance, and earned-result
+  hierarchy.
+- Complete the six implementation tracks and record actual-control evidence, final bundle hashes,
+  measured viewport limits, and evidence boundaries in
+  [GAMEWIDE_CONTINUATION_LEDGER.md](active_plans/reports/GAMEWIDE_CONTINUATION_LEDGER.md). The five-contract baseline passed fresh specification, quality, and integration review. Fresh specification, focused quality, and integration reviews accept all six contracts on the final
+  build. The sixth result-hierarchy change is accepted on its scoped checks; the baseline suites are
+  recorded separately.
+- Add a six-report ranked-opportunity reassessment to the ledger. Fresh integration confirms every
+  disposition, inspects the practice-result hierarchy at phone and desktop sizes, and records the
+  stop decision.
+
+### Developer Tests and Notes
+
+- The five-contract baseline passes both TypeScript configurations, ESLint, Prettier, 94 Node tests,
+  and all 25 browser tests (4.1 minutes, zero failures). Focused hygiene passes 18 explicit files for
+  Latin-1 encoding, BOM/CR absence, trailing newlines, line limits, and local Markdown links. Served
+  and on-disk hashes and the 37-module source map match; the renderer comment-only change has an
+  identical esbuild transform. For the sixth UI-only contract, fresh scoped TypeScript, ESLint, and
+  Prettier checks pass, and the actual Stage 23 practice-result route confirms the promoted sentence
+  at desktop and 390px portrait. The baseline 94/25 suites were not rerun for that change; no full
+  pytest claim is made.
 
 ## 2026-10-22
 

@@ -46,8 +46,8 @@ export function createRemixRendering(
     if (feedback.length >= 8) feedback.shift();
     feedback.push({ text, x, y, color, life: 1.1 });
   };
-  const caption = (text: string, x: number, y: number, color = "#dcfff1"): void => {
-    ctx.font = "bold 12px system-ui, sans-serif";
+  const caption = (text: string, x: number, y: number, color = "#dcfff1", fontSize = 12): void => {
+    ctx.font = `bold ${fontSize}px system-ui, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const width = ctx.measureText(text).width + 14;
@@ -212,6 +212,28 @@ export function createRemixRendering(
 
   function drawDevices(state: Readonly<SimulationState>): void {
     const flow = state.remix.flow;
+    // Device instructions live in CSS-sized HUD text when the world scales down.
+    // Large static markers connect each device to its matching HUD cue.
+    const showDeviceInstructions = ctx.canvas.getBoundingClientRect().width >= 720;
+    const deviceCaption = (
+      symbol: string,
+      text: string,
+      x: number,
+      y: number,
+      color = "#dcfff1",
+    ): void => {
+      if (showDeviceInstructions) {
+        caption(symbol + " " + text, x, y, color, 16);
+        return;
+      }
+      ctx.font = "bold 32px system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#211d32";
+      ctx.fillRect(x - 20, y - 20, 40, 40);
+      ctx.fillStyle = color;
+      ctx.fillText(symbol, x, y);
+    };
     ctx.save();
     const seam = state.level.clearancePulse;
     if (seam !== undefined && state.remix.clearancePulse !== undefined) {
@@ -249,10 +271,10 @@ export function createRemixRendering(
         ctx.lineTo(x, y + 13);
         ctx.lineTo(x + 7, y + 6);
         ctx.stroke();
-        caption("CARVE SEAM / CLEAR TINY", x, y - 33);
+        deviceCaption("\u25c7", "SHOOT SEAM / CLEAR TINY", x, y - 33);
       } else {
         // The permanent used mark is spatially quiet; the area telegraph is gone.
-        caption("SEAM USED", x, y - 22, "#e1d4cb");
+        deviceCaption("\u25c7", "SEAM SPENT", x, y - 22, "#e1d4cb");
       }
     }
     for (const pulse of pulses) {
@@ -323,7 +345,7 @@ export function createRemixRendering(
           : flow.kind === "active"
             ? `CURRENT ${flow.remaining.toFixed(1)}s`
             : `COOLDOWN ${flow.remaining.toFixed(1)}s / SHOTS PASS`;
-      caption(text, x, y + 43);
+      deviceCaption("\u2194", text, x, y + 46);
     }
     for (const pocket of state.remix.supportPockets) {
       const definition = state.level.arena.supportPockets?.find((item) => item.id === pocket.id);
@@ -345,7 +367,7 @@ export function createRemixRendering(
           const bottom = Math.max(...cells.map((cell) => cell.position.y)) + 12;
           ctx.strokeRect(left - 3, top - 3, right - left + 6, bottom - top + 6);
           ctx.drawImage(images["support-capsule"], (left + right) / 2 - 13, top - 34, 26, 26);
-          caption("OPTIONAL SUPPORT", (left + right) / 2, top - 47);
+          deviceCaption("+", "CARVE FOR SUPPORT", (left + right) / 2, top - 51);
         }
         ctx.setLineDash([]);
       } else if (pocket.capsulePosition !== undefined) {
@@ -354,6 +376,7 @@ export function createRemixRendering(
         ctx.strokeStyle = "#c5ffea";
         ctx.lineWidth = 2;
         ctx.strokeRect(x - 16, y - 16, 32, 32);
+        deviceCaption("+", "WALK TO SHIELD", x, y - 38);
       }
     }
     ctx.restore();

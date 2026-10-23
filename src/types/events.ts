@@ -29,6 +29,7 @@ export type LevelCompleteEvent = {
   type: "level_complete";
   levelId: LevelId;
   points: number;
+  masteryPoints: number;
 };
 export type RunEndEvent = {
   type: "run_end";

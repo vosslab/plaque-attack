@@ -69,13 +69,15 @@ function supportArena(level: LevelConfig, centerX = 132): LevelConfig["arena"] {
 function clearanceSeam(
   level: LevelConfig,
   arena: LevelConfig["arena"] = level.arena,
+  position?: { x: number; y: number },
 ): {
   arena: LevelConfig["arena"];
   pulse: ClearancePulseDefinition;
 } {
   const id = "clearance-seam";
-  const x = 780;
+  const x = position?.x ?? 780;
   const y =
+    position?.y ??
     floorMinimumY(arena.floor, x - PLAYER_WIDTH, x + 36 + PLAYER_WIDTH) - PLAYER_HEIGHT - 230;
   const cells = Array.from({ length: 3 }, (_, index) => ({
     id: `${id}:${index}`,
@@ -310,10 +312,11 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
           position: { x: logicalCoordinate(426 + index * 12), y: logicalCoordinate(bridgeY) },
         })),
       };
-      const seam = clearanceSeam(level, {
-        ...level.arena,
-        tissue: [...level.arena.tissue, bridge],
-      });
+      const seam = clearanceSeam(
+        level,
+        { ...level.arena, tissue: [...level.arena.tissue, bridge] },
+        { x: 680, y: 230 },
+      );
       return finale(
         {
           ...level,
@@ -321,9 +324,9 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
           weapon: "clopidogrel",
           arena: seam.arena,
           clearancePulse: seam.pulse,
-          flowSwitches: [current(480)],
+          flowSwitches: [current(480, 698)],
           briefing:
-            "Carve the marked seam when tiny platelets enter its ring for one local clearance pulse. Open the aperture beneath the switch, gather the next column, then sweep the last fragments to restore the lining.",
+            "Open the aperture beneath the switch to gather targets toward the right-side ring. Save the marked seam for a gathered tiny fan, then shoot it for one local clearance pulse. Ordinary shots can finish every phase and restore the lining.",
         },
         [
           {
@@ -344,9 +347,9 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
           {
             name: "Lining cleanup",
             targets: [
-              platelet(200, 140, 1, "tiny"),
-              platelet(480, 210, -1, "tiny"),
-              platelet(760, 140, -1, "tiny"),
+              platelet(340, 150, 1, "tiny"),
+              platelet(500, 230, -1, "tiny"),
+              platelet(820, 310, -1, "tiny"),
             ],
           },
         ],

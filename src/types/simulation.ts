@@ -71,6 +71,7 @@ export type SimulationPhase =
 export type SpawnWarning = {
   target: TargetSpawn;
   remaining: number;
+  selectedAfterShift?: boolean;
 };
 
 export type WaveState = {
@@ -78,6 +79,7 @@ export type WaveState = {
   spawned: number;
   nextSpawnAt: number;
   warning: SpawnWarning | undefined;
+  shiftedArrivalSpawned: boolean;
 };
 
 export type RuntimeTissueCell = {
@@ -200,6 +202,7 @@ export type SimulationState = {
   fireCooldown: number;
   nextDrug: DrugKind;
   overloadElapsed: number;
+  steadyFlowSeconds: number;
   survivalSecondsAwarded: number;
   score: number;
   levelStartScore: number;

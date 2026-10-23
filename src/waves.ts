@@ -3,6 +3,7 @@ import { createTarget } from "./characters";
 import { MAX_TARGETS, SPAWN_WARNING_DURATION } from "./constants";
 import { FINALE_TRANSITION_DURATION } from "./remix_mechanics";
 import { hasPendingTargets } from "./tissue";
+import { STEADY_FLOW_DURATION } from "./steady_flow";
 import type { SimulationEvent } from "./types/events";
 import type { TargetSpawn } from "./types/level";
 import type { SimulationState } from "./types/simulation";
@@ -38,6 +39,7 @@ export function advanceWaves(state: SimulationState, dt: number, events: Simulat
       state.level.arena.floor,
     );
     state.targets.push(target);
+    if (warning.selectedAfterShift) state.waves.shiftedArrivalSpawned = true;
     state.waves.spawned += 1;
     state.waves.warning = undefined;
     state.waves.nextSpawnAt =
@@ -53,12 +55,16 @@ export function advanceWaves(state: SimulationState, dt: number, events: Simulat
     events.push({ type: "spawn", targetId: target.id, position: { ...target.position } });
     return;
   }
+  // A full mastery meter closes future entries, but honors an announced arrival above.
+  if (objective.kind === "maintenance" && state.steadyFlowSeconds >= STEADY_FLOW_DURATION) return;
   const emptyFiniteWave = objective.kind === "clear" && state.targets.length === 0;
   if (!emptyFiniteWave && state.elapsed + 1e-9 < state.waves.nextSpawnAt - SPAWN_WARNING_DURATION)
     return;
   const target = nextEntry(state);
   if (target !== undefined) {
     state.waves.warning = { target, remaining: SPAWN_WARNING_DURATION };
+    if (objective.kind === "maintenance" && objective.entryShift !== undefined)
+      state.waves.warning.selectedAfterShift = state.elapsed >= objective.entryShift.at;
   }
 }
 
