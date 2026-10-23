@@ -10,7 +10,7 @@ the reasoning a later reader needs. Guidance Neil Voss states belongs in
 ### Gameplay variety behaviors and clearance seam
 
 **Decision.** Add three authored plaque behaviors and a one-use tissue clearance pulse while
-keeping the first three stages and familiar controls. Sticky pauses at a sidewall; a medium heavy
+keeping the established controls. Sticky pauses at a sidewall; a medium heavy
 plaque takes one hit and makes three ordinary tiny targets; an unstable plaque has a six-second
 active-play fuse whose timeout makes an ordinary next-size split without hit score. Eroding the
 marked seam activates one local pulse that removes nearby tiny plaques and platelets and awards
@@ -25,12 +25,20 @@ stent treatment or clinical care.
 **Consequence.** `src/remix_levels.ts` owns placement and `src/lipid_behaviors.ts` plus existing
 simulation owners implement behavior. Difficulty metrics calculate heavy work from its actual
 three-child split. Unstable scored work is a player-shot upper bound; pulse reach and benefit are
-encounter-dependent and are not exhaustively estimated. The plan's staged introduction is
-authored; integrated play, readability and fun remain subject to their evidence gates.
+encounter-dependent and are not exhaustively estimated. The selected contract uses a 0.65-second
+sticky pause, six-second active-play fuse, three heavy children with a 0.65 movement factor, and
+180-unit pulse radius. Specification, quality, and fresh integration reviews accept within the
+sampled scope. Actual-control play finds stage 9's timed pulse useful on desktop and mobile, and
+observes the stage-6 fuse cue and retry reset; it does not observe fuse expiry. The corrected
+stage-24 encounter changes two existing right-side targets to tiny targets, with the outer one at
+(940, 440). Ordinary rightward movement causes the seam pulse to clear one target for 250 points
+with all lives intact. It activated before the fire input, so deliberate shot activation remains
+unobserved. These bounded agent observations do not establish human enjoyment. See
+`output/gameplay_variety/closeout.md` and `output/gameplay_variety/integration.md`.
 
-**Owner.** [active_plans/active/gameplay_variety_plan.md](active_plans/active/gameplay_variety_plan.md),
-`src/lipid_behaviors.ts`, `src/remix_levels.ts`, `src/difficulty.ts`, and
-[output/gameplay_variety/metrics.md](../output/gameplay_variety/metrics.md).
+**Owner.** [gameplay_variety_plan.md](active_plans/active/gameplay_variety_plan.md),
+`src/lipid_behaviors.ts`, `src/remix_levels.ts`, and `src/difficulty.ts`. The generated local
+metrics snapshot is `output/gameplay_variety/metrics.md`.
 
 ### Stage-one intercept guide
 
@@ -103,6 +111,21 @@ encoded WebPs, and label staged recovery/unlock saves. Historical ignored proof 
 **Owner.** [SCREENSHOTS.md](SCREENSHOTS.md) and
 [capture_docs_screenshots.mjs](../tests/playwright/capture_docs_screenshots.mjs).
 
+### README screenshot gallery
+
+**Decision.** Present four complementary current screenshots in a clickable 2x2 Markdown table
+inside the managed README screenshot block.
+
+**Why.** The README should show the surgeon choice, arcade play, tissue carving and recovery map
+at a glance; clicking each preview opens its full-resolution image. The table layout follows the
+user-requested 2x2 gallery format.
+
+**Consequence.** Reuse the current quality-90 WebPs and preserve the demonstration-save caveat.
+The gallery markup lives between the existing screenshot sentinels, so the capture harness can
+refresh image assets without replacing the layout.
+
+**Owner.** [README.md](../README.md) and this decision record.
+
 ### Plaque Attack identity
 
 **Decision.** Use **Plaque Attack** as the current display name in the game, metadata and
@@ -150,6 +173,32 @@ valid XML and preserved coordinates establish source integrity only.
 
 **Owner.** [ART_DIRECTION.md](ART_DIRECTION.md), `src/surgeons.ts`, `src/surgeon_motion.ts`,
 `src/renderer.ts`, and chooser-scoped rules in `src/dialogs.ts` and `src/style.css`.
+
+### Surgeon anatomy polish
+
+**Decision.** Use Maya at 1.10 head scale and Jules at 1.25, with bespoke scales for Imani (1.04),
+Leo (1.15), Samira (1.12), and Alex (1.08). Build connected sleeves, forearms, wrists, and compact
+gloves. Preserve each face, hair, cap, mask, expression, and original palette while varying uniform
+pockets and equipment details.
+
+**Why.** The manager's selection, informed by an independent study assessment, retains the current
+cast's charm while making head scale and arm anatomy more readable. Different scales for Maya and
+Jules provide a range rather than imposing one enlargement on all six characters.
+
+**Consequence.** The twelve roster SVGs and active landing-page `surgeon.svg` retain the 96x128
+viewBox and y100 leg seam; existing leg groups and face geometry match their baselines. The source
+tool axis remains at x=77 and gameplay rendering remains 44x60. The six-study comparison is at
+`output/surgeon_polish/studies.png`; source integrity, rendered lineups, and bounds evidence are
+recorded in `output/surgeon_polish/ART_HANDOFF.md`. Independent visual review accepts the corrected
+full-body native-size, grayscale, and silhouette lineup. Nine browser regressions pass, Maya's
+idle, walk, firing, and earned victory states render in normal and reduced motion, and thirteen
+managed quality-90 WebP screenshots are current. Integration accepts within the sampled scope;
+source/dist hashes agree for all thirteen SVGs. Evidence and sample limits are recorded in
+[surgeon_anatomy_polish.md](active_plans/active/surgeon_anatomy_polish.md) and
+`output/surgeon_polish/final_visual_review.md` and `output/surgeon_polish/integration.md`.
+
+**Owner.** `src/assets/surgeon_*.svg`, [GAME_SPEC.md](GAME_SPEC.md), and
+[surgeon_anatomy_polish.md](active_plans/active/surgeon_anatomy_polish.md).
 
 ### Purposeful recovery poses
 
@@ -259,7 +308,7 @@ and the expansion contracts it defines.
 
 **Decision.** The expanded campaign has 24 levels across four chapters, with stable level IDs in
 this canonical play order: `[1, 16, 2, 3, 4, 5, 6, 17, 7, 18, 19, 20, 8, 21, 9, 22, 23, 10,
-11, 12, 13, 14, 24, 15]`. The remix preserves this order and the first three stages while
+11, 12, 13, 14, 24, 15]`. The remix preserves this order and the first stage configuration while
 reauthoring later encounters. Historical expansion save decisions are superseded by version 4.
 
 **Why.** The ordered curve brings new players into the campaign gradually, then introduces later
@@ -273,19 +322,44 @@ keep classic, expanded and remix records separate so historical scores retain th
 **Owner.** `src/constants.ts`, `src/remix_levels.ts`, [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md)
 and [archive/remix_campaign_plan.md](archive/remix_campaign_plan.md).
 
-### Beginner curve tuning
+### Early weapon discovery
 
-**Decision.** Keep the opening three stages easy, with seven, ten, and fifteen plaque hits and
-slow fluid motion. Tune work, speed, and wave pressure against the fun-first rubric.
+**Decision.** Keep all 24 stable IDs in their existing display order and preserve display 1 (ID 1)
+exactly. Introduce aspirin at display 2 (ID 16) against two separated small platelets and
+clopidogrel at display 3 (ID 2) against three vertically aligned small platelets; one persistent
+shot can inactivate all three. Keep the opening speed multipliers at 0.55, 0.60, and 0.65 and
+retain flat arenas. Name chapter 1 First Response. Use displays 4-6 to introduce sticky, heavy,
+and unstable plaque; treat displays 7 and 13 as mastery, not first tool discovery. Retain current,
+seam, support, dual-tool, and finale placements later in the campaign.
 
-**Why.** Small fragments moving low and fast create sharp early difficulty. New players need room
-to learn movement and firing before managing denser families or new weapon rhythms.
+**Why.** A player can leave after six stages without seeing the newer weapons. The manager adopted
+an early, reduced-pressure tool introduction inspired by the progression analogy in *A Theory of
+Fun for Game Design* (2013), lines 456-500, and SteroidQuest's use of stable controls with new uses.
+The opening remains gentle while later stages let players practice and combine the tools.
 
-**Consequence.** The earlier higher-bounce novice experiments are superseded and were not applied.
-Use measured progression, agent browser review and optional human feedback for balance; permanent tests protect meaningful
-behavior rather than freezing every tunable value.
+**Consequence.** Stable IDs continue to own saves, records, unlocks and recovery; chapter 1 stays
+an act-independent presentation group. The four finales at displays 6, 12, 18, and 24 remain in
+place; later dual-tool current and seam encounters remain part of mastery play. The corrected
+opening disables platelet-stage merge cues for IDs 16 and 2 while leaving shared lipid merge rules
+unchanged. On corrected build
+`f99fb7d2d4dc3a5ff7b8fab578cbd08e0dc1ad88995e9c393460628334633590`, sampled actual-control play
+cleared displays 2 and 3 in 7.283 and 1.083 seconds, respectively, each with three lives. Display 4
+cleared in 63.0 seconds with one life, and a lookahead-assisted keyboard route cleared both
+display-6 finale phases in 102.433 seconds with three lives. A stage-2 contact-loss retry cleared
+in 5.8 seconds with aspirin and three lives; this retry route is from prior build
+`72978ad2188f581d024a4e9e32ccf4f0cbfb88975ca70bcdd68b0465947663aa`. The corrected-build display-3
+route fires once after the ready interval and no further times; its three-target clear is recorded
+in `final.json` and its input sequence in `final.mjs`. Corrected-build routes establish sampled
+reachability, not unaided player performance or human enjoyment. Earlier full-browser and campaign
+routes also predate the merge correction. Final integration accepts the sampled delivery within
+these evidence limits; the full verdict is in `output/early_weapons/integration.md`. Details are
+in `output/early_weapons/play/final.json`, `output/early_weapons/play/final.mjs`,
+`output/early_weapons/play/retry.json`, `output/early_weapons/play/center-return.json`, and
+`output/early_weapons/play/finale-assisted.json`.
 
-**Owner.** [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md), `src/difficulty.ts`, and `src/constants.ts`.
+**Owner.** [early_weapon_discovery.md](active_plans/active/early_weapon_discovery.md),
+`src/constants.ts`, `src/remix_levels.ts`, [GAME_SPEC.md](GAME_SPEC.md), and
+[DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md).
 
 ### Fluid motion and organic presentation
 
@@ -359,10 +433,10 @@ retaining a tiny parent's slower speed.
 
 **Decision.** Introduce tissue at stage 4, gentle floor and optional support at stage 5, and the
 optional hazard-risk pocket at stage 9. Lipid merging is available from stage 1 with rising
-probability. The remix adds currents at stage 8 without changing the first three stages.
+probability. The remix adds currents at stage 8 while preserving the stable ID order.
 
-**Why.** One new mechanic at a time keeps the learning curve legible while retaining existing
-campaign identities and workloads.
+**Why.** One new mechanic at a time keeps the learning curve legible while retaining familiar
+controls and broader progression.
 
 **Consequence.** Stage 6 keeps its four original large plaques and 32 total authored leaf units
 across two finite groups, with no pocket. New mechanics require fresh integrated acceptance.
@@ -414,15 +488,18 @@ outside persistence. The recovery illustration is an arcade narrative, not a cli
 **Owner.** `src/save_load.ts`, `src/recovery.ts`, and
 [RECOVERY_ROSTER_PLAN.md](RECOVERY_ROSTER_PLAN.md).
 
-### Gentler tissue introduction
+### Historical: gentler tissue introduction
 
-**Decision.** Keep the opening three stages unchanged; reduce stages 4 and 5 to 25 and 37 mandatory
-hits at speeds 0.75 and 0.85. Retain stage 6's 60-hit bounded-merge capstone.
+**Decision.** The earlier campaign kept the opening three stages unchanged, reduced stages 4 and 5
+to 25 and 37 mandatory hits at speeds 0.75 and 0.85, and retained stage 6's 60-hit
+bounded-merge capstone. The early-weapon discovery decision above supersedes the first-three-stage
+workload claim.
 
 **Why.** Teach tissue shelter and gentle floor relief before the chapter's full workload.
 
-**Consequence.** Report the opening vector as `7, 10, 15, 25, 37, 60`. Label the earlier full-campaign
-completion evidence historical and the new six-stage assisted simulation separately.
+**Consequence.** The earlier opening vector was `7, 10, 15, 25, 37, 60`. Keep its full-campaign
+completion evidence historical; current opening values follow [GAME_SPEC.md](GAME_SPEC.md) and
+the approved early-weapon plan.
 
 **Owner.** `src/constants.ts` and [DIFFICULTY_REVIEW.md](DIFFICULTY_REVIEW.md).
 
@@ -477,26 +554,31 @@ No controllable jump or collision-state change is introduced by celebration.
 **Owner.** [CLEAR_FLOW.md](CLEAR_FLOW.md), [src/main.ts](../src/main.ts),
 [src/input.ts](../src/input.ts) and renderer modules.
 
-### Lipid merging throughout intervention
+### Collision-entry lipid merging
 
-**Decision.** Enable same-size lipid merging in every lipid stage. Stages 1-6 use probabilities
-5%, 8%, 12%, 16%, 20%, 25%; cooldowns 3, 3, 2.5, 2, 1.75, 1.5 seconds; successful-merge
-budgets 1, 1, 2, 3, 4, 5. Platelet-only chapters retain their existing target rules.
+**Decision.** Roll same-size plaque merging only on a new approaching geometric contact entry.
+Initial penetration, including split-child or deferred insertion overlap, cannot roll; continuing
+overlap remains latched until separation. Exact boundary contact can roll when approaching, while a
+stationary sticky hold is excluded. Splitting never rolls for a merge. Keep per-level probability,
+cooldown, and successful-merge budget; platelets never merge.
 
-**Why.** The user wants merging to be a recurring behavior with level-dependent probability.
-The previous stage-6-only restriction was an agent balancing choice, not human guidance.
+**Why.** Contact-entry gating makes merging a collision event during ordinary motion and prevents
+splits from immediately undoing themselves. A latch prevents repeated rolls during one overlap.
 
-**Consequence.** Each merge adds at most one removal hit; maximum opening-stage work is now
-8, 11, 17 hits. Longer early cooldowns limit rapid recombination. Rates are tuning choices,
-not a guarantee that a merge occurs in any run. Persistent contact still rolls only once.
+**Consequence.** Each merge adds at most one removal hit. Per-level rates and budgets remain tuning
+choices, not a guarantee that a merge occurs in any run. Split hit feedback keeps particles, ring,
+score, combo and sound without size or fuse-split callout text; successful merges retain ring and
+`MERGED` feedback.
 
-**Owner.** [arena_layouts.ts](../src/arena_layouts.ts).
+**Owner.** [coalescence.ts](../src/coalescence.ts), [simulation.ts](../src/simulation.ts), and
+[arena_layouts.ts](../src/arena_layouts.ts).
 
 ### Distinct floor silhouettes
 
 **Decision.** Add broad basin, shelf and off-center shoulder profiles at stages 10/14/17,
-then reuse basin and shelf with existing cover at 23/24. Keep the first six stages and tool
-introductions unchanged. Highlight the exact collision surface inside the solid tissue.
+then reuse basin and shelf with existing cover at 23/24. Keep the floor placement plan while
+updating early tool introductions through the early-weapon decision. Highlight the exact collision
+surface inside the solid tissue.
 
 **Why.** Repeating a shallow wave does not give enough spatial identity. Broad high and low
 regions vary muzzle height and tissue clearance without steps, jumping or movement penalties.
@@ -611,8 +693,8 @@ Small hazards can still enter from the sides; cover reduces exposure rather than
 The remix decisions below incorporate LLM reviewer input adopted by the manager; they are
 design direction, not quotations or guidance attributed to the human.
 
-**Decision.** Keep left/right/fire and the first three stages. Add any-tool flow switches with
-four-second bounded steering and a shared six-second cooldown, optional one-contact shields at
+**Decision.** Keep left/right/fire and the established stage 1 configuration. Add any-tool flow
+switches with four-second bounded steering and a shared six-second cooldown, optional one-contact shields at
 5/11/16/20/23/24, and clear-gated finales at 6/12/18/24. Stage 18 guarantees clopidogrel piercing;
 19/21/23 use dual maintenance, while 20/22 are finite breathers.
 

@@ -4,14 +4,42 @@ All final documentation screenshots use WebP encoded at quality 90. The current 
 [screenshots/manifest.json](screenshots/manifest.json), including capture time, browser version,
 production build hashes, dimensions, byte sizes, image hashes and scene provenance.
 
-## Current production UI refresh
+## Current surgeon polish snapshot
 
-The 2026-10-23 refresh replaces all thirteen managed views with quality-90 WebPs from the
-production build recorded in [screenshots/manifest.json](screenshots/manifest.json). The set
+The 2026-10-23 surgeon anatomy refresh replaces all thirteen managed views with quality-90
+WebPs from the current local production build. The set totals 659,266 bytes. The
+[screenshots/manifest.json](screenshots/manifest.json) records Chromium 156.0.8078.4, screenshot
+hashes, build hashes, source/delivered surgeon asset hashes and exact capture provenance.
+The manifest SHA-256 is
+`6f34d51ff65faf30fb066166b47ebd491ac47afd446e08c6ea7e41bdde167e42`.
+
+The README chooser and production-renderer cast sheet show the delivered larger individual
+heads, connected arms, clearer hands, and varied uniforms and applicators. All six idle, walking
+and victory figures fit the cast sheet, including their full feet. The managed clear montage
+shows an earned first-stage victory and the production celebration camera. Capture completed
+with no browser errors or retained PNG intermediates. The current JavaScript hash matches the
+previous corrected stage-24 build because this pass changes external SVG assets; the manifest's
+surgeon asset hashes identify the new art.
+
+The capture used a freshly bundled equivalent of the canonical harness with an explicit workspace
+root, preserving the no-Git-command scope. Separate local verification in
+`output/surgeon_polish/delivery/` covers every cast member in staged idle, walk, firing and
+victory poses, with native-size and enlarged color, grayscale and silhouette views, in normal
+and reduced motion. Those fixtures isolate actual production renderer draws; staged poses do
+not represent earned campaign progress. Separate ordinary-control captures cover representative
+Maya movement, firing and an earned first-stage celebration. The existing roster, recovery and
+clear-flow browser regressions pass (9 tests). This verifies this artwork delivery and selected
+runtime flows; it is not an exhaustive campaign run.
+
+## Previous production UI snapshot
+
+The 2026-10-23 refresh replaced all thirteen managed views with quality-90 WebPs from the
+production build recorded in [screenshots/manifest.json](screenshots/manifest.json). This is the
+previous documented screenshot snapshot, not the gameplay-variety build. The set
 totals 652,986 bytes, with no capture/browser errors or PNG intermediates. The capture owner
 inspected the encoded menu, chooser, recovery comparison, gameplay, terrain and clear-sequence views
 for coherence and readability. The build includes the playtest fixes for opening guidance, streak HUD
-refresh and pointer-cancel cleanup. The current gameplay frame shows the opening guide and HUD.
+refresh and pointer-cancel cleanup. Its gameplay frame shows the opening guide and HUD.
 Staged-save and fixture
 descriptions remain separate from actual-input play provenance.
 
@@ -20,7 +48,19 @@ The manifest SHA-256 is
 The refresh used a bundled equivalent of the command below, with an explicit workspace root
 to preserve the no-Git-command scope. Its exact execution is recorded in the manifest, including
 `PLAYWRIGHT_BROWSERS_PATH=/private/tmp/plaque-attack-playwright-browsers`; no rebuild intervened.
-A screenshot refresh does not prove all-stage completion or the full browser suite. Integrated
+A screenshot refresh does not prove all-stage completion or the full browser suite. The initial
+gameplay-variety build `7ae15fbcf1d94fd759e0477a004cbe83db7cf103a55a7747e9a87502aad50bc0` has
+separate actual-control captures in `output/gameplay_variety/play/`, including
+`stage4-outcome.webp`, `stage5-heavy.webp`, `stage6-combination.webp`, `stage9-seam-intact.webp`,
+`timed-9-true-pulse.webp`, and `combination-retry.webp`. The corrected stage-24 build
+`f64a28d20b61c97cbd3b7b8af111ff554afcbb5d03850365d3caaaf13eba41b2` has its own actual-control
+captures in `output/gameplay_variety/finale_fix/`, including `stage24-opening.webp` and
+`stage24-approach-pulse.webp`. These captures document specific browser states and are not the
+managed thirteen-view corpus. The stage-9 timed pulse and restart captures demonstrate useful
+removal and reset on their recorded build; the corrected stage-24 approach capture shows one
+target cleared before a deliberate fire input. Mobile reduced-motion evidence is present in the
+initial gameplay report. Fresh integration acceptance is recorded in the local gameplay-variety
+report. Integrated
 acceptance belongs to
 [active_plans/reports/remix_execution_ledger.md](active_plans/reports/remix_execution_ledger.md).
 

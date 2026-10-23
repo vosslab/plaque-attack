@@ -117,7 +117,7 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
           target.kind === "plaque" && index === 0 ? { ...target, behavior: "sticky" } : target,
         ),
         briefing:
-          "The tack-marked lipid pauses at a wall; its shrinking ring shows when it will drift again. Move beneath it or handle another family first.",
+          "Switch back to the stent for the tack-marked lipid. It pauses at a wall; its shrinking ring shows when it will drift again. Move beneath it or handle another family first.",
       };
     case 4:
       return {
@@ -142,7 +142,7 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
         [
           {
             name: "Practice: tack and weight",
-            targets: level.initialTargets.slice(0, 3).map((target, index) => {
+            targets: level.initialTargets.slice(0, 2).map((target, index) => {
               if (target.kind !== "plaque") return target;
               if (index === 0) return { ...target, behavior: "sticky" };
               if (index === 1) return { ...target, size: "medium", behavior: "heavy" };
@@ -158,6 +158,12 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
                 position: { x: logicalCoordinate(810), y: logicalCoordinate(150) },
                 direction: -1,
                 behavior: "unstable",
+              },
+              {
+                kind: "plaque",
+                size: "large",
+                position: { x: logicalCoordinate(590), y: logicalCoordinate(100) },
+                direction: 1,
               },
             ],
           },
@@ -436,8 +442,8 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
             targets: [
               platelet(170, 120, 1),
               platelet(300, 220, 1),
-              platelet(660, 220, -1),
-              platelet(790, 120, -1),
+              platelet(660, 220, -1, "tiny"),
+              platelet(940, 440, -1, "tiny"),
             ],
           },
           {

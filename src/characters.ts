@@ -1,9 +1,14 @@
 import { logicalCoordinate } from "./brands";
 import { FLAT_FLOOR, targetVerticalBounds } from "./arena_geometry";
 import { orbitPhase, targetVerticalVelocity } from "./motion";
-import { HEAVY_SPEED_FACTOR, UNSTABLE_SPLIT_DURATION } from "./lipid_behaviors";
 import type { TargetId } from "./brands";
-import { ARENA_WIDTH, FLUID_ANGULAR_SPEED, TARGET_PRESETS } from "./constants";
+import {
+  ARENA_WIDTH,
+  FLUID_ANGULAR_SPEED,
+  TARGET_PRESETS,
+  HEAVY_SPEED_FACTOR,
+  UNSTABLE_SPLIT_DURATION,
+} from "./constants";
 import type { FloorProfile, PlaqueSize, TargetSpawn } from "./types/level";
 import type { Target } from "./types/simulation";
 

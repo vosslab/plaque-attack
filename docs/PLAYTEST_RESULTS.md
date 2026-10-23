@@ -89,3 +89,29 @@ records artifact identity, actual inputs, route telemetry, measured bounds, scre
 limits. The completed [playtest improvements plan](archive/playtest_improvements_plan.md)
 records implementation and final integration closeout. Human enjoyment and comfortable physical-
 phone play remain unmeasured.
+
+## Gameplay variety iteration - 2026-10-23
+
+This iteration preserves the baseline ratings above as historical results for their recorded
+builds. The accepted source/specification review and quality review are not playtest ratings.
+Quality review visually inspected the held sticky cue, heavy silhouette, combined encounter, and
+intact seam in desktop captures; it found them legible at those captured sizes. Subsequent
+actual-control play found stage 9's timed pulse removed one target for 250 points with all three
+lives intact on desktop and at 390x844 in reduced motion. The 56px touch controls fit without
+horizontal overflow, and the seam mark and HUD remained readable; the small canvas caption was
+very small. Stage 6's phase-2 fuse cue and retry reset were observed, but fuse expiry was not.
+
+The implemented choices are a 0.65-second sticky pause, six-second active-play unstable fuse,
+three-child heavy split with a 0.65 movement factor, and a 180-unit seam radius. These are selected
+prototype/source settings, not a measured fun score or human preference. The initial stage-24
+session found that small platelets could spend the one-use pulse before tiny targets arrived. The
+final authoring change made two existing right-side targets tiny and positioned the outer one at
+(940, 440), preserving target count. On corrected build
+`f64a28d20b61c97cbd3b7b8af111ff554afcbb5d03850365d3caaaf13eba41b2`, ordinary rightward movement
+caused incidental seam erosion; the pulse cleared one tiny target for 250 points with three
+hazards and all three lives remaining. It activated before the later fire input, so deliberate
+shot activation was not observed. Fresh integration accepts within the sampled scope. Stage-6
+fuse expiry, stage 18, a full stage/campaign replay, and human enjoyment remain unobserved. The
+active [gameplay variety plan](active_plans/active/gameplay_variety_plan.md) is complete with
+these limits recorded in `output/gameplay_variety/closeout.md`, `finale_fix/report.md`, and
+`integration.md`.

@@ -15,8 +15,7 @@
     <g id="maya-victory-torso">
       <path d="M27 76Q43 70 60 76Q72 83 71 98H19Q17 84 27 76Z" fill="url(#maya-victory-scrubs)" />
       <path d="M32 77L42 84L53 76" fill="none" stroke="#e4f5f2" stroke-width="2.5" />
-      <path d="M48 85H61V94H48Z" fill="#244aa5" stroke-width="2" />
-      <path d="M52 89h5m-2.5-2.5v5" fill="none" stroke="#e4f5f2" stroke-width="1.8" />
+      <g id="maya-victory-pockets"><path d="M48 85H61V94H48Z" fill="#244aa5" stroke-width="2"/><path d="M50 86H59" fill="none" stroke="#89aff8" stroke-width="1.5"/></g>
     </g>
     <g id="maya-victory-tool">
       <path d="M77 69V29" stroke="#e0f4fc" stroke-width="8" />
@@ -25,16 +24,24 @@
       <path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5" />
       <path d="M69 61H84V77H69Z" fill="#f9c869"/>
       <path d="M72 65h9m-9 5h9" stroke="#a36b35" stroke-width="2"/>
+          <path d="M72 44H82V51H72Z" fill="#f9c869" stroke-width="2"/>
     </g>
     <g id="maya-victory-raised-arms">
-      <g id="maya-victory-gloves">
-        <path d="M24 80L16 75L13 67L16 61L15 56Q14 52 11 55L9 60L7 58Q3 58 4 63L6 75L12 88Q17 93 24 89L29 84Z" fill="#effff9"/>
-        <path d="M8 67l6 1" stroke="#78aab5" stroke-width="1.8"/>
-        <path d="M64 79L63 73Q65 62 74 65L81 68Q85 72 81 78L75 87Q68 94 62 88Z" fill="#effff9" />
-        <path d="M68 72l8 3" stroke="#78aab5" stroke-width="2" />
-      </g>
+<g id="maya-victory-free-arm">
+ <path d="M24,81L13,80L10,65" fill="none" stroke="#162b40" stroke-width="11.2"/>
+ <path d="M24,81L13,80L10,65" fill="none" stroke="#a76c4d" stroke-width="7.6"/>
+ <path d="M24,81L17.028747554726074,80.36624977770236" fill="none" stroke="#162b40" stroke-width="13" stroke-linecap="butt"/>
+ <path d="M24,81L17.028747554726074,80.36624977770236" fill="none" stroke="#427bec" stroke-width="9.5" stroke-linecap="butt"/>
+ <g id="maya-victory-free-glove" transform="translate(10,65)"><path d="M-4 4L-5-3L-2-4L-1-11Q1-13 3-10L3-4L6-2L5 4Z" fill="#effff9" /></g>
+ </g><g id="maya-victory-tool-arm">
+ <path d="M61,80L68,88L77,74" fill="none" stroke="#162b40" stroke-width="11.2"/>
+ <path d="M61,80L68,88L77,74" fill="none" stroke="#a76c4d" stroke-width="7.6"/>
+ <path d="M61,80L65.60953225507963,85.26803686294815" fill="none" stroke="#162b40" stroke-width="13" stroke-linecap="butt"/>
+ <path d="M61,80L65.60953225507963,85.26803686294815" fill="none" stroke="#427bec" stroke-width="9.5" stroke-linecap="butt"/>
+ <g id="maya-victory-tool-glove" transform="translate(77,74)"><path d="M-5 2L-5-4Q-3-8 1-5L5-2L5 4L0 7L-5 5Z" fill="#effff9" /><path d="M-1-2L4 0M-1 2L4 4" fill="none" stroke="#78aab5" stroke-width="1.5"/></g>
+ </g>
     </g>
-    <g id="maya-victory-head" transform="translate(-2 11)">
+    <g id="maya-victory-head" transform="translate(41 77) scale(1.1) translate(-41 -77) translate(-2 11)">
       <path d="M23 38Q23 23 42 23Q61 23 63 39L64 50Q61 65 43 67Q25 66 22 52Z" fill="#a76c4d"/>
       <path d="M22 39Q15 32 20 23Q19 15 29 15Q33 8 42 13Q52 6 57 16Q68 16 66 28L63 39L56 30L29 32Z" fill="#d6d9cf"/>
       <path d="M23 28Q38 18 61 27L61 34Q42 29 24 35Z" fill="#fa7d8b"/>

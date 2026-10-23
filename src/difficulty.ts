@@ -8,6 +8,7 @@ import {
   FIXED_STEP,
   FLUID_ANGULAR_SPEED,
   FLUID_WALL_INSET,
+  HEAVY_SPEED_FACTOR,
   LEVEL_IDS,
   LEVELS,
   MAX_TARGETS,
@@ -165,7 +166,7 @@ type Report = {
   })[];
 };
 
-type Hit = { size: PlaqueSize; count: number };
+type Hit = { size: PlaqueSize; count: number; speedFactor?: number };
 type MeanRange = { mean: number; min: number; max: number };
 const SIZES: readonly PlaqueSize[] = ["large", "medium", "small", "tiny"];
 
@@ -174,7 +175,7 @@ export function removalTree(spawn: TargetSpawn): Hit[] {
   if (spawn.kind === "plaque" && spawn.behavior === "heavy") {
     // Heavy is a one-hit medium source that creates three ordinary tiny targets.
     return [
-      { size: spawn.size, count: 1 },
+      { size: spawn.size, count: 1, speedFactor: HEAVY_SPEED_FACTOR },
       { size: "tiny", count: 3 },
     ];
   }
@@ -211,7 +212,9 @@ export function targetMetrics(targets: readonly TargetSpawn[], level: LevelConfi
       : hits.reduce((sum, hit) => {
           const preset = TARGET_PRESETS[hit.size];
           return (
-            sum + (hit.count * preset.horizontalSpeed * level.speedMultiplier) / (2 * preset.radius)
+            sum +
+            (hit.count * preset.horizontalSpeed * level.speedMultiplier * (hit.speedFactor ?? 1)) /
+              (2 * preset.radius)
           );
         }, 0) / workload;
   const tools: ProjectileKind[] =

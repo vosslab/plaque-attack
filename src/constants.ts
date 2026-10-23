@@ -18,6 +18,9 @@ export const ARENA_WIDTH = 960;
 export const ARENA_HEIGHT = 540;
 // Radians per second at normal campaign speed; shared by every lipid size.
 export const FLUID_ANGULAR_SPEED = 0.6;
+export const STICKY_PAUSE_DURATION = 0.65;
+export const UNSTABLE_SPLIT_DURATION = 6;
+export const HEAVY_SPEED_FACTOR = 0.65;
 // Keep circulating bodies suspended off the walls while retaining player contact.
 export const FLUID_WALL_INSET = 24;
 export const FIXED_STEP = 1 / 60;
@@ -171,7 +174,7 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
   },
   16: {
     id: 16,
-    act: 1,
+    act: 2,
     chapter: 1,
     scene: "scene-fatty-streak",
     lipidVariants: [
@@ -182,19 +185,20 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
       "lipid-dimpled",
       "lipid-swirl",
     ],
-    name: "Little trouble",
-    weapon: "stent",
+    name: "Aspirin opening",
+    weapon: "aspirin",
     speedMultiplier: 0.6,
     arena: ARENA_LAYOUTS[16],
-    merge: MERGE_RULES[16],
-    briefing: "Clear one medium family and a small fragment drifting on crossing currents.",
-    initialTargets: [plaque("medium", 350, 1), plaque("small", 650, -1)],
+    merge: DISABLED_MERGE_RULE,
+    briefing:
+      "New tool: aspirin shots travel a short distance and inactivate one platelet hazard. Step beneath each separated target and clear both.",
+    initialTargets: platelets(2, "small"),
     objective: { kind: "clear", reinforcements: [] },
-    fact: undefined,
+    fact: "Aspirin reduces platelet activity and helps prevent blood clots.",
   },
   2: {
     id: 2,
-    act: 1,
+    act: 2,
     chapter: 1,
     scene: "scene-fatty-streak",
     lipidVariants: [
@@ -205,15 +209,35 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
       "lipid-dimpled",
       "lipid-swirl",
     ],
-    name: "Crossing currents",
-    weapon: "stent",
+    name: "Persistent line",
+    weapon: "clopidogrel",
     speedMultiplier: 0.65,
     arena: ARENA_LAYOUTS[2],
-    merge: MERGE_RULES[2],
-    briefing: "Track one large family as its fragments drift through the bloodstream.",
-    initialTargets: [plaque("large", 480, 1)],
+    merge: DISABLED_MERGE_RULE,
+    briefing:
+      "New tool: line up one persistent clopidogrel shot through the three platelet hazards. It can inactivate up to three distinct targets.",
+    initialTargets: [
+      {
+        kind: "platelet",
+        size: "small",
+        position: { x: logicalCoordinate(480), y: logicalCoordinate(150) },
+        direction: 1,
+      },
+      {
+        kind: "platelet",
+        size: "small",
+        position: { x: logicalCoordinate(480), y: logicalCoordinate(255) },
+        direction: 1,
+      },
+      {
+        kind: "platelet",
+        size: "small",
+        position: { x: logicalCoordinate(480), y: logicalCoordinate(360) },
+        direction: 1,
+      },
+    ],
     objective: { kind: "clear", reinforcements: [] },
-    fact: undefined,
+    fact: "Clopidogrel blocks the platelet P2Y12 receptor, reducing platelet activation.",
   },
   3: {
     id: 3,
@@ -308,10 +332,10 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     arena: ARENA_LAYOUTS[6],
     merge: MERGE_RULES[6],
     briefing:
-      "New target: platelet activation. Antiplatelet drugs help prevent clot formation. Inactivate all four hazards.",
+      "Build aspirin timing across four platelet hazards. Keep moving and clear each one before the next chapter's current work.",
     initialTargets: platelets(4, "small"),
     objective: { kind: "clear", reinforcements: [] },
-    fact: "Aspirin reduces platelet activity and helps prevent blood clots.",
+    fact: undefined,
   },
   17: {
     id: 17,
@@ -456,10 +480,11 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     speedMultiplier: 0.85,
     arena: ARENA_LAYOUTS[8],
     merge: MERGE_RULES[8],
-    briefing: "Line up persistent shots. Each can inactivate three distinct hazards. Clear all 12.",
+    briefing:
+      "Build on the early persistent-shot lesson: line up clopidogrel through platelet lanes. Each shot can inactivate three distinct hazards; clear all 12.",
     initialTargets: platelets(6, "small"),
     objective: { kind: "clear", reinforcements: reinforcements(6, 4, entries([480])) },
-    fact: "Clopidogrel blocks the platelet P2Y12 receptor, reducing platelet activation.",
+    fact: undefined,
   },
   21: {
     id: 21,

@@ -2,8 +2,10 @@
 
 Status: source-derived measurement contract for the 24-stage remix. `src/difficulty.ts` reads
 exposed `LEVELS`, ordered `LEVEL_IDS`, target presets and weapon constants. This document is not a
-second hardcoded balance table. Current content comes from `src/remix_levels.ts`; the approved
-contract is [archive/remix_campaign_plan.md](archive/remix_campaign_plan.md).
+second hardcoded balance table. Content is authored across `src/constants.ts` and
+`src/remix_levels.ts`. The current opening is defined in
+[active_plans/active/early_weapon_discovery.md](active_plans/active/early_weapon_discovery.md);
+the broader remix contract remains in [archive/remix_campaign_plan.md](archive/remix_campaign_plan.md).
 [EXPANSION_PLAN.md](EXPANSION_PLAN.md) retains the historical expansion matrix.
 
 ## What the rubric measures
@@ -120,16 +122,18 @@ make it the sole ordering test. Novelty and endurance stay separate from that in
 
 Comparable encounters in campaign order:
 
-- Stages 1-6: stent clear, with the unchanged gentle first three and a two-group finale at 6.
-- Stages 7-12: aspirin clear; currents, lane selection and a three-group finale change position.
-- Stages 13-14: clopidogrel clear introduces persistent piercing and gathering.
+- Stage 1: gentle stent introduction; display 2 is a two-hit aspirin encounter and display 3 is a
+  three-target clopidogrel alignment that one persistent shot can clear.
+- Stages 4-6: stent clear, practicing sticky/heavy/unstable plaque and ending in a two-group finale.
+- Stages 7-12: aspirin mastery; currents, lane selection and a three-group finale change position.
+- Stages 13-14: clopidogrel mastery with persistent piercing and gathering.
 - Stages 15-17: dual clear combines alternating shots with shelter, support and floor choices.
 - Stage 18: finite clopidogrel finale; compare its aperture/gather/pierce task separately.
 - Stages 19/21/23: dual maintenance; compare occupancy, arrivals, safe capacity and duration.
 - Stages 20/22: finite dual breathers; stage 24 is a three-group finite finale.
 
-Read actual counts and rates from the generated report. Stage 7 resets after plaque, stage 13
-introduces persistence, and stage 15 introduces alternating shots. Stage 18 guarantees piercing
+Read actual counts and rates from the generated report. Displays 2 and 3 introduce antiplatelet
+tools. Stages 7 and 13 continue mastery, and stage 15 introduces alternating shots. Stage 18 guarantees piercing
 for its authored column; the final chapter alternates maintenance pressure with finite relief.
 These are deliberate changes in task and cadence. Neither an increasing global scalar nor an
 uninterrupted rise in workload is an acceptance requirement.

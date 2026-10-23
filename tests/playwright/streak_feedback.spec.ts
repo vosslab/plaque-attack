@@ -25,7 +25,7 @@ async function holdFireUntil(page: Page, ready: () => Promise<boolean>): Promise
   expect(await ready(), "Ordinary held fire must reach the requested visible reward").toBe(true);
 }
 
-test("real hits show both streak milestones and starting the next stage resets the reward display", async ({
+test("real hits show streak milestones, stage advancement resets rewards, and later practice reaches ten hits", async ({
   page,
 }) => {
   test.setTimeout(120_000);
@@ -89,6 +89,22 @@ test("real hits show both streak milestones and starting the next stage resets t
   expect(nextStageArena.height).toBeGreaterThanOrEqual(firstStageArena.height);
   expect((await feedback(page)).frame).toEqual([]);
 
+  // The opening stages deliberately teach short encounters. Stage 4 has enough
+  // plaque for ten consecutive real hits. Stage only its normal persisted unlock;
+  // enter Practice through visible controls and leave gameplay state untouched.
+  await page.evaluate(() => {
+    const raw = localStorage.getItem("plaque_trouble_save");
+    if (raw === null) throw new Error("Campaign must have created its normal save");
+    const save = JSON.parse(raw) as { unlockedLevel: number };
+    save.unlockedLevel = 3;
+    localStorage.setItem("plaque_trouble_save", JSON.stringify(save));
+  });
+  await page.reload();
+  await expect(page.locator("#start_level")).toBeEnabled();
+  await page.getByRole("button", { name: "Practice", exact: true }).click();
+  await page.getByRole("button", { name: /^Stage 4:/ }).click();
+  await page.getByRole("button", { name: "Start stage", exact: true }).click();
+  await page.clock.runFor(100);
   await holdFireUntil(page, async () =>
     (await feedback(page)).milestones.includes("10-HIT STREAK / x3 POINTS"),
   );

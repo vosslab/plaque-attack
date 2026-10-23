@@ -1,7 +1,6 @@
 import { FLAT_FLOOR, floorSlope, targetVerticalBounds } from "./arena_geometry";
 import { logicalCoordinate } from "./brands";
-import { ARENA_WIDTH } from "./constants";
-import { STICKY_PAUSE_DURATION } from "./lipid_behaviors";
+import { ARENA_WIDTH, STICKY_PAUSE_DURATION } from "./constants";
 import type { FloorProfile } from "./types/level";
 import type { LogicalPoint } from "./types/player";
 import type { Target, TargetMotionSegment, Velocity } from "./types/simulation";
@@ -104,6 +103,8 @@ export function advanceTarget(target: Target, dt: number, floor: FloorProfile = 
   if (!Number.isFinite(dt) || dt <= 0) return;
   const sticky =
     target.kind === "plaque" && target.behavior?.kind === "sticky" ? target.behavior : undefined;
+  const initialPhase = target.fluidPhase;
+  let movingElapsed = 0;
   let elapsed = 0;
   while (elapsed < dt) {
     if (sticky !== undefined && sticky.pauseRemaining > 0) {
@@ -140,6 +141,7 @@ export function advanceTarget(target: Target, dt: number, floor: FloorProfile = 
     const duration = Math.min(dt - elapsed, wallTime, 1 / 120);
     const start = { ...target.position };
     const nextElapsed = Math.min(dt, elapsed + duration);
+    const nextMovingElapsed = sticky === undefined ? nextElapsed : movingElapsed + duration;
     const x =
       duration === wallTime
         ? wall
@@ -150,7 +152,7 @@ export function advanceTarget(target: Target, dt: number, floor: FloorProfile = 
     target.position = {
       x: logicalCoordinate(x),
       y: logicalCoordinate(
-        orbitY(target, floor, x, target.fluidPhase + target.fluidAngularSpeed * duration),
+        orbitY(target, floor, x, initialPhase + target.fluidAngularSpeed * nextMovingElapsed),
       ),
     };
     target.motionSegments.push({
@@ -159,7 +161,7 @@ export function advanceTarget(target: Target, dt: number, floor: FloorProfile = 
       start,
       end: { ...target.position },
     });
-    target.fluidPhase = (target.fluidPhase + target.fluidAngularSpeed * duration) % (2 * Math.PI);
+    movingElapsed = nextMovingElapsed;
     elapsed = nextElapsed;
     if (duration === wallTime) {
       target.velocity.x = -velocityX;
@@ -170,6 +172,7 @@ export function advanceTarget(target: Target, dt: number, floor: FloorProfile = 
       }
     }
   }
+  target.fluidPhase = (initialPhase + target.fluidAngularSpeed * movingElapsed) % (2 * Math.PI);
   target.velocity.y =
     sticky !== undefined && sticky.pauseRemaining > 0 ? 0 : targetVerticalVelocity(target, floor);
 }

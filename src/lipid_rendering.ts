@@ -1,5 +1,4 @@
-import { ARENA_WIDTH } from "./constants";
-import { STICKY_PAUSE_DURATION, UNSTABLE_SPLIT_DURATION } from "./lipid_behaviors";
+import { ARENA_WIDTH, STICKY_PAUSE_DURATION, UNSTABLE_SPLIT_DURATION } from "./constants";
 import type { PlaqueTarget } from "./types/simulation";
 
 /** State cues follow active gameplay time, including when decorative motion is disabled. */

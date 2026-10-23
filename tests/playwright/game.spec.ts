@@ -141,10 +141,10 @@ test("movement and held fire split plaque, and P and Escape freeze and resume th
   await expect(recovery).toBeHidden();
   await page.getByRole("button", { name: /^Next: Stage / }).click();
   await expect(
-    page.getByRole("heading", { name: "Stage 2: Little trouble", exact: true }),
+    page.getByRole("heading", { name: "Stage 2: Aspirin opening", exact: true }),
   ).toBeVisible();
   await startLevel(page);
-  await expect(page.locator("#hud_level")).toHaveText("Stage 2: Little trouble");
+  await expect(page.locator("#hud_level")).toHaveText("Stage 2: Aspirin opening");
 });
 
 test("a failed campaign retries its stage and records only a confirmed departure", async ({

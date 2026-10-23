@@ -72,14 +72,6 @@ export function createRemixRendering(
               event.position.y - 35,
               "#e5d2ff",
             );
-          else if (event.split) {
-            label(
-              `${event.size.toUpperCase()} SPLIT`,
-              event.position.x,
-              event.position.y + 32,
-              "#ffe0a0",
-            );
-          }
           break;
         }
         case "clearance_pulse":
@@ -93,9 +85,6 @@ export function createRemixRendering(
             event.position.y - 48,
             "#dcfff1",
           );
-          break;
-        case "unstable_split":
-          label("FUSE SPLIT", event.position.x, event.position.y - 34, "#fff0d9");
           break;
         case "tissue_eroded":
           if (event.cause === "projectile")

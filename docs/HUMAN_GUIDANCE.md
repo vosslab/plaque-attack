@@ -36,6 +36,8 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
   moving left and right. Do not add jumping or a jump control.
 - Let colliding lipid balls sometimes merge: tiny into small, small into medium, medium into large.
   Make merging possible across lipid levels, with probabilities changing by level; keep the opening easy.
+- "The messages small > 2 tiny are stupid and superfluous." Keep split-size callouts off the play
+  field; "merge on break SHOULD NEVER HAPPEN." Let a merge roll only when floating lipids collide.
 - Finish every milestone through the manager and subagents. Remove visible and hidden human
   approval or playtesting dependencies; optional feedback must not hold up completion.
 - Give players a diverse choice of six surgeon characters. Start them with identical gameplay
@@ -66,5 +68,9 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 - Git commands and staging are out of scope, except for `git mv`.
 - Make rubrics and have agents test the game.
 - Make the stent more organic; the existing design looks more like a trellis than a stent.
+- "one frustration I have is that one can play 6 levels, give up, and never see the new weapons."
 - Zoom in on the surgeon after level completion so their celebration actions are easier to see.
 - Keep HUMAN_GUIDANCE for durable guidance, not one-off requests or individual bug fixes.
+- I like the charm of the surgeons, but their shapes could be more polished, especially the
+  awkwardly tapered arms. Normal bilateral symmetry can be broken when it adds character; repeated
+  plus pockets are optional, shooters can vary, and larger heads can use an NBA Jam style.

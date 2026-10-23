@@ -236,9 +236,15 @@ test("shield preserves life and streak on contact while same-tick overload still
 
 test("finite phases wait for pending hazards, preserve arena and aid, and finish after the last group", () => {
   const state = playing(5);
-  assert.equal(state.targets.length, 2);
   assert.equal(state.level.initialTargets.length, 0);
-  assert.equal(state.level.objective.phases.flatMap((phase) => phase.targets).length, 4);
+  const phases = state.level.objective.phases;
+  assert.ok(phases.length > 1, "the finite encounter has multiple authored groups");
+  const phaseTargetCounts = phases.map((phase) => phase.targets.length);
+  assert.ok(
+    phaseTargetCounts.every((count) => count > 0),
+    "each authored group is finite and populated",
+  );
+  assert.equal(state.targets.length, phaseTargetCounts[0]);
   state.targets = [];
   state.remix.contactShield = true;
   state.remix.flow = { kind: "cooldown", remaining: 3 };
@@ -256,13 +262,25 @@ test("finite phases wait for pending hazards, preserve arena and aid, and finish
   advanceFinale(state, FIXED_STEP, []);
   assert.ok(state.remix.finale.transitionRemaining > 0);
   const events = [];
-  advanceFinale(state, 1, events);
-  assert.equal(state.remix.finale.phaseIndex, 1);
-  assert.equal(state.targets.length, 2);
+  advanceFinale(state, state.remix.finale.transitionRemaining, events);
+  assert.equal(state.remix.finale.phaseIndex, Math.min(1, phases.length - 1));
+  assert.equal(state.targets.length, phaseTargetCounts[state.remix.finale.phaseIndex]);
   assert.equal(state.arena, arena);
   assert.equal(state.remix.contactShield, true);
   assert.equal(state.remix.flow.kind, "cooldown");
   assert.equal(events[0].type, "finale_phase_started");
+
+  while (state.remix.finale.phaseIndex < phases.length - 1) {
+    state.targets = [];
+    advanceFinale(state, 1, []);
+    assert.ok(state.remix.finale.transitionRemaining > 0);
+    advanceFinale(state, state.remix.finale.transitionRemaining, events);
+    assert.equal(state.targets.length, phaseTargetCounts[state.remix.finale.phaseIndex]);
+    assert.equal(state.arena, arena);
+    assert.equal(state.remix.contactShield, true);
+    assert.equal(state.remix.flow.kind, "cooldown");
+    assert.equal(clearObjectiveSatisfied(state), false);
+  }
   state.targets = [];
   assert.equal(clearObjectiveSatisfied(state), true);
   const support = playing(4);

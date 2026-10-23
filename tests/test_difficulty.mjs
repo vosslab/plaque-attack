@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { logicalCoordinate } from "../src/brands.ts";
-import { ARENA_WIDTH, LEVELS, TARGET_PRESETS, WEAPON_CONFIGS } from "../src/constants.ts";
+import {
+  ARENA_WIDTH,
+  HEAVY_SPEED_FACTOR,
+  LEVELS,
+  TARGET_PRESETS,
+  WEAPON_CONFIGS,
+} from "../src/constants.ts";
 import {
   arenaMetrics,
   fluidMetrics,
@@ -36,12 +42,19 @@ test("heavy authored medium plaque measures its one-hit three-tiny payoff", () =
   const heavy = spawn("plaque", "medium");
   heavy.behavior = "heavy";
   assert.deepEqual(removalTree(heavy), [
-    { size: "medium", count: 1 },
+    { size: "medium", count: 1, speedFactor: HEAVY_SPEED_FACTOR },
     { size: "tiny", count: 3 },
   ]);
   const measured = targetMetrics([heavy], LEVELS[1]);
   assert.equal(measured.workload, 4);
   assert.equal(measured.leafCeiling, 3);
+  const expectedMovement =
+    (LEVELS[1].speedMultiplier *
+      ((HEAVY_SPEED_FACTOR * TARGET_PRESETS.medium.horizontalSpeed) /
+        (2 * TARGET_PRESETS.medium.radius) +
+        (3 * TARGET_PRESETS.tiny.horizontalSpeed) / (2 * TARGET_PRESETS.tiny.radius))) /
+    4;
+  assert.ok(Math.abs(measured.movement - expectedMovement) < 1e-12);
   assert.equal(targetMetrics([spawn("plaque", "medium")], LEVELS[1]).workload, 7);
 });
 

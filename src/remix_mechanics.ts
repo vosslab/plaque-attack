@@ -1,13 +1,13 @@
 import { logicalCoordinate, targetId } from "./brands";
 import { playerSupportY } from "./arena_geometry";
 import { createTarget } from "./characters";
-import { HEAVY_SPEED_FACTOR } from "./lipid_behaviors";
 import { distanceToBox, projectileContact } from "./collision";
 import {
   CONTACT_INVULNERABILITY,
   PLAYER_HITBOX_HEIGHT,
   PLAYER_HITBOX_WIDTH,
   TARGET_PRESETS,
+  HEAVY_SPEED_FACTOR,
 } from "./constants";
 import type { SimulationEvent } from "./types/events";
 import type { FlowSwitchDefinition } from "./types/level";

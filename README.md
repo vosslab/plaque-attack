@@ -4,13 +4,18 @@ A browser arcade game for gamers and biology enthusiasts: choose one of six surg
 
 **[Play Plaque Attack in your browser](https://vosslab.github.io/plaque-attack/)**
 No installation or account required. Bring your arcade reflexes; the biology is optional.
-The screenshots below illustrate the surgeon cast, recovery map and tissue carving.
+The gallery shows the surgeon cast, campaign play, tissue carving and recovery map. Select an
+image to open it at full size.
 [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md) records capture provenance and refresh status.
 
 <!-- screenshots:begin (managed by screenshot-docs) -->
-![First-run surgeon chooser: six individual teammates with the same abilities](docs/screenshots/surgeon_roster.webp)
-![Patient recovery with demonstration progress: eight of 24 coronary routes restored](docs/screenshots/patient_recovery.webp)
-![Repeated stent shots carve a passage through tissue in Stage 4 Practice, with all three lives intact](docs/screenshots/tissue_carving.webp)
+
+| First-run surgeon choice | First-stage gameplay |
+| --- | --- |
+| [![First-run surgeon chooser with six teammates who share the same abilities](docs/screenshots/surgeon_roster.webp)](docs/screenshots/surgeon_roster.webp) | [![Maya faces the first plaque in campaign play, with the opening target guide visible](docs/screenshots/art_identity_game.webp)](docs/screenshots/art_identity_game.webp) |
+| Stage 4 tissue carving | Patient recovery |
+| [![Repeated stent shots carve a passage through tissue in Stage 4 Practice, with all three lives intact](docs/screenshots/tissue_carving.webp)](docs/screenshots/tissue_carving.webp) | [![Patient recovery map with eight of 24 routes restored in a demonstration save](docs/screenshots/patient_recovery.webp)](docs/screenshots/patient_recovery.webp) |
+
 <!-- screenshots:end -->
 
 Recovery progress in the screenshot is a demonstration save. See the
@@ -23,13 +28,14 @@ Plaque Attack turns a floating-hazard arcade loop into a colorful cardiovascular
 cartoon surgeon along the artery, fire upward, and make room for the smaller hazards created as large
 plaques split. Short captions provide optional biology context; no medical knowledge is required.
 
-The campaign changes the goal as you progress:
+The campaign introduces all three tools in its first three displays, then gives players room to
+practice and combine their established mechanics:
 
 | Levels | Tools | Goal |
 | --- | --- | --- |
-| 1-6: Plaque Patrol | Stent | Split plaque, starting with three deliberately gentle rounds |
-| 7-12: Platelet Pop | Aspirin | Clear platelet hazards arriving in changing patterns |
-| 13-18: Pulse Partners | Clopidogrel and alternating shots | Gather targets, pierce columns and finish a three-group lining finale |
+| 1-6: First Response | Stent, aspirin, then clopidogrel | Meet all three tools, then practice sticky, heavy and unstable plaque |
+| 7-12: Platelet Pop | Aspirin mastery | Practice currents, shelter and finite clears before a three-group finale |
+| 13-18: Pulse Partners | Clopidogrel and dual-tool mastery | Combine persistent shots, gathering and piercing before a lining finale |
 | 19-24: Flow State | Alternating aspirin and clopidogrel | Alternate maintenance with finite breathers, then restore the rhythm |
 
 - Carve tissue shelter with any shot, or use an open lane; hazards also erode cover on contact.
@@ -43,7 +49,8 @@ The campaign changes the goal as you progress:
 - Restore coronary routes after campaign clears and watch the patient become more active.
 - Keep selection, recovery, unlocks and scores locally; sound starts muted and motion follows your preference.
 
-All 24 remixed stages are authored; the first three retain their gentle opening balance.
+All 24 remixed stages are authored. The unchanged first display remains a gentle stent introduction;
+stages 2 and 3 introduce aspirin and clopidogrel before later mastery and combination play.
 Shootable currents last four seconds and share a six-second cooldown. Support is optional,
 nonstacking and protects against one contact; overload still requires reducing hazards.
 The four finales restore the artery opening, flow, lining and patient activity in distinct ways.

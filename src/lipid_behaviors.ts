@@ -6,10 +6,6 @@ import { awardHit } from "./scoring";
 import type { SimulationEvent } from "./types/events";
 import type { SimulationState, Target, TissueTick } from "./types/simulation";
 
-export const STICKY_PAUSE_DURATION = 0.65;
-export const UNSTABLE_SPLIT_DURATION = 6;
-export const HEAVY_SPEED_FACTOR = 0.65;
-
 // All fragmentation shares insertion limits, next-tick activation and ordinary descendants.
 export function splitTarget(state: SimulationState, target: Target): void {
   if (target.kind !== "plaque") return;
@@ -28,8 +24,8 @@ export function splitTarget(state: SimulationState, target: Target): void {
     if (heavy) {
       // Separate the three trajectories by vertical direction and lateral drift.
       synchronizeTargetMotion(child, state.level.arena.floor, {
-        x: child.velocity.x * (index === 2 ? 0.75 : 1),
-        y: index === 1 ? -Math.abs(child.velocity.y) : Math.abs(child.velocity.y),
+        x: child.velocity.x,
+        y: index === 2 ? Math.abs(child.velocity.y) : -Math.abs(child.velocity.y),
       });
     }
     child.mergeCooldownUntil = target.mergeCooldownUntil;

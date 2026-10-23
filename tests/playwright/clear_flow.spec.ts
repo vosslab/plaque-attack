@@ -165,7 +165,7 @@ for (const advanceKey of ["Enter", "Space"]) {
     await expect(cleared).toBeVisible();
     await page.keyboard.up(advanceKey);
     await expect(
-      page.getByRole("heading", { name: "Stage 2: Little trouble", exact: true }),
+      page.getByRole("heading", { name: "Stage 2: Aspirin opening", exact: true }),
     ).toBeVisible();
     await expect(arena).toBeHidden();
     // One release advances once; repeating a still-held press never starts the new stage.
@@ -177,7 +177,7 @@ for (const advanceKey of ["Enter", "Space"]) {
     await expect(arena).toBeVisible();
     await expect(briefing).toBeHidden();
     await page.clock.runFor(100);
-    await expect(page.locator("#hud_level")).toHaveText("Stage 2: Little trouble");
+    await expect(page.locator("#hud_level")).toHaveText("Stage 2: Aspirin opening");
     expect(await surgeonScale(page), "The next stage restores the gameplay camera").toBeCloseTo(
       gameplayScale,
       1,

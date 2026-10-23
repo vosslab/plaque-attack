@@ -426,7 +426,13 @@ function mass(state) {
 test("integrated merging is deterministic, conserves mass, spends finite budget and defers newborns", () => {
   function run(reverse) {
     const state = mergeState(1, 1);
-    state.targets = [200, 220, 600, 620].map((x) => target(state, x, 200));
+    state.targets = [200, 600].flatMap((x) => {
+      const left = target(state, x, 200);
+      const right = target(state, x + left.radius * 2 + 1, 200);
+      left.velocity.x = 120;
+      right.velocity.x = -120;
+      return [left, right];
+    });
     const parents = state.targets.slice(0, 2).map((entity) => entity.id);
     const before = mass(state);
     if (reverse) state.targets.reverse();
@@ -448,6 +454,7 @@ test("integrated merging is deterministic, conserves mass, spends finite budget 
   for (const size of ["tiny", "small", "medium"]) {
     const state = mergeState();
     state.targets = [target(state, 400, 200, size), target(state, 420, 200, size)];
+    state.targets[1].previousPosition = point(400 + state.targets[0].radius * 2 + 20, 200);
     const before = mass(state);
     assert.equal(mergeEvents(state).length, 1);
     assert.equal(mass(state), before);
@@ -482,6 +489,7 @@ test("failed merge attempts latch persistent overlap and require separated, cool
   const state = mergeState(Number.MIN_VALUE);
   const left = target(state, 400, 200);
   const right = target(state, 420, 200);
+  right.previousPosition = point(500, 200);
   state.targets = [left, right];
   mergeEvents(state);
   const seed = state.seed;
@@ -489,11 +497,12 @@ test("failed merge attempts latch persistent overlap and require separated, cool
   assert.ok(deadline > state.elapsed);
   state.tick += 1;
   state.elapsed = deadline + 1;
+  right.previousPosition = { ...right.position };
   mergeEvents(state);
   assert.equal(state.seed, seed, "overlap never rerolls even after cooldown");
   function place(x) {
+    right.previousPosition = { ...right.position };
     right.position = point(x, 200);
-    right.previousPosition = point(x, 200);
     right.motionSegments = [];
     mergeEvents(state);
   }
@@ -505,6 +514,42 @@ test("failed merge attempts latch persistent overlap and require separated, cool
   state.elapsed = deadline + 1;
   place(420);
   assert.notEqual(state.seed, seed);
+});
+
+test("only approaching boundary entries merge, including exact tick-start contact", () => {
+  for (const scenario of ["approaching", "separating", "tangent", "penetrating", "held"]) {
+    const state = mergeState();
+    const left = target(state, 400, 200);
+    const right = target(state, 432, 200);
+    if (scenario === "penetrating") right.position.x = 420;
+    right.previousPosition = { ...right.position };
+    right.position = point(
+      right.position.x + (scenario === "separating" ? 10 : scenario === "tangent" ? 0 : -10),
+      200 + (scenario === "tangent" ? 10 : 0),
+    );
+    if (scenario === "held")
+      left.behavior = { kind: "sticky", pauseRemaining: 1, resumeVelocityX: 104 };
+    state.targets = [left, right];
+    const seed = state.seed;
+    assert.equal(mergeEvents(state).length, Number(scenario === "approaching"), scenario);
+    assert.equal(state.seed === seed, scenario !== "approaching", scenario);
+  }
+});
+
+test("exact tick-end contact uses the terminal leg velocity", () => {
+  const state = mergeState();
+  const left = target(state, 400, 200);
+  const right = target(state, 432, 200);
+  // The first leg points away from the contact normal; the terminal leg reaches
+  // the boundary while approaching at exactly t=1.
+  right.previousPosition = point(420, 190);
+  right.position = point(432, 200);
+  right.motionSegments = [
+    { startTime: 0, endTime: 0.5, start: point(420, 190), end: point(440, 190) },
+    { startTime: 0.5, endTime: 1, start: point(440, 190), end: point(432, 200) },
+  ];
+  state.targets = [left, right];
+  assert.equal(mergeEvents(state).length, 1);
 });
 
 test("pause freezes all new runtime state; retry and campaign advancement recreate it", () => {

@@ -12,12 +12,41 @@ import type { SimulationState, Target, Velocity } from "./types/simulation";
 type ContactEntry = { time: number; lower: Target; higher: Target; key: string };
 
 function contactVelocity(target: Target, time: number): Velocity {
-  const leg = targetPathSegments(target).find(
-    (segment) => time >= segment.startTime && time <= segment.endTime,
-  );
+  const segments = targetPathSegments(target);
+  // Interior vertices belong to the outgoing leg. At the closed tick endpoint,
+  // use the terminal leg because there is no outgoing segment within this tick.
+  const leg =
+    time === 1
+      ? [...segments].reverse().find((segment) => segment.endTime === 1)
+      : segments.find((segment) => time >= segment.startTime && time < segment.endTime);
   if (leg === undefined || leg.endTime === leg.startTime) return target.velocity;
   const duration = (leg.endTime - leg.startTime) * FIXED_STEP;
   return { x: (leg.end.x - leg.start.x) / duration, y: (leg.end.y - leg.start.y) / duration };
+}
+
+// A spawn overlap is not a collision. Bodies must reach a boundary while approaching;
+// this also makes split fragments separate before siblings or nearby bodies can merge.
+function enteringContact(lower: Target, higher: Target, time: number): boolean {
+  const a = sampleTargetPath(targetPathSegments(lower), time);
+  const b = sampleTargetPath(targetPathSegments(higher), time);
+  if (a === undefined || b === undefined) return false;
+  const x = a.x - b.x;
+  const y = a.y - b.y;
+  if (Math.hypot(x, y) < lower.radius + higher.radius - 1e-7) return false;
+  const av = contactVelocity(lower, time);
+  const bv = contactVelocity(higher, time);
+  for (const [target, velocity] of [
+    [lower, av],
+    [higher, bv],
+  ] as const) {
+    if (
+      target.kind === "plaque" &&
+      target.behavior?.kind === "sticky" &&
+      Math.hypot(velocity.x, velocity.y) < 1e-8
+    )
+      return false;
+  }
+  return x * (av.x - bv.x) + y * (av.y - bv.y) < -1e-8;
 }
 
 // Union adjoining overlap intervals so reflection vertices preserve contact entry latches.
@@ -128,7 +157,10 @@ export function resolveCoalescence(state: SimulationState, events: SimulationEve
         const key = `${lower.id}:${higher.id}`;
         for (const [start, end] of contactIntervals(lower, higher)) {
           if (end >= 1 - 1e-10) touching.add(key);
-          if (start > 1e-10 || !state.merge.contacts.has(key))
+          if (
+            (start > 1e-10 || !state.merge.contacts.has(key)) &&
+            enteringContact(lower, higher, start)
+          )
             entries.push({ time: start, lower, higher, key });
         }
       }

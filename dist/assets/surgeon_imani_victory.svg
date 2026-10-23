@@ -15,8 +15,7 @@
     <g id="imani-victory-torso" >
       <path d="M20 61L59 60L71 75L73 98H15L14 77Z" fill="url(#imani-victory-scrubs)" />
       <path d="M35 77L43 82L53 78" fill="none" stroke="#e4f5f2" stroke-width="2.5"/>
-      <path d="M50 86H61V95H50Z" fill="#167b78" stroke-width="2"/>
-      <path d="M53 90h5m-2.5-2.5v5" stroke="#e4f5f2" stroke-width="1.8"/>
+      <g id="imani-victory-pockets"><path d="M50 86H63L61 95H50Z" fill="#167b78" stroke-width="2"/></g>
     </g>
     <g id="imani-victory-tool" >
       <path d="M77 69V29" stroke="#e0f4fc" stroke-width="8"/>
@@ -25,16 +24,24 @@
       <path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5"/>
       <path d="M68 59H84V81H68Z" fill="#e5b875"/>
       <circle cx="76" cy="65" r="3" fill="#294859" stroke-width="1.5"/>
+          <path d="M72 40H82V49H72Z" fill="#e5b875" stroke-width="2"/>
     </g>
     <g id="imani-victory-raised-arms">
-      <g id="imani-victory-gloves" >
-        <path d="M24 69L16 65L13 55L13 41Q13 37 9 38L7 53L5 53Q2 55 5 60L6 70L15 83Q20 86 27 80L31 75Z" fill="#effff9"/>
-        <path d="M7 61h7" stroke="#78aab5" stroke-width="1.8"/>
-        <path d="M64 69Q67 61 74 65L81 68Q85 72 81 78L75 85Q69 90 64 84L60 77Z" fill="#effff9"/>
-        <path d="M68 72l8 3" stroke="#78aab5" stroke-width="2"/>
-      </g>
+<g id="imani-victory-free-arm">
+ <path d="M22,69L12,68L10,54" fill="none" stroke="#162b40" stroke-width="11.2"/>
+ <path d="M22,69L12,68L10,54" fill="none" stroke="#5c392f" stroke-width="7.6"/>
+ <path d="M22,69L13.044665288110098,68.10446652881102" fill="none" stroke="#162b40" stroke-width="13" stroke-linecap="butt"/>
+ <path d="M22,69L13.044665288110098,68.10446652881102" fill="none" stroke="#37b5a7" stroke-width="9.5" stroke-linecap="butt"/>
+ <g id="imani-victory-free-glove" transform="translate(10,54)"><path d="M-4 4L-5-3L-2-4L-1-13Q1-15 3-12L3-4L5-2L5 4Z" fill="#effff9" /></g>
+ </g><g id="imani-victory-tool-arm">
+ <path d="M63,69L69,85L77,72" fill="none" stroke="#162b40" stroke-width="11.2"/>
+ <path d="M63,69L69,85L77,72" fill="none" stroke="#5c392f" stroke-width="7.6"/>
+ <path d="M63,69L66.16011097429552,77.4269625981214" fill="none" stroke="#162b40" stroke-width="13" stroke-linecap="butt"/>
+ <path d="M63,69L66.16011097429552,77.4269625981214" fill="none" stroke="#37b5a7" stroke-width="9.5" stroke-linecap="butt"/>
+ <g id="imani-victory-tool-glove" transform="translate(77,72)"><path d="M-5 2L-5-4Q-3-8 1-5L5-2L5 4L0 7L-5 5Z" fill="#effff9" /><path d="M-1-2L4 0M-1 2L4 4" fill="none" stroke="#78aab5" stroke-width="1.5"/></g>
+ </g>
     </g>
-    <g id="imani-victory-head">
+    <g id="imani-victory-head" transform="translate(41 64) scale(1.04) translate(-41 -64) ">
       <path d="M17 39Q10 17 26 10Q46 1 59 15Q67 27 64 44L69 63L53 70L22 64Z" fill="#913d63"/>
       <path d="M22 28Q29 16 43 18Q57 19 59 34L59 49Q53 62 38 61Q22 59 21 44Z" fill="#5c392f"/>
       <path d="M18 29Q28 10 44 15M18 54L29 63" fill="none" stroke="#e2c0c6" stroke-width="3"/>

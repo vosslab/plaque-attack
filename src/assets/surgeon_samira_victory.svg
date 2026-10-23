@@ -15,8 +15,7 @@
     <g id="samira-victory-torso">
       <path d="M31 65L59 58L68 67L65 80L73 97L26 98L28 81L25 73Z" fill="url(#samira-victory-scrubs)" />
       <path d="M36 65L46 73L57 61" fill="none" stroke="#e4f5f2" stroke-width="2.5" />
-      <path d="M50 83L62 81L64 92L51 94Z" fill="#8c285c" stroke-width="2" />
-      <path d="M55 87h5m-2.5-2.5v5" fill="none" stroke="#e4f5f2" stroke-width="1.8" />
+      <g id="samira-victory-pockets"><path d="M49 84L62 81L64 91L51 94Z" fill="#8c285c" stroke-width="2"/><path d="M50 85L62 83" fill="none" stroke="#e4a2c1" stroke-width="1.5"/></g>
     </g>
     <g id="samira-victory-tool">
       <path d="M77 69V29" stroke="#e0f4fc" stroke-width="8" />
@@ -24,16 +23,24 @@
       <path d="M71 29h12l-3-15h-6z" fill="#e8f8ff" />
       <path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5" />
       <path d="M70 59L84 62V80H70Z" fill="#edb5bd"/>
+          <path d="M73 37L81 40V50L73 47Z" fill="#edb5bd" stroke-width="2"/>
     </g>
     <g id="samira-victory-raised-arms">
-      <g id="samira-victory-gloves">
-        <path d="M29 69L21 79L15 77L12 71L7 69Q4 70 7 74L4 75Q2 78 7 81L16 88Q21 92 26 87L36 77Z" fill="#effff9"/>
-        <path d="M8 78l8 2" stroke="#78aab5" stroke-width="1.8"/>
-        <path d="M64 69Q67 61 74 65L81 68Q85 72 81 78L75 85Q69 90 64 84L60 77Z" fill="#effff9" />
-        <path d="M68 72l8 3" stroke="#78aab5" stroke-width="2" />
-      </g>
+<g id="samira-victory-free-arm">
+ <path d="M29,70L22,84L15,79" fill="none" stroke="#162b40" stroke-width="11.2"/>
+ <path d="M29,70L22,84L11,79" fill="none" stroke="#bc805e" stroke-width="7.6"/>
+ <path d="M29,70L25.422291236000337,77.15541752799933" fill="none" stroke="#162b40" stroke-width="13" stroke-linecap="butt"/>
+ <path d="M29,70L25.422291236000337,77.15541752799933" fill="none" stroke="#c85187" stroke-width="9.5" stroke-linecap="butt"/>
+ <g id="samira-victory-free-glove" transform="translate(15,79)"><path d="M4-3L0-5L-3-9Q-6-10-5-6L-4-3L-8-4Q-10-2-7 1L-1 5L5 4Z" fill="#effff9" /></g>
+ </g><g id="samira-victory-tool-arm">
+ <path d="M62,66L68,83L77,72" fill="none" stroke="#162b40" stroke-width="11.2"/>
+ <path d="M62,66L68,83L77,72" fill="none" stroke="#bc805e" stroke-width="7.6"/>
+ <path d="M62,66L64.6625609418811,73.54392266866311" fill="none" stroke="#162b40" stroke-width="13" stroke-linecap="butt"/>
+ <path d="M62,66L64.6625609418811,73.54392266866311" fill="none" stroke="#c85187" stroke-width="9.5" stroke-linecap="butt"/>
+ <g id="samira-victory-tool-glove" transform="translate(77,72)"><path d="M-5 2L-5-4Q-3-8 1-5L5-2L5 4L0 7L-5 5Z" fill="#effff9" /><path d="M-1-2L4 0M-1 2L4 4" fill="none" stroke="#78aab5" stroke-width="1.5"/></g>
+ </g>
     </g>
-    <g id="samira-victory-head" transform="rotate(-5 44 34)">
+    <g id="samira-victory-head" transform="translate(0 3) translate(44 57) scale(1.12) translate(-44 -57) rotate(-5 44 34)">
       <path d="M24 29Q25 14 44 14Q61 14 64 29L61 47L49 59L35 56L25 45Z" fill="#bc805e"/>
       <path d="M22 33Q16 21 25 17Q23 8 36 11Q48 3 61 15L65 25L55 23L44 19L33 30Z" fill="#d5dbdb"/>
       <path d="M23 24L30 14M35 20L44 12M49 18l6-3" stroke="#f5f1dd" stroke-width="2"/>

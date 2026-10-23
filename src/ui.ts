@@ -39,7 +39,7 @@ const TOOL_DETAILS: Record<WeaponMode, string> = {
   dual: "Shots alternate automatically between aspirin and clopidogrel. Hold fire to keep going.",
 };
 export const CHAPTER_NAMES = {
-  1: "Plaque Patrol",
+  1: "First Response",
   2: "Platelet Pop",
   3: "Pulse Partners",
   4: "Flow State",
@@ -65,7 +65,7 @@ export function showBriefing(level: LevelConfig, practice: boolean): void {
   if (level.arena.floor.controlPoints.some((point) => point.y < 540))
     mechanics.push("Move left and right to follow the wavy floor automatically.");
   if (level.merge.budget > 0)
-    mechanics.push("Matching small lipid fragments can merge into a larger target.");
+    mechanics.push("Floating lipids of matching sizes can sometimes merge on collision.");
   if (level.arena.pockets.length > 0)
     mechanics.push(
       "Sealed pockets are optional. Breach one to release extra hazards after a short warning.",
@@ -96,11 +96,13 @@ export function showBriefing(level: LevelConfig, practice: boolean): void {
   element("briefing_feel").textContent =
     position <= 3
       ? "Gentle warm-up / take your time"
-      : position === 7 || position === 13 || position === 15 || position === 18
-        ? "Fresh rhythm / settle into your new tool"
-        : level.objective.kind === "maintenance"
-          ? "Keep the rhythm / stay below the safe count"
-          : "Find your opening / keep moving";
+      : position === 15
+        ? "Fresh rhythm / settle into dual-tool play"
+        : position === 7 || position === 13 || position === 18
+          ? "Mastery lap / refine your timing"
+          : level.objective.kind === "maintenance"
+            ? "Keep the rhythm / stay below the safe count"
+            : "Find your opening / keep moving";
   const scene = element("briefing_scene");
   if (scene instanceof HTMLImageElement) scene.src = `assets/${level.scene}.svg`;
   element("briefing_weapon").textContent = TOOL_NAMES[level.weapon];

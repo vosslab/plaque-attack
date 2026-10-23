@@ -14,9 +14,8 @@
     </g>
     <g id="jules-victory-torso">
       <path d="M30 48L55 47L64 55L59 87H28L24 57Z" fill="url(#jules-victory-scrubs)" />
-      <path d="M34 50L43 59L53 49" fill="none" stroke="#e4f5f2" stroke-width="2.5" />
-      <path d="M43 67H55V79H43Z" fill="#59359d" stroke-width="2" />
-      <path d="M47 72h5m-2.5-2.5v5" fill="none" stroke="#e4f5f2" stroke-width="1.8" />
+      <path d="M35 55L43 64L52 55" fill="none" stroke="#e4f5f2" stroke-width="2.5" />
+      <g id="jules-victory-pockets"><path d="M43 68H55V79H43Z" fill="#59359d" stroke-width="2"/><path d="M47 63V71M51 65V71" fill="none" stroke="#e4f5f2" stroke-width="1.7"/></g>
     </g>
     <g id="jules-victory-tool">
       <path d="M77 69V29" stroke="#e0f4fc" stroke-width="8" />
@@ -24,16 +23,24 @@
       <path d="M71 29h12l-3-15h-6z" fill="#e8f8ff" />
       <path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5" />
       <path d="M73 57H82L84 79H72Z" fill="#ccb8ec"/>
+          <path d="M74 36H80V52H74Z" fill="#ccb8ec" stroke-width="2"/>
     </g>
     <g id="jules-victory-raised-arms">
-      <g id="jules-victory-gloves">
-        <path d="M28 53L17 48L13 39L17 33L16 29Q15 26 12 29L7 35L4 32Q1 32 3 38L7 43L11 56L24 64L32 59Z" fill="#effff9"/>
-        <path d="M7 42l6-3" stroke="#78aab5" stroke-width="1.8"/>
-        <path d="M61 57L71 63L80 68Q85 72 81 78L75 85Q69 90 63 83L55 67Z" fill="#effff9" />
-        <path d="M68 72l8 3" stroke="#78aab5" stroke-width="2" />
-      </g>
+<g id="jules-victory-free-arm">
+ <path d="M27,56L13,52L10,38" fill="none" stroke="#162b40" stroke-width="11.2"/>
+ <path d="M27,56L13,52L10,38" fill="none" stroke="#704737" stroke-width="7.6"/>
+ <path d="M27,56L18.346284471232593,53.5275098489236" fill="none" stroke="#162b40" stroke-width="13" stroke-linecap="butt"/>
+ <path d="M27,56L18.346284471232593,53.5275098489236" fill="none" stroke="#9972dc" stroke-width="9.5" stroke-linecap="butt"/>
+ <g id="jules-victory-free-glove" transform="translate(10,38)"><path d="M-4 4L-7-2L-6-6L-2-3L1-9Q4-10 4-7L2-1L5 0L4 5Z" fill="#effff9" /></g>
+ </g><g id="jules-victory-tool-arm">
+ <path d="M59,56L68,77L77,70" fill="none" stroke="#162b40" stroke-width="11.2"/>
+ <path d="M59,56L68,77L77,70" fill="none" stroke="#704737" stroke-width="7.6"/>
+ <path d="M59,56L62.54527368721251,64.27230527016252" fill="none" stroke="#162b40" stroke-width="13" stroke-linecap="butt"/>
+ <path d="M59,56L62.54527368721251,64.27230527016252" fill="none" stroke="#9972dc" stroke-width="9.5" stroke-linecap="butt"/>
+ <g id="jules-victory-tool-glove" transform="translate(77,70)"><path d="M-5 2L-5-4Q-3-8 1-5L5-2L5 4L0 7L-5 5Z" fill="#effff9" /><path d="M-1-2L4 0M-1 2L4 4" fill="none" stroke="#78aab5" stroke-width="1.5"/></g>
+ </g>
     </g>
-    <g id="jules-victory-head" transform="rotate(3 44 29)">
+    <g id="jules-victory-head" transform="translate(0 3) translate(44 15) scale(1.25) translate(-44 -15) rotate(3 44 29)">
       <path d="M30 17Q33 9 44 10Q58 11 59 24L57 38Q53 48 42 47Q32 44 30 34Z" fill="#704737"/>
       <path d="M28 23Q24 16 28 13Q26 8 33 8Q34 2 40 6Q46 2 50 7Q57 5 58 11Q63 15 59 23L52 17L34 19Z" fill="#443343"/>
       <path d="M30 19Q43 14 58 20" stroke="#a48bbd" fill="none" stroke-width="3"/>

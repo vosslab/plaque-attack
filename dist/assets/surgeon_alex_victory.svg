@@ -15,8 +15,7 @@
     <g id="alex-victory-torso" >
       <path d="M22 65L58 64L71 76L74 98H16L14 79Z" fill="url(#alex-victory-scrubs)" />
       <path d="M33 65L43 75L55 63" fill="none" stroke="#e4f5f2" stroke-width="2.5"/>
-      <path d="M48 82H62V94H48Z" fill="#2d8a54" stroke-width="2"/>
-      <path d="M53 86h5m-2.5-2.5v5" stroke="#e4f5f2" stroke-width="1.8"/>
+      <g id="alex-victory-pockets"><path d="M26 86H39V94H26Z M51 86H64V94H51Z" fill="#2d8a54" stroke-width="2"/></g>
     </g>
     <g id="alex-victory-tool" >
       <path d="M77 69V29" stroke="#e0f4fc" stroke-width="8"/>
@@ -24,16 +23,24 @@
       <path d="M71 29h12l-3-15h-6z" fill="#e8f8ff"/>
       <path d="m74 19 6 6m-6 0 6-6" stroke="#6997aa" stroke-width="1.5"/>
       <path d="M68 62Q76 57 84 62V80H68Z" fill="#e5d68e"/>
+          <path d="M72 43Q77 39 82 43V51H72Z" fill="#e5d68e" stroke-width="2"/>
     </g>
     <g id="alex-victory-raised-arms">
-      <g id="alex-victory-gloves" >
-        <path d="M25 70L18 66L19 60L22 55Q24 51 20 50Q16 49 14 58L10 57Q5 57 5 62L6 71L14 84Q20 88 26 81L30 76Z" fill="#effff9"/>
-        <path d="M7 64h7m-6 5h7" stroke="#78aab5" stroke-width="1.8"/>
-        <path d="M64 69Q67 61 74 65L81 68Q85 72 81 78L75 85Q69 90 64 84L60 77Z" fill="#effff9"/>
-        <path d="M68 72l8 3" stroke="#78aab5" stroke-width="2"/>
-      </g>
+<g id="alex-victory-free-arm">
+ <path d="M23,72L15,79L13,65" fill="none" stroke="#162b40" stroke-width="11.2"/>
+ <path d="M23,72L15,79L13,65" fill="none" stroke="#e0ab83" stroke-width="7.6"/>
+ <path d="M23,72L16.97938644234498,77.26803686294815" fill="none" stroke="#162b40" stroke-width="13" stroke-linecap="butt"/>
+ <path d="M23,72L16.97938644234498,77.26803686294815" fill="none" stroke="#6dbd59" stroke-width="9.5" stroke-linecap="butt"/>
+ <g id="alex-victory-free-glove" transform="translate(13,65)"><path d="M-5 4L-6-3L-1-4L0-11Q3-13 4-9L3-3L6-1L5 5Z" fill="#effff9" /></g>
+ </g><g id="alex-victory-tool-arm">
+ <path d="M64,72L69,87L77,74" fill="none" stroke="#162b40" stroke-width="11.2"/>
+ <path d="M64,72L69,87L77,74" fill="none" stroke="#e0ab83" stroke-width="7.6"/>
+ <path d="M64,72L66.5298221281347,79.5894663844041" fill="none" stroke="#162b40" stroke-width="13" stroke-linecap="butt"/>
+ <path d="M64,72L66.5298221281347,79.5894663844041" fill="none" stroke="#6dbd59" stroke-width="9.5" stroke-linecap="butt"/>
+ <g id="alex-victory-tool-glove" transform="translate(77,74)"><path d="M-5 2L-5-4Q-3-8 1-5L5-2L5 4L0 7L-5 5Z" fill="#effff9" /><path d="M-1-2L4 0M-1 2L4 4" fill="none" stroke="#78aab5" stroke-width="1.5"/></g>
+ </g>
     </g>
-    <g id="alex-victory-head" transform="translate(-2 0)">
+    <g id="alex-victory-head" transform="translate(41 64) scale(1.08) translate(-41 -64) translate(-2 0)">
       <path d="M20 37Q21 21 41 22Q60 21 64 37L63 54L55 64Q41 70 28 63L21 53Z" fill="#e0ab83"/>
       <path d="M18 35Q16 20 28 18L53 18Q66 20 65 37L56 32L26 35Z" fill="#b0d886"/>
       <path d="M22 33L60 32" stroke="#f2f6c8" stroke-width="3"/>

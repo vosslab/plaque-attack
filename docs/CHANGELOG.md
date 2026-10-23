@@ -1,6 +1,81 @@
 ## 2026-10-23
 
+### Lipid merge briefing
+
+- Clarify that lipids of matching sizes can merge when they collide.
+
+### Lipid collision feedback
+
+- Gate merges on new approaching contact entries between floating plaques, with separation required
+  before another roll. Split or break events never trigger merging. Remove split-size and fuse-split
+  callouts while retaining hit and merge feedback.
+- Update the game specification and design record with insertion-overlap, sticky-hold, cooldown,
+  and contact-latch behavior. Correct tick-end contacts to use terminal-segment velocity, with a
+  regression test for a multi-segment path; fresh quality review accepts the correction.
+
+### Early tool pacing
+
+- Keep display 1 and the stable ID order, introduce aspirin at display 2 and clopidogrel at display
+  3, and use later chapters for mastery and combinations. Name chapter 1 First Response. Preserve
+  the README 2x2 screenshot gallery and record the adopted reduced-pressure introduction rationale
+  in design decisions; preserve the player's frustration quote in human guidance.
+- Correct platelet-only stages 16 and 2 to use disabled merge configs, preventing a misleading
+  lipid-merge briefing while retaining the shared merge rules. Specification and quality reviews
+  accept. Corrected-build actual-control samples clear display 2 in 7.283 seconds and display 3 in
+  1.083 seconds, each with three lives; the display-3 route fires one clopidogrel projectile, then
+  no more, before clearing all three targets. A stage-2 contact-loss retry clears in 5.8 seconds with
+  aspirin and three lives, but that route is from the prior build. Display 4 clears in 63.0
+  seconds with one life; a
+  lookahead-assisted keyboard route clears both display-6 finale phases in 102.433 seconds with
+  three lives. These routes establish sampled reachability, not unaided performance. Focused
+  campaign, arena, and difficulty tests plus TypeScript, scoped ESLint, and scoped Prettier checks
+  pass after the merge correction; 81 Node tests were also rerun after it. The earlier 24-test
+  browser lane and 1,395-pytest full check predate the correction, so no full-suite or full-browser
+  pass is claimed for the corrected build. Specification, quality, and final integration reviews
+  accept within the sampled scope. See the active plan and `output/early_weapons/` for evidence
+  limits; no human playtest or universal clearability claim is made.
+
 ### Additions and New Features
+
+- Reorganize the README screenshot gallery into a clickable 2x2 grid, reusing four current
+  documented views for surgeon choice, campaign gameplay, tissue carving and patient recovery.
+
+- Start an anatomy polish pass for the six surgeons. The active plan begins with proportion studies
+  and renderer constraint inspection, then covers the twelve editable idle and victory assets,
+  integrated browser review, regression checks, local build, and refreshed documentation proofs.
+  The manager and independent study assessment selected Maya's 10% and Jules's 25% larger-head
+  studies, connected arm-first sleeves with compact gloves, and bespoke scales for the other four.
+  Astra delivered all twelve roster SVGs and the active landing-page surgeon, preserving face and
+  leg geometry, source anchors, and palette while adding connected arm anatomy and varied uniform
+  details. Independent visual review and integration accept the corrected full-body lineup and
+  sampled production rendering. The focused browser suite passes 9 tests; TypeScript, lint,
+  formatting, 80 Node tests, and 1,394 pytest tests pass. Thirteen managed quality-90 WebP
+  screenshots are refreshed. Source, review, integration, and delivery evidence is recorded in
+  `output/surgeon_polish/ART_HANDOFF.md`, `output/surgeon_polish/final_visual_review.md`,
+  `output/surgeon_polish/integration.md`, and `output/surgeon_polish/delivery/REPORT.md`.
+
+- Author the gameplay-variety introduction across stages 4-6 and the local clearance seam at
+  stage 9, with selected seam returns later. Update current specification and design records for
+  sticky, heavy, unstable and pulse behavior; calculate heavy workload from its three tiny
+  children and label unstable scoring and pulse benefit as bounds. The completed plan records the
+  authored content, source-derived metrics, bounded integrated play evidence and remaining
+  evidence limits in [gameplay_variety_plan.md](active_plans/active/gameplay_variety_plan.md).
+
+- Record the initial gameplay-variety gates and actual-control assessment: specification review
+  ACCEPT after a sticky/tissue motion correction; quality review ACCEPT; build
+  `7ae15fbcf1d94fd759e0477a004cbe83db7cf103a55a7747e9a87502aad50bc0`; TypeScript, ESLint,
+  Prettier, 80 Node tests, 1,391 pytest tests and 25 browser tests pass. Actual-control play finds
+  useful stage-9 pulse removal on desktop/mobile and successful retry, but stage 24 spends the
+  pulse on initial small targets before tiny targets arrive. Then change two existing stage-24
+  right-side targets to tiny targets, placing the outer target at (940, 440) without changing
+  target count, phases, or total authored hazards. On corrected build
+  `f64a28d20b61c97cbd3b7b8af111ff554afcbb5d03850365d3caaaf13eba41b2`, ordinary rightward input
+  causes incidental seam erosion and one 250-point removal with three hazards and all lives
+  remaining. Fresh integration accepts within sampled scope. The corrected build passed TypeScript,
+  the affected nine Remix/campaign tests, and exact-build play; the 25-test browser run remains tied
+  to the initial build. Stage 18, deliberate shot activation, fuse expiry, and human enjoyment
+  remain unobserved. The active plan is complete with its evidence limits recorded in the local
+  gameplay-variety closeout report.
 
 - Implement the stage-1 intercept guide as a persistent tip, static floor chevron, and latched
   nearest-target outline with an approximate 0.8-second horizontal lead. It does not auto-move or

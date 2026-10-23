@@ -231,6 +231,14 @@ export function resolveTargetTissue(state: SimulationState, dt: number, tick: Ti
         x: incoming.x - 2 * Math.min(0, dot) * first.normal.x,
         y: incoming.y - 2 * Math.min(0, dot) * first.normal.y,
       };
+      // The proposed path may have reached a sidewall after this earlier tissue contact.
+      // Discard its hold together with that future path: tissue never anchors sticky bodies.
+      if (target.kind === "plaque" && target.behavior?.kind === "sticky") {
+        if (velocity.x === 0 && target.behavior.pauseRemaining > 0)
+          velocity.x = target.behavior.resumeVelocityX;
+        target.behavior.pauseRemaining = 0;
+        target.behavior.resumeVelocityX = velocity.x;
+      }
       synchronizeTargetMotion(target, state.level.arena.floor, velocity);
       if (overlapsCells(tick.cells, target.position, target.radius)) {
         target.position = { ...leg.start };

@@ -5,7 +5,7 @@ import type { RecoveryMapOptions } from "./types/recovery";
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
 type MapSlot = Readonly<{ x: number; y: number }>;
-const CHAPTER_NAMES = ["Plaque Patrol", "Platelet Pop", "Pulse Partners", "Flow State"] as const;
+const CHAPTER_NAMES = ["First Response", "Platelet Pop", "Pulse Partners", "Flow State"] as const;
 
 // Stable IDs own their physical coronary territory. Campaign order controls
 // routes and labels below, so reordering a campaign never moves a healed area.

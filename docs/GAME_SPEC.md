@@ -2,15 +2,18 @@
 
 Plaque Attack is a single-player browser arcade game inspired by Bubble Trouble: move a cartoon
 cardiovascular surgeon along the floor, fire upward, dodge drifting hazards, and turn one large
-plaque into progressively smaller fragments. The campaign then shifts to antiplatelet tools and
-the sustained control of small platelet hazards.
+plaque into progressively smaller fragments. The campaign introduces aspirin and clopidogrel in
+its first three displays, then builds skill with their platelet hazards and sustained control.
 
-Status: current source contract, 2026-10-23. All 24 stages are authored in four chapters,
-with the first three stages preserved. The remix adds shootable flow switches, optional contact
-shields, finite phase finales, quick stage retries and distinct earned restoration.
-[archive/remix_campaign_plan.md](archive/remix_campaign_plan.md)
-owns the approved remix contract; `src/constants.ts` exposes canonical order and
-`src/remix_levels.ts` owns the remixed content. Numerical balance remains tunable.
+Status: current source contract, 2026-10-23. All 24 stages are authored in four chapters.
+The approved early-weapon progression keeps the stable display order and stage 1 configuration,
+introduces aspirin at display 2 and clopidogrel at display 3, then builds mastery and combinations.
+The remix also adds shootable flow switches, optional contact shields, finite phase finales, quick
+stage retries and distinct earned restoration.
+[archive/remix_campaign_plan.md](archive/remix_campaign_plan.md) owns the existing remix contract;
+[active_plans/active/early_weapon_discovery.md](active_plans/active/early_weapon_discovery.md)
+owns the approved opening and mastery update. `src/constants.ts` and `src/remix_levels.ts` own
+authored level content. Numerical balance remains tunable.
 [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md) owns descriptive measurements.
 
 Current source/build checks, actual-input completion and rendered acceptance are tracked in
@@ -88,19 +91,19 @@ be presented as the physical removal of cholesterol by those medicines.
 
 Preserve the requested fragmentation mechanic with these presentation rules:
 
-- Stages 1-6 use golden plaque tokens. The stent splits these as an explicit arcade abstraction.
-- Stages 7-24 use platelet-activation tokens: small purple clusters representing developing
+- Display stages 1 and 4-6 use golden plaque tokens. The stent splits these as an explicit arcade abstraction.
+- Display stages 2-3 and 7-24 use platelet-activation tokens: small purple clusters representing developing
   platelet aggregation. A successful drug hit makes a token inactive and harmless, then it fades.
 - Pharmaceutical levels contain no yellow plaque targets. Drug shots do not dissolve plaque or
   portray the dissolution of an established clot.
 - The transition changes the challenge, not a patient's prescription. The implanted stent remains
   visible in the background; the game does not imply that medication replaces or removes it.
-- The smaller later targets represent a different hazard class, not proof that aspirin has
-  reduced plaque size. Atherosclerosis care continues beyond the arcade victory.
+- Platelet targets represent a different hazard class, not proof that aspirin has reduced plaque
+  size. Atherosclerosis care continues beyond the arcade victory.
 - The surgeon is a cartoon avatar. The arena is a schematic artery, with no anatomical scale.
 
 The brief level-one caption reads: "Arcade model: real stents hold arteries open."
-The first aspirin-stage caption reads: "New target: platelet activation. Antiplatelet drugs help prevent
+Display 2's aspirin caption reads: "New target: platelet activation. Antiplatelet drugs help prevent
 clot formation." A dismissible "The real medicine" panel explains the difference in more detail.
 The screen label is "Active platelet hazards", shortened to "Active hazards" in compact layouts;
 avoid presenting the counter as a clinical measurement of clot burden or blood flow.
@@ -165,7 +168,8 @@ that shortens prolonged lower turns; platelets retain the original cosine orbit.
 gravity, ballistic launch, or floor impact. Walls reflect lateral travel while retaining
 overshoot. Size-based lateral speeds are 72/84/94/104 units/s from large to tiny, with a
 shared angular rate of 0.6 radians/s; both scale by the level speed multiplier. Targets normally
-pass through each other; all lipid stages permit occasional equal-size plaque coalescence.
+pass through each other; all lipid stages permit occasional equal-size plaque coalescence when two
+floating plaques make a new approaching contact. A break or split never rolls for a merge.
 Decorative particles do not collide.
 
 On flat floors, each kind uses the full reachable vertical range, with a 24-unit wall inset;
@@ -223,17 +227,18 @@ firing lanes; terrain height alone does not guarantee safety.
 
 ## Tissue, pockets, and coalescence
 
-Stages 1-3 keep their flat arena, slow fluid drift and original workload. The remix introduces a
+Displays 1-3 keep flat arenas and gentle movement while introducing the three tools. Display 1
+retains its original stent workload; displays 2-3 use platelet encounters. The remix introduces a
 sticky plaque at stage 4, a heavy plaque and optional support at stage 5, then practices both
 before an unstable plaque in stage 6's second phase. Stage 9 introduces a marked clearance seam
 among tiny platelets; its first committed seam erosion triggers one local pulse against nearby
 tiny plaques and platelets, awarding the existing removal points. Larger hazards remain. The seam
 can return selectively in later encounters. The pulse activates once per attempt and its telegraph
 shows the authored radius. It is a helpful arcade effect, not a modeled biological or clinical
-process. The first-three-stage configuration remains unchanged; later authored work now includes
-behavior-specific splits, so old later-stage hit totals are not current metrics. Authored
-placement is in `src/remix_levels.ts`; behavior and reach estimates have explicit bounds in
-[gameplay variety metrics](../output/gameplay_variety/metrics.md).
+process. Displays 4-6 retain the plaque behavior sequence, so old later-stage hit totals are not
+current metrics. Authored
+placement is in `src/remix_levels.ts`; behavior and reach estimates have explicit bounds in the
+local report `output/gameplay_variety/metrics.md`.
 
 ### Flow and optional support
 
@@ -270,15 +275,19 @@ wait for capacity and a safe player clearance without dropping hazards or allowi
 contact damage. Only active hazards count toward overload; unopened contents remain optional.
 
 Only same-size plaque below large can merge into the next preset size; platelets never merge.
-Stages 1-6 use a 5%, 8%, 12%, 16%, 20%, and 25% chance per eligible new contact entry.
-Their cooldowns are 3, 3, 2.5, 2, 1.75, and 1.5 seconds; successful-merge budgets are
-1, 1, 2, 3, 4, and 5. Stage 6 retains four large plaques across two phases and 32 total authored leaf units.
-Persistent overlap does not reroll. Merged direction follows averaged parent horizontal velocity,
-with lower-ID direction breaking a near-zero tie; speed comes from the new size preset times level
-speed. Splits inherit remaining cooldown, and new merged targets activate next tick. Merges
+Each level's merge rule sets the chance per eligible new contact entry, its cooldown, and its
+successful-merge budget. These settings only affect plaque encounters. Stage 6 retains four large
+plaques across two phases and 32 total authored leaf units. A new approaching contact can roll
+once; exact boundary contact counts when approaching. Continuing overlap stays latched until the
+targets separate. Initial penetration never rolls, including split children or deferred targets,
+and a stationary sticky hold cannot trigger a merge. Merged direction follows averaged parent
+horizontal velocity, with lower-ID direction breaking a near-zero tie; speed comes from the new size
+preset times level speed. Splits inherit remaining cooldown, and new merged targets activate next
+tick. Split feedback keeps hit particles and ring, score, through-hit combo and sound without size
+or fuse-split callout text. Successful merges retain the ring and `MERGED` feedback. Merges
 conserve leaf mass and add one future hit each, bounding removal work by the baseline/opened-pocket
-hit tree plus merge budget. Tissue carving and size coalescence are arcade abstractions, not
-claims about drugs destroying tissue or literal physical droplet size.
+hit tree plus merge budget. Tissue carving and size coalescence are arcade abstractions, not claims
+about drugs destroying tissue or literal physical droplet size.
 
 ## Weapons and hit rules
 
@@ -340,14 +349,22 @@ The approved remix plan and exposed source configuration own composition and pla
 
 | Display stages | Chapter | Tools and objectives |
 | --- | --- | --- |
-| 1-6 | Plaque Patrol | Stent; finite plaque clears, ending with two alternating-side pairs |
-| 7-12 | Platelet Pop | Aspirin; currents, shelter and finite clears; three-group switchback finale |
-| 13-18 | Pulse Partners | Clopidogrel at 13-14 and 18; dual at 15-17; finite clears |
+| 1-6 | First Response | Stent at 1 and 4-6; aspirin at 2; clopidogrel at 3; sticky/heavy/unstable plaque practice |
+| 7-12 | Platelet Pop | Aspirin mastery; currents, shelter and finite clears; three-group switchback finale |
+| 13-18 | Pulse Partners | Clopidogrel and dual-tool mastery; finite clears and a lining finale |
 | 19-24 | Flow State | Dual; maintenance at 19/21/23, finite breathers at 20/22, three-group finale at 24 |
 
-The first three stages require seven, ten and fifteen hits, with speed multipliers 0.55, 0.60
-and 0.65. Later introductions deliberately reset pressure. Tool changes and spatial choices
-matter more than a single increasing difficulty score.
+Display 1 (stable ID 1) remains the gentle stent introduction, with seven hits and a 0.55 speed
+multiplier. Display 2 (ID 16) introduces aspirin against two separated small platelets; its two
+hits and 0.60 speed multiplier keep the encounter short. Display 3 (ID 2) introduces clopidogrel
+against three vertically aligned small platelets; one persistent shot can inactivate all three,
+with a 0.65 speed multiplier. All three opening encounters use flat arenas. Later chapters build
+mastery and combine tools.
+The heavy stage's authored workload follows its one-hit, three-tiny split. Unstable scored-hit
+work is reported as an upper bound because its no-score fuse split can remove one potential scored
+hit. Clearance-pulse radius and eligible target reach describe authored geometry only; actual
+benefit depends on target positions at activation and is not exhaustively estimated. Tool changes
+and spatial choices matter more than a single increasing difficulty score.
 
 The mechanical `act` field describes objective families; `chapter` owns four-part presentation.
 Stable IDs drive progress, target identities drive cosmetic lipid variation, and neither changes
@@ -359,7 +376,7 @@ finite arrival. Maintenance cycles through authored entries; seeded selection is
 
 | Stage | Groups and player decision | Earned restoration |
 | --- | --- | --- |
-| 6 | Original four large plaques in two alternating-side pairs | Fissure widens into an opened artery |
+| 6 | Practice sticky/heavy choices, then place a warned unstable split in phase 2 | Fissure widens into an opened artery |
 | 12 | Redirect left entries, reposition right, then handle crossing volley | Continuous restored flow |
 | 18 | Carve aperture, gather a column, pierce with clopidogrel, clean up | Restored lining |
 | 24 | Outer opening, crossing optional-shield risk, final fan | Full patient and surgeon payoff |
@@ -754,7 +771,7 @@ optional human feedback may improve tuning but never blocks a milestone.
 | --- | --- |
 | Fragmentation | One large plaque produces two children per split, eight final tiny removals, and 15 total successful hits |
 | Collision | Shots cannot tunnel or hit children immediately; removed targets cannot also inflict contact damage |
-| Arena | Feet, muzzle and hitbox follow smooth floors; first-three-stage exact state stays unchanged |
+| Arena | Feet, muzzle and hitbox follow smooth floors; display 1's exact stage configuration stays unchanged |
 | Tissue | Every shot kind stops at first solid, cuts up to three cells, and uses frozen occupancy; hazard entry erosion and reflected paths remain consistent |
 | Pockets | Sealed contents optional; breached contents warn, wait safely at capacity, release once and block completion while pending |
 | Merging | Equal-size eligible plaque only; seeded entry attempts, inherited cooldown, conserved leaf mass, finite work bound and new-size speed |
@@ -776,8 +793,8 @@ drug transitions, overload/recovery, game over/retry, and leaderboard persistenc
 fixtures for hard-to-reach failure states and a real campaign playthrough for completion evidence.
 Do not claim fully nonvisual action-game accessibility from accessible menus alone.
 
-Inspect ordinary-input play of the first three stages before locking later numbers. Optional human
-feedback can test whether new players discover
+Inspect ordinary-input play of displays 1-3 before locking later numbers. Optional human feedback
+can test whether new players discover
 movement and firing quickly, understand why splitting increases danger, can track tiny fragments,
 and can recover from overload without reading a paragraph. Compare aspirin and clopidogrel in
 their introduction levels to ensure their timing feels distinct. Tune one variable at a time and
