@@ -593,7 +593,7 @@ function main(): void {
       );
       paragraph(
         body,
-        "Stents split yellow plaque. Aspirin inactivates one purple platelet hazard; clopidogrel can inactivate three. Dual mode alternates automatically. Clear all hazards, including incoming waves. In maintenance, keep the count at or below the safe maximum; five continuous seconds of overload costs a life.",
+        "Stents split yellow plaque. Aspirin breaks purple platelet clusters into singles; hit a single to sweep nearby singles. Clopidogrel directly clears up to three platelets. Dual mode alternates automatically. Clear all hazards, including incoming waves. In maintenance, keep the count at or below the safe maximum; five continuous seconds of overload costs a life.",
       );
       paragraph(
         body,

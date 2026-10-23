@@ -80,11 +80,37 @@ export function advanceFlow(state: SimulationState, dt: number): void {
   const remaining = flow.remaining - dt;
   if (remaining > 1e-9) flow.remaining = remaining;
   else if (flow.kind === "active") {
-    restoreOrdinaryDrift(state, flow.switchId);
+    if (getRestoredCurrent(state) === undefined) restoreOrdinaryDrift(state, flow.switchId);
     const cooldown = FLOW_COOLDOWN_DURATION + remaining;
     state.remix.flow =
       cooldown > 1e-9 ? { kind: "cooldown", remaining: cooldown } : { kind: "ready" };
   } else state.remix.flow = { kind: "ready" };
+}
+
+export function getRestoredCurrent(
+  state: Readonly<SimulationState>,
+): FlowSwitchDefinition | undefined {
+  const restored = state.level.restoredCurrent;
+  const objective = state.level.objective;
+  const finale = state.remix.finale;
+  if (
+    restored === undefined ||
+    objective.kind !== "clear" ||
+    objective.phases === undefined ||
+    finale === undefined ||
+    finale.phaseIndex + Number(finale.transitionRemaining > 0) < restored.afterPhase
+  )
+    return undefined;
+  return state.level.flowSwitches?.find((definition) => definition.id === restored.switchId);
+}
+
+export function getEffectiveCurrent(
+  state: Readonly<SimulationState>,
+): FlowSwitchDefinition | undefined {
+  const flow = state.remix.flow;
+  if (flow.kind === "active")
+    return state.level.flowSwitches?.find((definition) => definition.id === flow.switchId);
+  return getRestoredCurrent(state);
 }
 
 function restoreOrdinaryDrift(state: SimulationState, switchId: string): void {
@@ -108,9 +134,7 @@ function restoreOrdinaryDrift(state: SimulationState, switchId: string): void {
 }
 
 export function steerCurrent(state: SimulationState, dt: number): void {
-  const flow = state.remix.flow;
-  if (flow.kind !== "active") return;
-  const definition = state.level.flowSwitches?.find((item) => item.id === flow.switchId);
+  const definition = getEffectiveCurrent(state);
   if (definition === undefined) return;
   for (const target of state.targets) {
     if (

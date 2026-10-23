@@ -25,17 +25,33 @@ function spawn(kind, size) {
   };
 }
 
-test("plaque removal workload includes every binary split descendant; platelets remain single hits", () => {
+test("plaque removal workload includes every binary split descendant", () => {
   assert.deepEqual(removalTree(spawn("plaque", "large")), [
     { size: "large", count: 1 },
     { size: "medium", count: 2 },
     { size: "small", count: 4 },
     { size: "tiny", count: 8 },
   ]);
-  assert.deepEqual(removalTree(spawn("platelet", "small")), [{ size: "small", count: 1 }]);
   const large = targetMetrics([spawn("plaque", "large")], LEVELS[1]);
   assert.equal(large.workload, 15);
   assert.equal(large.leafCeiling, 8);
+});
+
+test("platelet contact workload follows aspirin descendants and direct-tool alternatives", () => {
+  const cluster = spawn("platelet", "small");
+  const aspirin = targetMetrics([cluster], { ...LEVELS[1], weapon: "aspirin" });
+  assert.equal(aspirin.workload, 4);
+  assert.equal(aspirin.leafCeiling, 3);
+  for (const weapon of ["clopidogrel", "dual"]) {
+    const direct = targetMetrics([cluster], { ...LEVELS[1], weapon });
+    assert.equal(direct.workload, 1);
+    assert.equal(direct.leafCeiling, 1);
+  }
+  assert.deepEqual(removalTree(cluster), [{ size: "small", count: 1 }]);
+  assert.equal(
+    targetMetrics([spawn("platelet", "tiny")], { ...LEVELS[1], weapon: "aspirin" }).workload,
+    1,
+  );
 });
 
 test("heavy authored medium plaque measures its one-hit three-tiny payoff", () => {

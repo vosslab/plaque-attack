@@ -2,7 +2,7 @@ import { absorbContact, advanceFlow, advanceSupport, steerCurrent } from "./remi
 import { logicalCoordinate } from "./brands";
 import { playerSupportY } from "./arena_geometry";
 import { sweptTargetPlayerContact } from "./collision";
-import { resolveCoalescence } from "./coalescence";
+import { resolveTargetContacts } from "./target_contacts";
 import {
   ARENA_WIDTH,
   CONTACT_INVULNERABILITY,
@@ -21,10 +21,9 @@ import {
   commitTissueErosion,
   freezeTissue,
   hasPendingTargets,
-  resolveTargetTissue,
 } from "./tissue";
 import { advanceFinale, advanceWaves, clearObjectiveSatisfied } from "./waves";
-import { fireWeapon, resolveProjectileHits } from "./weapons";
+import { beginProjectileContacts, fireWeapon } from "./weapons";
 
 function damage(
   state: SimulationState,
@@ -113,10 +112,9 @@ export const stepSimulation: SimulationStep = (state, input, dt) => {
   steerCurrent(state, dt);
   const tissue = freezeTissue(state);
   for (const target of state.targets) advanceTarget(target, dt, state.level.arena.floor);
-  resolveTargetTissue(state, dt, tissue);
-  resolveProjectileHits(state, dt, events, tissue);
+  const projectileContacts = beginProjectileContacts(state, dt, events, tissue);
+  resolveTargetContacts(state, events, dt, tissue, projectileContacts);
   advanceUnstable(state, dt, events);
-  resolveCoalescence(state, events);
   const contact =
     state.player.contactInvulnerabilityRemaining <= 1e-9 &&
     state.targets.some(

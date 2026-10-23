@@ -3,6 +3,7 @@ import type { FlowSwitchDefinition } from "./types/level";
 import { logicalCoordinate, projectileId } from "./brands";
 import { nextPlaqueSize } from "./characters";
 import { splitTarget } from "./lipid_behaviors";
+import { ASPIRIN_BURST_RADIUS, dispersePlatelet } from "./platelet_behaviors";
 import {
   DUAL_ACTIVE_LIMIT,
   DUAL_FIRE_INTERVAL,
@@ -79,18 +80,85 @@ export function projectileExpired(projectile: Projectile): boolean {
   );
 }
 
-// Resolve the global earliest contact, then recompute eligibility after every removal.
-// This keeps a piercing shot and intersecting shots deterministic without double scoring.
-export function resolveProjectileHits(
+function hitTarget(
+  state: SimulationState,
+  projectile: Projectile,
+  target: Target,
+  time: number,
+  events: SimulationEvent[],
+): void {
+  state.targets = state.targets.filter((candidate) => candidate.id !== target.id);
+  target.position = sampleTargetPath(targetPathSegments(target), time) ?? { ...target.position };
+  const disperses =
+    projectile.kind === "aspirin" && target.kind === "platelet" && target.size === "small";
+  const points = disperses ? 0 : awardHit(state, target);
+  events.push({
+    type: "target_hit",
+    targetId: target.id,
+    projectileId: projectile.id,
+    targetKind: target.kind,
+    size: target.size,
+    position: { ...target.position },
+    points,
+    streak: state.streak,
+    split: disperses || (target.kind === "plaque" && nextPlaqueSize(target.size) !== undefined),
+  });
+  if (disperses && target.kind === "platelet") dispersePlatelet(state, target);
+  else splitTarget(state, target);
+}
+
+function hitWithAspirin(
+  state: SimulationState,
+  projectile: Projectile,
+  target: Target,
+  time: number,
+  events: SimulationEvent[],
+): void {
+  if (projectile.kind !== "aspirin" || target.kind !== "platelet" || target.size !== "tiny") {
+    hitTarget(state, projectile, target, time, events);
+    return;
+  }
+  const position = sampleTargetPath(targetPathSegments(target), time) ?? { ...target.position };
+  // Sample every neighbor at this contact time. End-of-tick positions can be far away
+  // after a bounce, and fragments created earlier this tick are still newborns.
+  const removed = state.targets
+    .filter((candidate) => {
+      if (
+        candidate.kind !== "platelet" ||
+        candidate.size !== "tiny" ||
+        candidate.activeFromTick > state.tick
+      )
+        return false;
+      const location = sampleTargetPath(targetPathSegments(candidate), time) ?? candidate.position;
+      return Math.hypot(location.x - position.x, location.y - position.y) <= ASPIRIN_BURST_RADIUS;
+    })
+    .sort((a, b) => a.id - b.id);
+  for (const candidate of removed) hitTarget(state, projectile, candidate, time, events);
+  events.push({
+    type: "aspirin_burst",
+    position: { ...position },
+    radius: ASPIRIN_BURST_RADIUS,
+    removedTargetIds: removed.map((candidate) => candidate.id),
+  });
+}
+
+export type ProjectileContact = { time: number; commit: () => void };
+export type ProjectileContactSession = {
+  next: (after: number) => ProjectileContact | undefined;
+  finish: () => void;
+};
+
+// Advance shots once, then let the shared chronological solver interleave each hit
+// with target contacts. Each query uses the current paths after any reflection.
+export function beginProjectileContacts(
   state: SimulationState,
   dt: number,
   events: SimulationEvent[],
-  tissue: TissueTick = freezeTissue(state),
-): void {
+  tissue: TissueTick,
+): ProjectileContactSession {
   const consumed = new Set<Projectile>();
   const sweeps = new Map(state.projectiles.map((shot) => [shot, advanceProjectile(shot, dt)]));
-  let minimumTime = 0;
-  for (;;) {
+  const next = (minimumTime: number): ProjectileContact | undefined => {
     let best: { projectile: Projectile; target: Target; time: number } | undefined;
     let flowContact:
       { projectile: Projectile; definition: FlowSwitchDefinition; time: number } | undefined;
@@ -136,7 +204,7 @@ export function resolveProjectileHits(
         if (target.activeFromTick > state.tick) continue;
         const sweep = sweeps.get(projectile);
         if (sweep === undefined || sweep.active <= 0) continue;
-        const time = projectileContact(projectile, target, sweep.active, sweep.growth);
+        const time = projectileContact(projectile, target, sweep.active, sweep.growth, minimumTime);
         if (time === undefined || time < minimumTime) continue;
         if (
           best === undefined ||
@@ -154,46 +222,63 @@ export function resolveProjectileHits(
       (best === undefined || solid.time <= best.time) &&
       (flowContact === undefined || solid.time <= flowContact.time)
     ) {
-      minimumTime = solid.time;
-      queueProjectileErosion(tissue, solid.cell);
-      consumed.add(solid.projectile);
-      continue;
+      const contact = solid;
+      return {
+        time: contact.time,
+        commit: (): void => {
+          queueProjectileErosion(tissue, contact.cell);
+          consumed.add(contact.projectile);
+        },
+      };
     }
     if (flowContact !== undefined && (best === undefined || flowContact.time < best.time)) {
-      minimumTime = flowContact.time;
-      consumed.add(flowContact.projectile);
-      activateFlow(state, flowContact.definition, events);
-      continue;
+      const contact = flowContact;
+      return {
+        time: contact.time,
+        commit: (): void => {
+          consumed.add(contact.projectile);
+          activateFlow(state, contact.definition, events);
+        },
+      };
     }
-    if (best === undefined) break;
+    if (best === undefined) return undefined;
     const { projectile, target, time } = best;
-    minimumTime = time;
-    state.targets = state.targets.filter((candidate) => candidate.id !== target.id);
-    // Splits originate at the swept contact, rather than the target's end-of-tick position.
-    target.position = sampleTargetPath(targetPathSegments(target), time) ?? { ...target.position };
-    const points = awardHit(state, target);
-    const split = target.kind === "plaque" && nextPlaqueSize(target.size) !== undefined;
-    events.push({
-      type: "target_hit",
-      targetId: target.id,
-      projectileId: projectile.id,
-      targetKind: target.kind,
-      size: target.size,
-      position: { ...target.position },
-      points,
-      streak: state.streak,
-      split,
-    });
-    splitTarget(state, target);
-    if (projectile.kind === "stent") consumed.add(projectile);
-    else {
-      projectile.hitTargetIds.push(target.id);
-      if (projectile.hitTargetIds.length >= WEAPON_CONFIGS[projectile.kind].targetLimit) {
-        consumed.add(projectile);
-      }
-    }
+    return {
+      time,
+      commit: (): void => {
+        hitWithAspirin(state, projectile, target, time, events);
+        if (projectile.kind === "stent") consumed.add(projectile);
+        else {
+          projectile.hitTargetIds.push(target.id);
+          if (projectile.hitTargetIds.length >= WEAPON_CONFIGS[projectile.kind].targetLimit) {
+            consumed.add(projectile);
+          }
+        }
+      },
+    };
+  };
+  return {
+    next,
+    finish: (): void => {
+      state.projectiles = state.projectiles.filter(
+        (shot) => !consumed.has(shot) && !projectileExpired(shot),
+      );
+    },
+  };
+}
+
+// Isolated weapon entry point for callers that have already prepared target paths.
+export function resolveProjectileHits(
+  state: SimulationState,
+  dt: number,
+  events: SimulationEvent[],
+  tissue: TissueTick = freezeTissue(state),
+): void {
+  const contacts = beginProjectileContacts(state, dt, events, tissue);
+  let contact = contacts.next(0);
+  while (contact !== undefined) {
+    contact.commit();
+    contact = contacts.next(contact.time);
   }
-  state.projectiles = state.projectiles.filter(
-    (shot) => !consumed.has(shot) && !projectileExpired(shot),
-  );
+  contacts.finish();
 }

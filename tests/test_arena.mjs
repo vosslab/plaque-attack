@@ -3,7 +3,7 @@ import test from "node:test";
 import { playerSupportY } from "../src/arena_geometry.ts";
 import { createTarget } from "../src/characters.ts";
 import { projectileContact, sweptTargetPlayerContact } from "../src/collision.ts";
-import { resolveCoalescence } from "../src/coalescence.ts";
+import { resolveTargetContacts } from "../src/target_contacts.ts";
 import {
   ARENA_WIDTH,
   FIXED_STEP,
@@ -412,7 +412,7 @@ function mergeState(probability = 1, budget = 2) {
 
 function mergeEvents(state) {
   const events = [];
-  resolveCoalescence(state, events);
+  resolveTargetContacts(state, events);
   return events;
 }
 
@@ -497,10 +497,16 @@ test("failed merge attempts latch persistent overlap and require separated, cool
   assert.ok(deadline > state.elapsed);
   state.tick += 1;
   state.elapsed = deadline + 1;
-  right.previousPosition = { ...right.position };
+  left.previousPosition = left.position = point(400, 200);
+  right.previousPosition = right.position = point(420, 200);
+  left.motionSegments = right.motionSegments = [];
   mergeEvents(state);
   assert.equal(state.seed, seed, "overlap never rerolls even after cooldown");
   function place(x) {
+    left.previousPosition = left.position = point(400, 200);
+    left.motionSegments = [];
+    left.velocity = { x: 0, y: 0 };
+    left.fluidAngularSpeed = 0;
     right.previousPosition = { ...right.position };
     right.position = point(x, 200);
     right.motionSegments = [];

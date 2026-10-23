@@ -2,6 +2,7 @@ import { campaignPosition, getLevel, LEVEL_IDS, nextLevelId, OVERLOAD_DURATION }
 import { hitMultiplier, masteryBonusPoints } from "./scoring";
 import { STEADY_FLOW_DURATION, steadyFlowMaximum } from "./steady_flow";
 import { getEntryShiftCue } from "./entry_shift";
+import { getEffectiveCurrent, getRestoredCurrent } from "./remix_mechanics";
 import { createRecoveryMap } from "./recovery";
 import type { RecoveryMapOptions } from "./types/recovery";
 import type { DamageEvent } from "./types/events";
@@ -38,9 +39,10 @@ export const TOOL_NAMES: Record<WeaponMode, string> = {
 };
 const TOOL_DETAILS: Record<WeaponMode, string> = {
   stent: "One mesh shot at a time. Split plaque into smaller, faster fragments.",
-  aspirin: "Rapid, short-range shots. Each inactivates one platelet hazard.",
-  clopidogrel: "Slower, persistent shots. Each can inactivate three different hazards.",
-  dual: "Shots alternate automatically between aspirin and clopidogrel. Hold fire to keep going.",
+  aspirin:
+    "Short-range shots break a cluster into three singles. Hit a single to sweep nearby singles.",
+  clopidogrel: "Slower, persistent shots clear up to three targets directly, including clusters.",
+  dual: "Shots alternate: aspirin breaks clusters and sweeps singles; clopidogrel clears a line. Hold fire.",
 };
 export const CHAPTER_NAMES = {
   1: "First Response",
@@ -251,20 +253,20 @@ export function updateHud(state: Readonly<SimulationState>): void {
   tactic("hud_phase", steadyText || phaseText);
   const flow = state.remix.flow;
   const hasFlow = (level.flowSwitches?.length ?? 0) > 0;
-  const lane =
-    flow.kind === "active"
-      ? (level.flowSwitches?.findIndex((entry) => entry.id === flow.switchId) ?? -1) + 1
-      : 0;
+  const current = getEffectiveCurrent(state);
+  const restored = flow.kind !== "active" && getRestoredCurrent(state) !== undefined;
+  const lane = (level.flowSwitches?.findIndex((entry) => entry.id === current?.id) ?? -1) + 1;
   const flowLabel =
-    flow.kind === "ready"
-      ? "\u2194 Current: shoot switch"
-      : flow.kind === "active"
-        ? `\u2194 Current: gathering / lane ${lane}`
+    current !== undefined
+      ? `\u2194 Current: gathering / lane ${lane}`
+      : flow.kind === "ready"
+        ? "\u2194 Current: shoot switch"
         : "\u2194 Current: cooling / shots pass";
-  tactic(
-    "hud_flow",
-    hasFlow ? `${flowLabel}${flow.kind === "ready" ? "" : ` / ${Math.ceil(flow.remaining)}s`}` : "",
-  );
+  const flowCountdown =
+    flow.kind === "ready"
+      ? ""
+      : ` / ${restored ? "switch cooling " : ""}${Math.ceil(flow.remaining)}s`;
+  tactic("hud_flow", hasFlow ? `${flowLabel}${flowCountdown}` : "");
   element("hud_flow").dataset.state = flow.kind;
   const seam = state.remix.clearancePulse;
   const seamText =

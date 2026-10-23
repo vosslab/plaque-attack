@@ -37,6 +37,8 @@ export type SceneId =
 export type LipidVariant =
   "lipid-amber" | "lipid-pear" | "lipid-ruffled" | "lipid-lobed" | "lipid-dimpled" | "lipid-swirl";
 export type PlaqueSize = "large" | "medium" | "small" | "tiny";
+// In the arcade, small is a three-single aggregate; tiny is one free platelet hazard.
+// Aspirin opens an aggregate before a later shot can sweep its active singles.
 export type PlateletSize = "small" | "tiny";
 export type DrugKind = "aspirin" | "clopidogrel";
 export type ProjectileKind = "stent" | DrugKind;
@@ -179,6 +181,11 @@ export type LevelConfig = {
   speedMultiplier: number;
   arena: ArenaLayout;
   flowSwitches?: readonly FlowSwitchDefinition[];
+  // Earn a baseline current after this many finale phases clear, including their transition.
+  restoredCurrent?: {
+    readonly afterPhase: number;
+    readonly switchId: string;
+  };
   clearancePulse?: ClearancePulseDefinition;
   merge: MergeRule;
   initialTargets: readonly TargetSpawn[];

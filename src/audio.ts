@@ -160,7 +160,7 @@ export function createAudio(): {
               "sine",
               event.split ? splitPitch * 2 : 880,
             );
-            if (consecutiveHits > 1)
+            if (event.points > 0 && consecutiveHits > 1)
               tone(
                 700 + Math.min(consecutiveHits, 5) * 120,
                 0.18,
@@ -170,7 +170,7 @@ export function createAudio(): {
                 "triangle",
               );
             const milestone = streakMilestone(event.streak);
-            if (milestone !== undefined) {
+            if (event.points > 0 && milestone !== undefined) {
               const notes = milestone === 3 ? [659.25, 880, 1318.51] : [523.25, 659.25, 1046.5];
               for (const [index, note] of notes.entries())
                 tone(note, 0.14, 0.025, now + 0.04 + index * 0.075, effectVoices, "triangle");

@@ -19,6 +19,12 @@ export type TargetHitEvent = {
   streak: number;
   split: boolean;
 };
+export type AspirinBurstEvent = {
+  type: "aspirin_burst";
+  position: LogicalPoint;
+  radius: number;
+  removedTargetIds: TargetId[];
+};
 export type DamageEvent = {
   type: "damage";
   cause: "contact" | "overload";
@@ -109,6 +115,7 @@ export type ClearancePulseEvent = {
 export type SimulationEvent =
   | ShotEvent
   | TargetHitEvent
+  | AspirinBurstEvent
   | DamageEvent
   | LevelCompleteEvent
   | RunEndEvent

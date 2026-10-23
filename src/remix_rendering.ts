@@ -2,6 +2,7 @@ import type { ProjectileId } from "./brands";
 import { floorY } from "./arena_geometry";
 import { PLAYER_HEIGHT, PLAYER_WIDTH } from "./constants";
 import { getEntryShiftCue } from "./entry_shift";
+import { getEffectiveCurrent, getRestoredCurrent } from "./remix_mechanics";
 import type { SimulationEvent } from "./types/events";
 import type { AssetImages } from "./types/runtime";
 import type { SimulationState } from "./types/simulation";
@@ -139,10 +140,18 @@ export function createRemixRendering(
         ctx.closePath();
         break;
       }
-      case "restored_flow":
-        // The installed stent stays in the scene while one continuous stream extends.
-        ctx.roundRect(18, 125, 924 * progress, 240, 65);
+      case "restored_flow": {
+        // Recovery reaches the physical vessel wall, with a soft tissue-shaped frontier.
+        // Keep the original implant registered to the same scene and camera.
+        const edge = progress === 1 ? 1040 : 960 * progress;
+        ctx.moveTo(0, 0);
+        ctx.lineTo(edge - 28, 0);
+        ctx.bezierCurveTo(edge + 34, 90, edge - 48, 145, edge + 8, 235);
+        ctx.bezierCurveTo(edge + 46, 310, edge - 35, 390, edge, 490);
+        ctx.lineTo(0, 490);
+        ctx.closePath();
         break;
+      }
       case "restored_lining": {
         // Repaired lower lining and the gathered column are separate visible consequences.
         ctx.rect(0, 425, 960 * progress, 65);
@@ -159,27 +168,55 @@ export function createRemixRendering(
         ctx.roundRect(452, 95, 56, 350 * progress, 20);
         break;
       }
-      case "patient_recovery":
-        ctx.moveTo(480, 490);
-        ctx.lineTo(480 - 490 * progress, 55);
-        ctx.lineTo(480 + 490 * progress, 55);
+      case "patient_recovery": {
+        // Living tissue recovers outward along both walls, with an uneven soft frontier.
+        // The final earned clearance restores the entire registered scene.
+        if (progress === 1) {
+          ctx.rect(0, 0, 960, 540);
+          break;
+        }
+        const left = 480 - 480 * progress;
+        const right = 480 + 480 * progress;
+        const fold = 42 * (1 - progress);
+        ctx.moveTo(left - fold, 0);
+        ctx.lineTo(right + fold * 0.6, 0);
+        ctx.bezierCurveTo(right - fold, 100, right + fold, 175, right, 270);
+        ctx.bezierCurveTo(right - fold, 370, right + fold * 1.4, 445, right + fold, 540);
+        ctx.lineTo(left - fold * 0.7, 540);
+        ctx.bezierCurveTo(left + fold, 440, left - fold * 1.3, 355, left, 265);
+        ctx.bezierCurveTo(left + fold, 170, left - fold * 1.2, 90, left - fold, 0);
         ctx.closePath();
         break;
+      }
     }
     ctx.clip();
     if (
       objective.restoration === "artery_opening" ||
+      objective.restoration === "restored_flow" ||
       objective.restoration === "patient_recovery"
     ) {
       ctx.globalAlpha = 0.65;
       ctx.drawImage(images["scene-healed-flow"], 0, 0, 960, 540);
     }
-    ctx.fillStyle = "#95d7c7";
-    ctx.globalAlpha = objective.restoration === "artery_opening" ? 0.18 : 0.09;
-    ctx.fillRect(0, 50, 960, 440);
+    if (objective.restoration === "patient_recovery") {
+      // Healthy warmth belongs to the tissue; the open lumen stays dark for hazards.
+      const warmth = ctx.createLinearGradient(0, 0, 0, 540);
+      warmth.addColorStop(0, "rgba(255, 182, 158, 0.2)");
+      warmth.addColorStop(0.12, "rgba(255, 182, 158, 0.05)");
+      warmth.addColorStop(0.3, "rgba(255, 182, 158, 0)");
+      warmth.addColorStop(0.78, "rgba(255, 182, 158, 0)");
+      warmth.addColorStop(1, "rgba(255, 182, 158, 0.18)");
+      ctx.fillStyle = warmth;
+      ctx.globalAlpha = 1;
+      ctx.fillRect(0, 0, 960, 540);
+    } else {
+      ctx.fillStyle = "#95d7c7";
+      ctx.globalAlpha = objective.restoration === "artery_opening" ? 0.18 : 0.09;
+      ctx.fillRect(0, 50, 960, 440);
+    }
     ctx.globalAlpha = 1;
     ctx.drawImage(images["restored-flow"], 0, 0, 960, 540);
-    if (objective.restoration === "restored_lining") {
+    if (objective.restoration === "restored_lining" || objective.restoration === "restored_flow") {
       ctx.strokeStyle = "#d9ffee";
       ctx.lineWidth = 5;
       ctx.beginPath();
@@ -191,7 +228,7 @@ export function createRemixRendering(
       ctx.stroke();
     }
     // Movement exists only in earned regions and uses simulation time, so pause freezes it.
-    if (!reducedMotion) {
+    if (!reducedMotion && getEffectiveCurrent(state) === undefined) {
       ctx.strokeStyle = "#eafff4";
       ctx.globalAlpha = 0.5;
       ctx.lineWidth = 2;
@@ -302,49 +339,77 @@ export function createRemixRendering(
       }
     }
     ctx.globalAlpha = 1;
-    if (flow.kind === "active") {
-      const active = state.level.flowSwitches?.find((item) => item.id === flow.switchId);
-      if (active !== undefined) {
-        ctx.strokeStyle = "#c5ffea";
-        ctx.lineWidth = 2;
-        ctx.setLineDash([8, 10]);
-        ctx.beginPath();
-        for (const side of [-1, 1]) {
-          ctx.moveTo(active.laneX + side * 21, 50);
-          ctx.lineTo(active.laneX + side * 21, floorY(state.level.arena.floor, active.laneX) - 12);
-        }
-        ctx.stroke();
-        ctx.setLineDash([]);
-        // Static inward arrows explain the attraction even with reduced motion.
-        for (const side of [-1, 1]) {
-          const x = active.laneX + side * 72;
+    const restored = getRestoredCurrent(state);
+    const active = getEffectiveCurrent(state);
+    if (active !== undefined) {
+      // Curved streamlines show the actual gathering lane through both manual and
+      // earned flow. They stay thin so tiny hazards retain their silhouettes.
+      const bottom = floorY(state.level.arena.floor, active.laneX) - 14;
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = "#b5e9d4";
+      ctx.globalAlpha = 0.3;
+      for (const side of [-1, 1]) {
+        for (let row = 0; row < 3; row += 1) {
+          const outerX = side < 0 ? 24 : 936;
+          const startY = 105 + row * 90;
           ctx.beginPath();
-          ctx.moveTo(x, active.position.y - 70);
-          ctx.lineTo(x - side * 34, active.position.y - 70);
-          ctx.lineTo(x - side * 26, active.position.y - 77);
-          ctx.moveTo(x - side * 34, active.position.y - 70);
-          ctx.lineTo(x - side * 26, active.position.y - 63);
+          ctx.moveTo(outerX, startY);
+          ctx.bezierCurveTo(
+            outerX + (active.laneX - outerX) * 0.6,
+            startY - 18,
+            active.laneX + side * 27,
+            startY + 25,
+            active.laneX + side * 21,
+            Math.min(bottom, startY + 125),
+          );
           ctx.stroke();
         }
+      }
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = "#c5ffea";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 10]);
+      ctx.beginPath();
+      for (const side of [-1, 1]) {
+        ctx.moveTo(active.laneX + side * 21, 50);
+        ctx.lineTo(active.laneX + side * 21, bottom);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // Static inward arrows explain the attraction even with reduced motion.
+      for (const side of [-1, 1]) {
+        const x = active.laneX + side * 72;
+        ctx.beginPath();
+        ctx.moveTo(x, active.position.y - 70);
+        ctx.lineTo(x - side * 34, active.position.y - 70);
+        ctx.lineTo(x - side * 26, active.position.y - 77);
+        ctx.moveTo(x - side * 34, active.position.y - 70);
+        ctx.lineTo(x - side * 26, active.position.y - 63);
+        ctx.stroke();
       }
     }
     for (const definition of state.level.flowSwitches ?? []) {
       const { x, y } = definition.position;
       ctx.drawImage(images["flow-switch"], x - 24, y - 24, 48, 48);
-      ctx.strokeStyle =
-        flow.kind === "ready" ? "#ffefb3" : flow.kind === "active" ? "#c5ffea" : "#d6c5e6";
-      ctx.lineWidth = flow.kind === "active" ? 3 : 2;
-      ctx.setLineDash(flow.kind === "cooldown" ? [3, 4] : []);
+      const manuallyActive = flow.kind === "active" && flow.switchId === definition.id;
+      const carryingCurrent = active?.id === definition.id;
+      ctx.strokeStyle = carryingCurrent ? "#c5ffea" : flow.kind === "ready" ? "#ffefb3" : "#d6c5e6";
+      ctx.lineWidth = carryingCurrent ? 3 : 2;
+      ctx.setLineDash(flow.kind === "cooldown" && !carryingCurrent ? [3, 4] : []);
       ctx.beginPath();
       ctx.arc(x, y, 27, 0, Math.PI * 2);
       ctx.stroke();
       ctx.setLineDash([]);
       const text =
-        flow.kind === "ready"
-          ? "READY / SHOOT"
-          : flow.kind === "active"
-            ? `CURRENT ${flow.remaining.toFixed(1)}s`
-            : `COOLDOWN ${flow.remaining.toFixed(1)}s / SHOTS PASS`;
+        manuallyActive && flow.kind === "active"
+          ? `CURRENT ${flow.remaining.toFixed(1)}s`
+          : restored?.id === definition.id
+            ? "RESTORED"
+            : flow.kind === "ready"
+              ? "READY / SHOOT"
+              : flow.kind === "active"
+                ? "SWITCH IN USE"
+                : `COOLDOWN ${flow.remaining.toFixed(1)}s / SHOTS PASS`;
       deviceCaption("\u2194", text, x, y + 46);
     }
     for (const pocket of state.remix.supportPockets) {

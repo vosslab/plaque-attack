@@ -74,3 +74,10 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 - I like the charm of the surgeons, but their shapes could be more polished, especially the
   awkwardly tapered arms. Normal bilateral symmetry can be broken when it adds character; repeated
   plus pockets are optional, shooters can vary, and larger heads can use an NBA Jam style.
+- Treat preproduction decisions as revisable. Explore creative gameplay without first requiring
+  evidence that players struggle; complexity earns its place through enjoyment. Prioritize fun,
+  distinctive and memorable play, medical actions, and visual appeal. Keep warnings, HUD, and
+  tutorial decisions conservative without applying that caution to creative gameplay experiments.
+- "I have all of these small balls going, but no collisions, and when the balls meet they just pass
+  over one another, physics boring."
+- "aspirin levels lame no smaller pieces just one shot over not much gameplay."

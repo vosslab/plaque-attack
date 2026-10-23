@@ -16,7 +16,8 @@ function platelet(
   x: number,
   y: number,
   direction: -1 | 1,
-  size: PlateletSize = "small",
+  // Singles are the base workload; place aggregates explicitly for break-and-sweep choices.
+  size: PlateletSize = "tiny",
 ): TargetSpawn {
   return {
     kind: "platelet",
@@ -181,8 +182,8 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
         flowSwitches: [{ ...current(480), id: "center-current" }],
         briefing:
           level.id === 17
-            ? "Shoot the circular flow switch to gather hazards toward the marked center lane. Clear all six with aspirin."
-            : "Shoot the flow switch to gather a center column, then use persistent clopidogrel shots to hit up to three hazards.",
+            ? "Shoot the center switch to gather the cluster and three singles. Break the cluster, then sweep nearby singles before they spread."
+            : "Shoot the flow switch to gather a center column. Clopidogrel clears up to three targets directly, including the cluster.",
       };
     case 7: {
       const seam = clearanceSeam(level);
@@ -230,35 +231,28 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
           ...level,
           name: "Switchback surge",
           flowSwitches: [current(320), current(640)],
+          restoredCurrent: { afterPhase: 1, switchId: "current-320" },
           briefing:
-            "Redirect the left stream, then reposition for the right. Carved shelter stays open for the final crossing volley. Restore the flow.",
+            "Break and sweep the first group to restore a lasting left current. Gather the next cluster there, or divert right for four seconds. Keep your carved lanes for the crossing volley.",
         },
         [
           {
             name: "Redirect left",
-            targets: [
-              platelet(150, 100, 1),
-              platelet(210, 170, 1),
-              platelet(280, 110, 1),
-              platelet(340, 210, 1),
-            ],
+            targets: [platelet(150, 100, 1), platelet(210, 170, 1, "small"), platelet(340, 210, 1)],
           },
           {
-            name: "Reposition right",
+            name: "Restored current",
             targets: [
               platelet(810, 100, -1),
-              platelet(750, 170, -1),
-              platelet(680, 110, -1),
+              platelet(750, 170, -1, "small"),
               platelet(620, 210, -1),
             ],
           },
           {
             name: "Crossing volley",
             targets: [
-              platelet(170, 110, 1),
+              platelet(170, 110, 1, "small"),
               platelet(300, 200, 1, "tiny"),
-              platelet(430, 140, 1),
-              platelet(530, 140, -1),
               platelet(660, 200, -1, "tiny"),
               platelet(790, 110, -1),
             ],
@@ -272,7 +266,7 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
       return {
         ...level,
         briefing:
-          "Shots alternate automatically between aspirin and persistent clopidogrel. Sweep the outer entries and find the rhythm.",
+          "Shots alternate automatically. Aspirin breaks the cluster and sweeps nearby singles; clopidogrel clears targets directly. Work the outer entries to find the rhythm.",
         objective:
           level.objective.kind === "clear"
             ? { ...level.objective, reinforcements: level.objective.reinforcements.slice(0, 6) }
@@ -282,9 +276,9 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
       return {
         ...level,
         arena: supportArena(level),
-        flowSwitches: [current(480)],
+        flowSwitches: [current(480, 780)],
         briefing:
-          "Gather the opposing entries into the center, or cross the rolling floor to the left shield cache. Your alternating tools keep firing automatically.",
+          "Shoot the center switch to divert traffic right. Retrieve the left shield while it gathers, or follow the current and clear the column with alternating tools.",
         objective:
           level.objective.kind === "clear"
             ? { ...level.objective, reinforcements: level.objective.reinforcements.slice(0, 4) }
@@ -296,7 +290,7 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
         flowSwitches: [current(600)],
         initialTargets: level.initialTargets.slice(0, 6),
         briefing:
-          "Small and tiny targets slip above the shoulder. Carve a shelter notch, then gather them into the lower right firing lane.",
+          "A cluster and four singles cross the shoulder. Carve a shelter notch, then gather a lower right firing lane. Break and sweep, or pierce the cluster directly.",
         objective:
           level.objective.kind === "clear"
             ? { ...level.objective, reinforcements: level.objective.reinforcements.slice(0, 6) }
@@ -331,14 +325,18 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
         [
           {
             name: "Carve the aperture",
-            targets: [platelet(450, 120, 1), platelet(480, 210, -1), platelet(510, 300, 1)],
+            targets: [
+              platelet(450, 120, 1),
+              platelet(480, 210, -1, "small"),
+              platelet(510, 300, 1),
+            ],
           },
           {
             name: "Gather and pierce",
             targets: [
               platelet(410, 100, 1),
               platelet(410, 180, 1, "tiny"),
-              platelet(410, 260, 1),
+              platelet(410, 260, 1, "small"),
               platelet(550, 100, -1),
               platelet(550, 180, -1, "tiny"),
               platelet(550, 260, -1),
@@ -371,14 +369,12 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
         initialTargets: [
           platelet(200, 130, 1, "tiny"),
           platelet(320, 230, -1, "tiny"),
-          platelet(440, 150, 1),
+          platelet(440, 150, 1, "small"),
           platelet(560, 250, -1, "tiny"),
-          platelet(680, 170, 1),
-          platelet(800, 210, -1, "tiny"),
         ],
         objective: { kind: "clear", reinforcements: [] },
         briefing:
-          "A short finite clear: six hazards and no incoming wave. Collect the left shield if you want, then enjoy the open firing lanes.",
+          "One cluster, three singles, no incoming wave. Collect the left shield if you want, then choose a break-and-sweep or a direct clear in the open lanes.",
       };
     case 13:
       return {
@@ -393,26 +389,23 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
         name: "Open-lane interlude",
         arena: withoutHazardPocket(level),
         initialTargets: [
-          platelet(160, 120, 1),
+          platelet(160, 120, 1, "small"),
           platelet(270, 220, 1, "tiny"),
-          platelet(380, 150, -1, "tiny"),
-          platelet(480, 260, 1),
-          platelet(580, 150, 1, "tiny"),
+          platelet(480, 260, 1, "tiny"),
           platelet(690, 220, -1, "tiny"),
-          platelet(800, 120, -1),
         ],
         objective: { kind: "clear", reinforcements: [] },
         briefing:
-          "Seven hazards, no reinforcements. Keep the arch as shelter or open a notch; take this short clear at your own pace.",
+          "One cluster, three singles, no reinforcements. Keep the arch as shelter or open a notch; take this short clear at your own pace.",
       };
-    case 24:
+    case 24: {
       return {
         ...level,
         name: "Steady hands",
         arena: supportArena(level, 828),
         flowSwitches: [current(320), current(640)],
         briefing:
-          "Keep five or fewer hazards for 50 seconds. Gather left first; the right stream opens halfway through. Cross to gather it, or stay and carve shelter. An optional shield waits on the right.",
+          "Keep five or fewer hazards for 50 seconds. The right stream opens halfway through. Hold two or fewer without damage for six seconds after the shift to finish early. The right shield is optional.",
         objective:
           level.objective.kind === "maintenance"
             ? {
@@ -426,6 +419,7 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
               }
             : level.objective,
       };
+    }
     case 15: {
       const support = supportArena(level, 828);
       const seam = clearanceSeam(level, support);
@@ -436,14 +430,15 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
           arena: seam.arena,
           clearancePulse: seam.pulse,
           flowSwitches: [current(320), current(640)],
+          restoredCurrent: { afterPhase: 1, switchId: "current-640" },
           briefing:
-            "Carve the marked seam when tiny platelets enter its ring for one local clearance pulse. Open the outer lanes, cross the streams for an optional right shield, then clear the last fan.",
+            "Clear the first group to earn a gathering current on the right. Divert it left for the right shield, or save the marked seam's clearance pulse for the gathered last fan. Ordinary shots can clear every group.",
         },
         [
           {
             name: "Open the rhythm",
             targets: [
-              platelet(170, 120, 1),
+              platelet(170, 120, 1, "small"),
               platelet(300, 220, 1),
               platelet(660, 220, -1, "tiny"),
               platelet(940, 440, -1, "tiny"),
@@ -452,10 +447,8 @@ export function remixCampaign(level: LevelConfig): LevelConfig {
           {
             name: "Cross-stream choice",
             targets: [
-              platelet(170, 100, 1),
+              platelet(170, 100, 1, "small"),
               platelet(290, 190, 1, "tiny"),
-              platelet(410, 280, 1),
-              platelet(550, 280, -1),
               platelet(670, 190, -1, "tiny"),
               platelet(790, 100, -1),
             ],

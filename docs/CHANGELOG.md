@@ -1,5 +1,60 @@
 ## 2026-10-23
 
+### Core interaction design
+
+- Document the implemented chronological contact and swept-path contract, including authored orbit
+  until first physical impulse, persistent free-fluid velocity, and speed-preserving reflections at
+  walls, ceiling, and curved floor. Record aspirin's safe three-piece fan, break-and-sweep help,
+  positive-score audio feedback, and weapon-aware workload estimates. Browser acceptance and fresh
+  reviews remain pending.
+
+### Gameplay exploration
+
+- Start an adaptable creative gameplay exploration for fun-first memorable stages, medical actions,
+  authored mechanic combinations, and visible world restoration. Keep shelter carving and the
+  no-merge-on-break rule in view; use focused actual-control experiments to select and expand the
+  strongest direction. See [gameplay_creative_evolution.md](active_plans/active/gameplay_creative_evolution.md)
+  and [gameplay_creative_evolution_ledger.md](active_plans/reports/gameplay_creative_evolution_ledger.md).
+
+### Decisions and Failures
+
+- Reject prototype 1 acceptance after ordinary target ID 21 reached speed 37,745 at 11.9 seconds and
+  extended target ID 8 followed a crash path. The cause was inverse-orbit-slope rephasing near a
+  turning point; physical impulses now enter persistent free-fluid motion. The prototype's aspirin
+  fan also cleared stages nearly instantly, prompting a safe three-piece spread correction. Runtime,
+  browser, and review gates remain open; these failures do not establish a final verdict.
+
+- Complete the selected three-encounter finale: display 12 (stable ID 20) earns the left-current
+  baseline at x=320 after phase one; the manual right switch at x=640 overrides it for four seconds,
+  then the left baseline resumes during cooldown. Display 16 (stable ID 22) uses the center switch
+  at x=480 to gather the right current at x=780 for safe retrieval of the left shield at x=132.
+  Display 24 (stable ID 15) earns the right baseline at x=640 after phase one, with an optional
+  left-current override at x=320 for player-directed positioning/crossing before the right
+  baseline resumes for a saved last-fan flush. Preserve display 12's three phases, display 23's
+  original 25-second shift and ordinary maintenance structure, and runtime/save schemas. The
+  existing HUD badge now reports gathering through cooldown. Remove the display-23 seam after
+  bounded play found no attainable useful seam payoff and surplus
+  device/instruction; reject the display-5 concept for discovery load. Actual-control evidence
+  includes display 12's 58.6-second ordinary clear (three lives) and risky optional override route;
+  display 16's 20.82-second shield-retaining clear (three lives); and display 24's ordinary clear
+  plus reproduced saved flush at 23.4 seconds on refreshed real-mobile-RAF capture (three lives,
+  shield retained). Route details and
+  limits are in the [creative evolution ledger](active_plans/reports/gameplay_creative_evolution_ledger.md).
+  The final code check passes 99 Node tests, TypeScript, lint, format, and distribution build. A
+  prior full 25-test Playwright run passed; after final rollback, focused 20-test and final 5-test
+  runs passed. Source/spec and quality reviews accepted the final configuration, including fresh
+  HUDP2 review. The completed plan records its narrow recovery-illustration refinement, refreshed
+  source/build identity and visual review, and integration assessment. No human enjoyment or
+  usability claim is made.
+
+- Apply the bounded `patient_recovery` rendering refinement: use a center-out organic mask and
+  warmer shading on the unchanged physical walls. The latest TypeScript, lint, format, 99 Node
+  checks, and 133.8 kB distribution build pass. The refreshed route receipt records stable
+  source/distribution identities with no browser errors or overflow. The visual comparison favors
+  the organic refinement. Fresh earned-clear capture, bounded-renderer source/spec and quality
+  reviews, and gameplay integration acceptance are recorded; sampled agent routes do not establish
+  human enjoyment or usability. See the creative-evolution ledger.
+
 ### Behavior or Interface Changes
 
 - Record six scoped gamewide contracts: same-patient continuity through earned results; distinct

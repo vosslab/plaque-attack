@@ -21,6 +21,8 @@ type TargetBody = {
   // Vertical fluid orbit is deterministic and continuous from the spawn position.
   fluidPhase: number;
   fluidAngularSpeed: number;
+  // Physical impulses replace the authored orbit with persistent reflected fluid drift.
+  motionKind?: "impulse";
   radius: number;
   // Children created on tick N first participate in collision on tick N + 1.
   activeFromTick: number;
@@ -33,6 +35,7 @@ export type PlaqueBehaviorState =
       // Active-play seconds; zero means free motion. Restore the inward velocity on release.
       pauseRemaining: number;
       resumeVelocityX: number;
+      resumeVelocityY?: number;
     }
   | { kind: "heavy" }
   | { kind: "unstable"; splitRemaining: number };

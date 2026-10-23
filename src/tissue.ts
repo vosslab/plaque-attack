@@ -1,14 +1,20 @@
 import { logicalCoordinate, targetId } from "./brands";
 import { createTarget } from "./characters";
 import type { Box } from "./collision";
-import { distanceToBox, sampleSegment, sweepCircleBox, targetPathSegments } from "./collision";
+import {
+  distanceToBox,
+  sampleSegment,
+  sweepCircleBox,
+  targetPathSegments,
+  targetPathVelocity,
+} from "./collision";
 import {
   MAX_TARGETS,
   PLAYER_HITBOX_HEIGHT,
   PLAYER_HITBOX_WIDTH,
   WEAPON_CONFIGS,
 } from "./constants";
-import { advanceTarget, synchronizeTargetMotion } from "./motion";
+import { rewriteTargetPath, stopTargetPath } from "./motion";
 import type { SimulationEvent } from "./types/events";
 import type { LogicalPoint } from "./types/player";
 import type {
@@ -16,7 +22,7 @@ import type {
   TissueTick,
   Projectile,
   SimulationState,
-  TargetMotionSegment,
+  Target,
   Velocity,
 } from "./types/simulation";
 
@@ -174,124 +180,116 @@ function projectFree(
   return candidates.find((candidate) => !overlapsCells(cells, candidate, radius));
 }
 
-export function resolveTargetTissue(state: SimulationState, dt: number, tick: TissueTick): void {
+export type TargetTissueContact = {
+  target: Target;
+  cell: FrozenTissueCell;
+  time: number;
+  normal: Velocity;
+};
+
+export function firstTargetTissueContact(
+  target: Target,
+  tick: TissueTick,
+  after: number,
+): TargetTissueContact | undefined {
+  let first: TargetTissueContact | undefined;
+  for (const leg of targetPathSegments(target)) {
+    const startTime = Math.max(after, leg.startTime);
+    if (leg.endTime <= startTime) continue;
+    const start = sampleSegment(leg, startTime);
+    for (const cell of tick.cells) {
+      const hit = sweepCircleBox(start, leg.end, target.radius, cellBox(cell));
+      if (hit === undefined) continue;
+      const time = startTime + (leg.endTime - startTime) * hit.time;
+      if (first === undefined || time < first.time)
+        first = { target, cell, time, normal: hit.normal };
+    }
+  }
+  return first;
+}
+
+export function applyTargetTissueContact(
+  state: SimulationState,
+  dt: number,
+  tick: TissueTick,
+  hit: TargetTissueContact,
+): void {
+  const { target, cell, time, normal } = hit;
+  const leg = targetPathSegments(target).find(
+    (item) => time >= item.startTime && time <= item.endTime,
+  );
+  if (leg === undefined) return;
+  const contact = sampleSegment(leg, time);
+  const incoming = targetPathVelocity(target, time, dt);
+  let latch = state.arena.tissueContacts.find(
+    (item) => item.targetId === target.id && item.patchId === cell.patchId,
+  );
+  if (latch === undefined) {
+    latch = {
+      targetId: target.id,
+      patchId: cell.patchId,
+      touching: false,
+      lastErosionAt: -Infinity,
+    };
+    state.arena.tissueContacts.push(latch);
+  }
+  if (!latch.touching && state.elapsed - latch.lastErosionAt >= 0.3) {
+    queueTargetErosion(state, tick, cell, normal);
+    latch.lastErosionAt = state.elapsed;
+  }
+  latch.touching = true;
+  const position = projectFree(
+    tick.cells,
+    {
+      x: logicalCoordinate(contact.x + normal.x * SEPARATION),
+      y: logicalCoordinate(contact.y + normal.y * SEPARATION),
+    },
+    target.radius,
+  );
+  if (position === undefined) {
+    stopTargetPath(target, leg.startTime, state.level.arena.floor);
+    return;
+  }
+  const dot = incoming.x * normal.x + incoming.y * normal.y;
+  const velocity = {
+    x: incoming.x - 2 * Math.min(0, dot) * normal.x,
+    y: incoming.y - 2 * Math.min(0, dot) * normal.y,
+  };
+  rewriteTargetPath(target, time, position, velocity, dt, state.level.arena.floor);
+}
+
+export function finishTargetTissueContacts(
+  state: SimulationState,
+  touched: ReadonlySet<string>,
+): void {
   const living = new Set(state.targets.map((target) => target.id));
   state.arena.tissueContacts = state.arena.tissueContacts.filter((latch) =>
     living.has(latch.targetId),
   );
+  for (const latch of state.arena.tissueContacts)
+    latch.touching = touched.has(JSON.stringify([latch.targetId, latch.patchId]));
+}
+
+// Standalone tissue callers use the same response and path contract as the world scheduler.
+export function resolveTargetTissue(state: SimulationState, dt: number, tick: TissueTick): void {
+  const touched = new Set<string>();
   for (const target of state.targets) {
     if (target.activeFromTick > state.tick) continue;
-    let path = [...targetPathSegments(target)];
-    const completed: TargetMotionSegment[] = [];
-    const touched = new Set<string>();
+    let after = 0;
     let iterations = 0;
-    let stopped = false;
-    while (path.length > 0 && iterations < 12) {
-      const leg = path.shift();
-      if (leg === undefined) break;
-      let first: { cell: FrozenTissueCell; time: number; normal: Velocity } | undefined;
-      for (const cell of tick.cells) {
-        const hit = sweepCircleBox(leg.start, leg.end, target.radius, cellBox(cell));
-        if (hit !== undefined && (first === undefined || hit.time < first.time))
-          first = { cell, ...hit };
-      }
-      if (first === undefined) {
-        completed.push(leg);
-        continue;
-      }
-      iterations++;
-      const time = leg.startTime + (leg.endTime - leg.startTime) * first.time;
-      const contact = sampleSegment(leg, time);
-      const incoming = {
-        x: (leg.end.x - leg.start.x) / Math.max(1e-12, (leg.endTime - leg.startTime) * dt),
-        y: (leg.end.y - leg.start.y) / Math.max(1e-12, (leg.endTime - leg.startTime) * dt),
-      };
-      touched.add(first.cell.patchId);
-      let latch = state.arena.tissueContacts.find(
-        (item) => item.targetId === target.id && item.patchId === first.cell.patchId,
-      );
-      if (latch === undefined) {
-        latch = {
-          targetId: target.id,
-          patchId: first.cell.patchId,
-          touching: false,
-          lastErosionAt: -Infinity,
-        };
-        state.arena.tissueContacts.push(latch);
-      }
-      if (!latch.touching && state.elapsed - latch.lastErosionAt >= 0.3) {
-        queueTargetErosion(state, tick, first.cell, first.normal);
-        latch.lastErosionAt = state.elapsed;
-      }
-      latch.touching = true;
-      if (time > leg.startTime) completed.push({ ...leg, endTime: time, end: contact });
-      const projected = projectFree(
-        tick.cells,
-        {
-          x: logicalCoordinate(contact.x + first.normal.x * SEPARATION),
-          y: logicalCoordinate(contact.y + first.normal.y * SEPARATION),
-        },
-        target.radius,
-      );
-      if (projected === undefined) {
-        target.position = { ...leg.start };
-        stopped = true;
+    for (;;) {
+      const hit = firstTargetTissueContact(target, tick, after);
+      if (hit === undefined) break;
+      if (++iterations > 12) {
+        stopTargetPath(target, after, state.level.arena.floor);
         break;
       }
-      target.position = projected;
-      const dot = incoming.x * first.normal.x + incoming.y * first.normal.y;
-      const velocity = {
-        x: incoming.x - 2 * Math.min(0, dot) * first.normal.x,
-        y: incoming.y - 2 * Math.min(0, dot) * first.normal.y,
-      };
-      // The proposed path may have reached a sidewall after this earlier tissue contact.
-      // Discard its hold together with that future path: tissue never anchors sticky bodies.
-      if (target.kind === "plaque" && target.behavior?.kind === "sticky") {
-        if (velocity.x === 0 && target.behavior.pauseRemaining > 0)
-          velocity.x = target.behavior.resumeVelocityX;
-        target.behavior.pauseRemaining = 0;
-        target.behavior.resumeVelocityX = velocity.x;
-      }
-      synchronizeTargetMotion(target, state.level.arena.floor, velocity);
-      if (overlapsCells(tick.cells, target.position, target.radius)) {
-        target.position = { ...leg.start };
-        synchronizeTargetMotion(target, state.level.arena.floor, velocity);
-        stopped = true;
-        break;
-      }
-      const remaining = (1 - time) * dt;
-      if (remaining <= 1e-12) {
-        path = [];
-        break;
-      }
-      advanceTarget(target, remaining, state.level.arena.floor);
-      path = target.motionSegments.map((segment) => ({
-        ...segment,
-        startTime: time + segment.startTime * (1 - time),
-        endTime: time + segment.endTime * (1 - time),
-      }));
-    }
-    if (path.length > 0 || stopped) {
-      const last = completed[completed.length - 1];
-      // A failed projection must never expose the discarded future proposal as a collision path.
-      const safe = last?.end ?? target.previousPosition;
-      target.position = { ...safe };
-      synchronizeTargetMotion(target, state.level.arena.floor, target.velocity);
-      completed.push({
-        startTime: last?.endTime ?? 0,
-        endTime: 1,
-        start: { ...target.position },
-        end: { ...target.position },
-      });
-    }
-    target.motionSegments = completed;
-    const firstLeg = completed[0];
-    if (firstLeg !== undefined) target.previousPosition = { ...firstLeg.start };
-    for (const latch of state.arena.tissueContacts.filter((item) => item.targetId === target.id)) {
-      // A reflected exit remains latched until a full tick without contact, preventing chatter.
-      latch.touching = touched.has(latch.patchId);
+      touched.add(JSON.stringify([target.id, hit.cell.patchId]));
+      applyTargetTissueContact(state, dt, tick, hit);
+      after = hit.time;
     }
   }
+  finishTargetTissueContacts(state, touched);
 }
 
 export function commitTissueErosion(

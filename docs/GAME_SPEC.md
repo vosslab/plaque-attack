@@ -5,7 +5,9 @@ cardiovascular surgeon along the floor, fire upward, dodge drifting hazards, and
 plaque into progressively smaller fragments. The campaign introduces aspirin and clopidogrel in
 its first three displays, then builds skill with their platelet hazards and sustained control.
 
-Status: current source contract, 2026-10-23. All 24 stages are authored in four chapters.
+Status: gameplay contract, 2026-10-23. The core interaction revision below is approved but not yet
+implemented; track its work in [core_interactions_revision.md](active_plans/active/core_interactions_revision.md).
+All 24 stages are authored in four chapters.
 The approved early-weapon progression keeps the stable display order and stage 1 configuration,
 introduces aspirin at display 2 and clopidogrel at display 3, then builds mastery and combinations.
 The remix also adds shootable flow switches, optional contact shields, finite phase finales, quick
@@ -51,7 +53,8 @@ Miniclip hosting or affiliation is not part of the delivery requirement.
 
 The game should feel immediately understandable and increasingly demanding. The interesting
 decision is where to stand and when to fire: a split removes a large obstacle but creates two
-smaller ones. Later, rapid aspirin shots and persistent clopidogrel shots reward different timing.
+smaller ones. Aspirin grows a small aggregate into tiny targets, then rewards a tiny-target burst;
+clopidogrel rewards lining up hazards along a persistent shot.
 Maintenance asks the player to sustain control rather than chase a permanently empty screen; an
 optional earned finish rewards especially steady play.
 
@@ -169,19 +172,25 @@ damage and contact invulnerability do not interrupt play or introduce another co
 ## Target physics and splitting
 
 Use steady lateral drift and smooth analytic vertical circulation. Plaques use a rounded orbit
-that shortens prolonged lower turns; platelets retain the original cosine orbit. There is no
-gravity, ballistic launch, or floor impact. Walls reflect lateral travel while retaining
-overshoot. Size-based lateral speeds are 72/84/94/104 units/s from large to tiny, with a
-shared angular rate of 0.6 radians/s; both scale by the level speed multiplier. Targets normally
-pass through each other; all lipid stages permit occasional equal-size plaque coalescence when two
-floating plaques make a new approaching contact. A break or split never rolls for a merge.
-Decorative particles do not collide.
+that shortens prolonged lower turns; platelets retain the original cosine orbit. A target keeps that
+authored orbit until its first physical impulse, then carries persistent free-fluid velocity.
+Physical redirects do not remap velocity through an orbit slope. Impulse motion reflects at fixed
+walls and ceiling and at the curved floor's local
+normal, preserving speed. This is a fluid-style arcade path, not gravity or a ballistic floor impact.
+Size-based lateral speeds are 72/84/94/104 units/s from large to tiny, with a shared angular rate of
+0.6 radians/s; both scale by the level speed multiplier. Every pair of active targets physically
+responds to contact, including tiny and mixed-size targets and platelet hazards. Contact redirects
+motion with a readable bounce; it does not remove, split, or merge a target by itself. Same-size
+plaques below large can occasionally merge only on a new approaching contact entry, subject to the
+level's probability, cooldown, and success budget. A break or split never rolls for a merge.
+Decorative particles do not collide. The event and path contract is in
+[CORE_INTERACTIONS_DESIGN.md](CORE_INTERACTIONS_DESIGN.md).
 
 On flat floors, each kind uses the full reachable vertical range, with a 24-unit wall inset;
 on raised floors, its bounds follow the local ceiling/floor envelope. Plaques use the rounded
 analytic profile `q=(1-asin(k*cos(p))/asin(k))/2`, with `k=0.90`; platelets use the original
-cosine profile. Both turn smoothly, and tissue contacts deflect the same continuous fluid path.
-Initial phase derives from clamped spawn height and stable target ID. Every size visits the
+cosine profile. Both turn smoothly. Tissue contact enters the corrected impulse path. Initial phase
+derives from clamped spawn height and stable target ID. Every size visits the
 lower firing and player-contact region, including aspirin's shorter range. This is a predictable
 arcade model, not a fluid solver.
 
@@ -312,17 +321,22 @@ next shot only after both the active-shot restriction and cooldown permit it.
 
 ### Aspirin
 
-Aspirin fires a small white, scored tablet token vertically at 700 units per second. Initial firing
-interval is 0.22 seconds, range is 340 logical units, and the maximum is three active shots. Each
-shot inactivates one small or tiny platelet hazard and disappears. The player succeeds by moving
-beneath low targets and firing frequent, precise shots.
+Aspirin fires a small white tablet token vertically at 700 units per second. Initial firing interval
+is 0.22 seconds, range is 340 logical units, and the maximum is three active shots. A hit on a small
+platelet disaggregates it into three tiny platelet hazards on the following tick; that hit awards no
+score or streak credit. A hit on a tiny platelet triggers a local-radius burst that clears existing
+active tiny platelets only. The burst excludes aggregates, plaques, and targets born during the
+same tick. Resolve burst removals in deterministic target-ID order and award score and streak once
+per removed existing tiny target. Do not recurse into new hits or award a target twice. Exact radius
+and balance remain tunable. This is an arcade action, not a model of aspirin's clinical effects.
 
 ### Clopidogrel
 
 Clopidogrel fires a blue oblong tablet token with a distinct outline and pulse trail. Initial firing
 interval is 0.75 seconds, speed is 320 units per second, lifetime is 1.5 seconds, and the maximum is
-two active shots. A shot can inactivate up to three distinct platelet hazards before disappearing.
-It leaves the arena at the ceiling. Repeated overlap with the same target never produces more hits.
+two active shots. A shot directly removes up to three distinct platelet hazards along its
+persistent path before disappearing. It leaves the arena at the ceiling. Repeated overlap with the
+same target never produces more hits. It does not create aspirin's fan or burst effects.
 
 This tool rewards lining up several hazards along a persistent shot. Its silhouette is symbolic;
 the drawing does not identify a commercial pill or prescribe a formulation.
@@ -337,8 +351,8 @@ pattern, not an instruction to alternate real medication doses.
 | Tool | Plaque target | Platelet hazard |
 | --- | --- | --- |
 | Stent | Split or remove according to size | No effect |
-| Aspirin | No effect | Inactivate one small or tiny hazard |
-| Clopidogrel | No effect | Inactivate up to three small or tiny hazards per shot |
+| Aspirin | No effect | Small impact fans into three tiny targets; tiny impact bursts nearby tiny targets |
+| Clopidogrel | No effect | Directly remove up to three platelet targets per shot |
 
 Ordinary levels never equip an incompatible tool. A rejected hit changes no target or score.
 Tools have unlimited ammunition; cooldowns and active-shot limits define the firing rhythm.
@@ -363,9 +377,10 @@ The approved remix plan and exposed source configuration own composition and pla
 | 19-24 | Flow State | Dual; maintenance at 19/21/23, finite breathers at 20/22, three-group finale at 24 |
 
 Display 1 (stable ID 1) remains the gentle stent introduction, with seven hits and a 0.55 speed
-multiplier. Display 2 (ID 16) introduces aspirin against two separated small platelets; its two
-hits and 0.60 speed multiplier keep the encounter short. Display 3 (ID 2) introduces clopidogrel
-against three vertically aligned small platelets; one persistent shot can inactivate all three,
+multiplier. Display 2 (ID 16) introduces aspirin against one small platelet aggregate; its 0.60
+speed multiplier keeps the encounter short as the aggregate fans into three tiny targets. Display 3
+(ID 2) introduces clopidogrel against three vertically aligned small platelets; one persistent
+shot can remove all three,
 with a 0.65 speed multiplier. All three opening encounters use flat arenas. Later chapters build
 mastery and combine tools.
 The heavy stage's authored workload follows its one-hit, three-tiny split. Unstable scored-hit
@@ -480,8 +495,8 @@ same attempt. An active run remains in memory only and does not resume after rel
 | Split medium plaque | 150 |
 | Split small plaque | 200 |
 | Remove tiny plaque | 250 |
-| Inactivate small platelet hazard | 200 |
-| Inactivate tiny platelet hazard | 250 |
+| Remove small platelet hazard | 200 |
+| Remove tiny platelet hazard | 250 |
 | Complete a level | 1,000 |
 | Complete a level without life loss | 500 additional |
 | Maintenance survival | 10 per completed second of the nominal timer |
@@ -730,14 +745,19 @@ Use an explicit seed for any randomized entry selection, with stable ordering fo
 Within each tick:
 
 1. Read actions, place the player on the floor, emit an eligible shot, and freeze tissue occupancy.
-2. Advance floor-aware target paths with tissue reflection, and advance projectiles.
-3. Resolve earliest shot/solid/target contacts, splits and inactivation against the frozen cells.
-4. Resolve eligible surviving merge entries and player contacts using the same piecewise paths.
+2. Advance floor-aware target paths and projectiles; collect swept target-target, target-tissue,
+   and target-projectile contacts as one chronological `target_contacts` agenda.
+3. Resolve agenda events in time order; the earliest event wins, with a projectile ahead of a
+   target-pair event on an exact tie. Contacts rewrite affected swept suffixes. Splits, aspirin
+   births, deletion, and redirection affect later events in the same tick.
+4. Resolve eligible surviving merge entries and player contacts using corrected piecewise paths.
 5. Commit erosion and pocket breaches; update releases, arrivals, counts and objective timers.
 6. Resolve terminal states and emit score/UI events once.
 
 Use circle-to-rectangle collision for the player and target, and swept projectile-region tests
-to avoid tunneling. New split children wait until the following tick for collisions. Contact
+to avoid tunneling. Rendering and collision consumers use corrected paths after each agenda event.
+New split children wait until the following tick for collisions. Aspirin fan children also activate
+on the following tick and separate before any later live collision. Contact
 damage therefore cannot come from a just-spawned child before the player can see it.
 
 Zero lives takes precedence over a simultaneous clear or timer expiry. A target removed by a
@@ -803,7 +823,7 @@ optional human feedback may improve tuning but never blocks a milestone.
 | Tissue | Every shot kind stops at first solid, cuts up to three cells, and uses frozen occupancy; hazard entry erosion and reflected paths remain consistent |
 | Pockets | Sealed contents optional; breached contents warn, wait safely at capacity, release once and block completion while pending |
 | Merging | Equal-size eligible plaque only; seeded entry attempts, inherited cooldown, conserved leaf mass, finite work bound and new-size speed |
-| Tools | Stent limits one active shot; aspirin hits once; clopidogrel hits distinct targets up to its limit; dual alternates on successful fires |
+| Tools | Stent limits one active shot; aspirin small hits create three tiny targets and tiny hits burst; clopidogrel removes platelet targets along its path; dual alternates on successful fires |
 | Target identity | Drugs never score against plaque; platelet hazards never split into cholesterol |
 | Lives | One life loss per tick; shield absorbs ordinary contact, overload bypasses; zero lives offers same-stage retry |
 | Finite waves | Scheduled/pending hazards block clear; phases preserve tissue/current/shield; optional support does not block |
@@ -836,7 +856,7 @@ The following choices make the supplied concept executable while keeping its cen
 - Resolve repeated hits as the fragmentation chain, with one hit per individual plaque.
 - Consume the stent on its first hit so one mesh trail cannot clear an entire descendant tree.
 - Use finite reinforcements in authored drug stages and explicit maintenance objectives for timed rounds.
-- Use platelet-activation tokens for medication stages and label their inactivation as prevention.
+- Use platelet-activation tokens for medication stages; frame their removal and aspirin's arcade effects as game actions, not clinical prevention claims.
 - Treat maintenance limits as inclusive; define overload recovery and timer-expiry behavior.
 - Carry three lives through the campaign and offer unranked practice for unlocked levels.
 - Keep elapsed time in clear levels, countdown time in maintenance, and no optional blood-flow

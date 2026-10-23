@@ -170,8 +170,14 @@ type Hit = { size: PlaqueSize; count: number; speedFactor?: number };
 type MeanRange = { mean: number; min: number; max: number };
 const SIZES: readonly PlaqueSize[] = ["large", "medium", "small", "tiny"];
 
-// Expand every removal, including the fast small descendants, rather than initial bodies alone.
-export function removalTree(spawn: TargetSpawn): Hit[] {
+// Expand target contacts; the default counts direct removal for platelets.
+export function removalTree(spawn: TargetSpawn, weapon?: LevelConfig["weapon"]): Hit[] {
+  if (spawn.kind === "platelet" && spawn.size === "small" && weapon === "aspirin") {
+    return [
+      { size: "small", count: 1 },
+      { size: "tiny", count: 3 },
+    ];
+  }
   if (spawn.kind === "plaque" && spawn.behavior === "heavy") {
     // Heavy is a one-hit medium source that creates three ordinary tiny targets.
     return [
@@ -200,10 +206,10 @@ function summarize(values: readonly number[]): MeanRange | undefined {
 }
 
 export function targetMetrics(targets: readonly TargetSpawn[], level: LevelConfig): TargetMetrics {
-  const hits = targets.flatMap(removalTree);
+  const hits = targets.flatMap((target) => removalTree(target, level.weapon));
   const workload = hits.reduce((sum, hit) => sum + hit.count, 0);
   const leafCeiling = targets.reduce((sum, target) => {
-    const tree = removalTree(target);
+    const tree = removalTree(target, level.weapon);
     return sum + (tree[tree.length - 1]?.count ?? 0);
   }, 0);
   const movement =
@@ -622,6 +628,7 @@ export function difficultyReport(): Report {
       dualFireInterval: DUAL_FIRE_INTERVAL,
       limits: [
         "Config metrics are a vector, not a global difficulty score or proof of fun.",
+        "Platelet workload counts target contacts rather than shots or scored removals. Aspirin includes the unscored cluster break and three singles, an upper bound before local-burst savings. Clopidogrel counts direct contacts without multi-target shot savings. Dual uses direct removal as a tool-choice lower bound; aspirin choices can add descendants. Leaf ceilings follow the same tool choice.",
         "Analytic overlap is provided only for constant-height flat floors. Sampling advances the actual floor-aware motion for one fluid cycle, comparing playerSupportY at the same x. Neither measures horizontal collision probability, tissue reflection or merges.",
         "Floor relief and exact smoothstep maximum slope describe geometry. Open firing lanes are raw gaps in the union of occupied-cell x projections, before projectile-width and player-bound trimming.",
         "Full tissue removal shot bounds assume productive shots only, 1-3 occupied cells per shot, and no hazard erosion. They are not required completion work: cover may be bypassed, hazards carve it, and missed/redundant shots are unbounded.",

@@ -7,6 +7,36 @@ the reasoning a later reader needs. Guidance Neil Voss states belongs in
 `docs/active_plans/decisions/`. [PROPAGATED HEADER - ENTRIES BELOW ARE YOURS]
 <!-- VENDORED HEADER: END -->
 
+### Earned-current finale arc
+
+**Decision.** Keep the three-phase progression and derived restored-current contract. Display 12
+(stable ID 20) earns the left baseline at x=320 after phase one; the manual right switch at x=640
+overrides it for four seconds, then the left baseline resumes during cooldown. Display 16 (ID 22)
+uses a center switch at x=480 to gather the right current at x=780 for left-shield retrieval at
+x=132. Display 24 (ID 15) earns the right baseline at x=640 after phase one; an optional left
+override at x=320 offers player-directed positioning and crossing before the right baseline resumes.
+The recorded saved-fan route uses a no-fire flank; it does not establish a shield-crossing benefit.
+Remove the experimental display-23 (ID 24) seam; preserve its
+original right shield, shift, and steady gather. Leave display 5 unchanged.
+
+**Why.** The three encounters offer different choices through existing movement and firing controls,
+with optional routes and visible payoffs. The display-23 seam added surplus device and instruction
+without an attainable, meaningful two-target clearance; display 5 added discovery load.
+
+**Consequence.** The sampled routes demonstrate reachability and payoff, not human enjoyment. The
+latest bounded `patient_recovery` mask refinement adds center-out organic curves and warmer physical
+wall shading. TypeScript, lint, format, the 99 Node checks, and 133.8 kB distribution build pass.
+The refreshed route receipt matches stable source/distribution identities and reports no browser
+errors or overflow. Fresh earned-clear captures, bounded-renderer source/spec and visual-quality
+reviews, and gameplay integration assessment accept the result. The zoomed celebration view crops
+full arena borders; source/spec evidence verifies earned progress coverage. Evidence and limits are tracked in
+[gameplay_creative_evolution_ledger.md](active_plans/reports/gameplay_creative_evolution_ledger.md).
+
+**Owner.** [src/types/level.ts](../src/types/level.ts),
+[src/remix_mechanics.ts](../src/remix_mechanics.ts), [src/remix_levels.ts](../src/remix_levels.ts),
+[src/remix_rendering.ts](../src/remix_rendering.ts), and
+[gameplay_creative_evolution_ledger.md](active_plans/reports/gameplay_creative_evolution_ledger.md).
+
 
 ### Same-patient recovery continuity
 
@@ -441,7 +471,7 @@ keep classic, expanded and remix records separate so historical scores retain th
 **Owner.** `src/constants.ts`, `src/remix_levels.ts`, [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md)
 and [archive/remix_campaign_plan.md](archive/remix_campaign_plan.md).
 
-### Early weapon discovery
+### Early weapon discovery (superseded count)
 
 **Decision.** Keep all 24 stable IDs in their existing display order and preserve display 1 (ID 1)
 exactly. Introduce aspirin at display 2 (ID 16) against two separated small platelets and
@@ -492,33 +522,16 @@ alter medical target identity or physics.
 **Why.** The requested setting is a fluid, gravityless interior-body environment where lipid and
 bubble motion should feel smooth and buoyant. Ballistic bounces suggest gravity and floor contact.
 
-**Consequence.** Keep first-three-level ease as the leading challenge priority. Use the shared
-kind-selected orbit for motion, creation, rephasing and plaque exposure reporting. The scoped local
-trial is accepted: controlled no-fire observations reduce floor-band dwell and travel by 17.4%
-on a flat floor and 14.4% on a wavy floor, while adaptive route pacing is mixed. Platelet control
-motion is unchanged. These results do not establish human enjoyment or universal play improvement;
-final integration accepts the current source, with no human study or universal play-improvement
-claim.
+**Consequence.** Keep opening ease as the challenge priority. Use the kind-selected orbit for
+ordinary motion, creation and exposure reporting. A physical impulse enters persistent free-fluid
+motion with fixed-boundary reflections; see [CORE_INTERACTIONS_DESIGN.md](CORE_INTERACTIONS_DESIGN.md)
+for the collision transition. The accepted plaque-only profile reduces
+floor-band dwell and travel by 17.4% on flat floors and 14.4% on wavy floors in controlled no-fire
+observations; adaptive-route effects are mixed. Platelet motion is unchanged. This is not a human
+enjoyment or universal-improvement claim.
 
 **Owner.** `src/motion.ts`, [EXPANSION_PLAN.md](EXPANSION_PLAN.md),
 [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md), and the renderer asset-loading contract.
-
-### Plaque rounded floor turns
-
-**Decision.** Use the rounded analytic orbit only for plaques and preserve platelet cosine
-motion exactly. Share plaque position, derivative and inverse across motion, creation, rephasing
-and flat-floor exposure estimates.
-
-**Why.** Controlled no-fire observations show lower floor-band dwell and travel (17.4% flat,
-14.4% wavy) with bounds and period preserved. Adaptive routes vary: they do not show a universal
-clear-time or total-exposure improvement. Fixed-center first-stage held fire clears both versions
-at 32.62 seconds with three lives, showing an ordinary alternative to the slower adaptive cleanup.
-
-**Consequence.** Keep the plaque-only profile as the accepted scoped trial. Describe paired
-observations separately from adaptive clear routes, and keep claims limited to these scenarios.
-
-**Owner.** `src/motion.ts`, `src/characters.ts`, `src/difficulty.ts`, and
-[archive/lipid_floor_turn_plan.md](archive/lipid_floor_turn_plan.md).
 
 ### Fixed-tick tissue collision geometry
 
@@ -659,7 +672,14 @@ Start the gesture after the camera settles so its action is visible at the enlar
 Reduced motion cuts to a static close-up. These are tunable presentation defaults.
 Use contextual Enter and freshly pressed Space for continuation, with one transition per physical
 press. Show the patient recovery illustration directly in every successful result, with the
-cleared route emphasized and an explicit continuation action. Keep route browsing optional.
+cleared route emphasized and an explicit continuation action. Keep route browsing optional. For
+the creative finale, retain the existing recovery badge as the only gathering-through-cooldown
+status surface. Its selected encounters are display 12 / ID 20 (earned current and temporary
+override), display 16 / ID 22 (switch-directed gathering and shield retrieval), and display 24 / ID
+15 (optional diversion and saved last-fan flush). Display 23's seam and display 5's added
+interaction were removed after play showed insufficient benefit for their device and instruction
+load. A narrow illustration refinement remains under review: spotlight the patient's organic
+frontiers while preserving the same physical walls.
 
 **Why.** A visible outcome gives the last shot closure; carried firing input and repeated keys must
 not dismiss results or start the next stage. The former optional-map button hid the visual payoff
@@ -675,22 +695,12 @@ No controllable jump or collision-state change is introduced by celebration.
 
 ### Collision-entry lipid merging
 
-**Decision.** Roll same-size plaque merging only on a new approaching geometric contact entry.
-Initial penetration, including split-child or deferred insertion overlap, cannot roll; continuing
-overlap remains latched until separation. Exact boundary contact can roll when approaching, while a
-stationary sticky hold is excluded. Splitting never rolls for a merge. Keep per-level probability,
-cooldown, and successful-merge budget; platelets never merge.
+**Decision.** Keep same-size plaque merges rare and entry-gated under probability, cooldown, and
+budget limits, separate from universal contact bounce. Projectile breaks never merge; newborns
+activate next tick and must separate first.
 
-**Why.** Contact-entry gating makes merging a collision event during ordinary motion and prevents
-splits from immediately undoing themselves. A latch prevents repeated rolls during one overlap.
-
-**Consequence.** Each merge adds at most one removal hit. Per-level rates and budgets remain tuning
-choices, not a guarantee that a merge occurs in any run. Split hit feedback keeps particles, ring,
-score, combo and sound without size or fuse-split callout text; successful merges retain ring and
-`MERGED` feedback.
-
-**Owner.** [coalescence.ts](../src/coalescence.ts), [simulation.ts](../src/simulation.ts), and
-[arena_layouts.ts](../src/arena_layouts.ts).
+**Consequence.** Contact ordering and weapon interactions are in
+[CORE_INTERACTIONS_DESIGN.md](CORE_INTERACTIONS_DESIGN.md).
 
 ### Distinct floor silhouettes
 
@@ -942,3 +952,21 @@ supports reachability, not human enjoyment or a claim that prior maintenance was
 **Owner.** `src/simulation.ts`, `src/waves.ts`, `src/scoring.ts`, `src/ui.ts`, and
 [GAME_SPEC.md](GAME_SPEC.md), with bounded implementation and play evidence in
 `output/whole_game_review/`.
+
+### Shared contacts and aspirin action
+
+**Decision.** Resolve all active target contacts through a chronological shared agenda. Every
+target pair bounces; eligible same-size plaque pairs may additionally merge under the existing
+approach, probability, cooldown, and budget rules. Aspirin turns small platelet targets into three
+tiny targets and gives tiny-target hits a local burst. Clopidogrel directly removes up to three
+platelet targets along its persistent path.
+
+**Why.** Shared bounce and distinct aspirin stages make contact meaningful and give players a
+multi-step action without borrowing stent fragmentation or inflating health.
+
+**Consequence.** Earliest swept event wins (projectile before pair on ties); later events use
+corrected paths. No break-triggered merge; newborns wait and separate. Arcade fiction governs.
+See [CORE_INTERACTIONS_DESIGN.md](CORE_INTERACTIONS_DESIGN.md).
+
+**Owner.** [GAME_SPEC.md](GAME_SPEC.md), [CORE_INTERACTIONS_DESIGN.md](CORE_INTERACTIONS_DESIGN.md).
+

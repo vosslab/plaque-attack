@@ -20,6 +20,7 @@ import { celebrationMotion, idleBodyAngle } from "./surgeon_motion";
 import { createRemixRendering } from "./remix_rendering";
 import { openingInterceptGuide } from "./opening_guide";
 import { drawLipidBehavior } from "./lipid_rendering";
+import { drawPlatelet, drawPlateletDisaggregation } from "./platelet_rendering";
 import { createHitEffect, drawHitEffect, type HitEffect } from "./hit_effects";
 import type { TargetId } from "./brands";
 
@@ -34,7 +35,8 @@ type StreakCallout = { streak: number; multiplier: 2 | 3; life: number };
 const VICTORY_POSE_DELAY = 0.3;
 const VICTORY_ZOOM_DURATION = 0.35;
 type ArenaEffect = {
-  kind: "tissue_eroded" | "pocket_breached" | "pocket_released" | "targets_merged";
+  kind:
+    "tissue_eroded" | "pocket_breached" | "pocket_released" | "targets_merged" | "aspirin_burst";
   x: number;
   y: number;
   life: number;
@@ -96,6 +98,7 @@ export function createRenderer(
         event.type === "tissue_eroded" ||
         event.type === "pocket_breached" ||
         event.type === "pocket_released" ||
+        event.type === "aspirin_burst" ||
         event.type === "targets_merged"
       ) {
         if (arenaEffects.length >= HIT_EFFECT_LIMIT) arenaEffects.shift();
@@ -104,28 +107,32 @@ export function createRenderer(
           ...event.position,
           life: 0.6,
           radius:
-            event.type === "targets_merged"
-              ? TARGET_PRESETS[event.size].radius
-              : event.type === "tissue_eroded"
-                ? 7
-                : 20,
+            event.type === "aspirin_burst"
+              ? event.radius
+              : event.type === "targets_merged"
+                ? TARGET_PRESETS[event.size].radius
+                : event.type === "tissue_eroded"
+                  ? 7
+                  : 20,
         });
       }
       if (event.type === "target_hit") {
-        if (pointLabels.length >= POINT_LABEL_LIMIT) pointLabels.shift();
-        pointLabels.push({
-          x: event.position.x,
-          y: event.position.y - TARGET_PRESETS[event.size].radius - 12,
-          points: event.points,
-          life: POINT_LABEL_DURATION,
-        });
-        const milestone = streakMilestone(event.streak);
-        if (milestone !== undefined)
-          streakCallout = {
-            streak: event.streak,
-            multiplier: milestone,
-            life: STREAK_CALLOUT_DURATION,
-          };
+        if (event.points > 0) {
+          if (pointLabels.length >= POINT_LABEL_LIMIT) pointLabels.shift();
+          pointLabels.push({
+            x: event.position.x,
+            y: event.position.y - TARGET_PRESETS[event.size].radius - 12,
+            points: event.points,
+            life: POINT_LABEL_DURATION,
+          });
+          const milestone = streakMilestone(event.streak);
+          if (milestone !== undefined)
+            streakCallout = {
+              streak: event.streak,
+              multiplier: milestone,
+              life: STREAK_CALLOUT_DURATION,
+            };
+        }
         if (hitEffects.length >= HIT_EFFECT_LIMIT) hitEffects.shift();
         hitEffects.push(createHitEffect(event, TARGET_PRESETS[event.size].radius));
       }
@@ -251,13 +258,23 @@ export function createRenderer(
           const radius = TARGET_PRESETS[content.size].radius;
           const appearance =
             content.kind === "platelet" ? "platelet" : state.level.lipidVariants[0];
-          ctx.drawImage(
-            images[appearance],
-            content.position.x - radius,
-            content.position.y - radius,
-            radius * 2,
-            radius * 2,
-          );
+          if (content.kind === "platelet")
+            drawPlatelet(
+              ctx,
+              images.platelet,
+              content.size,
+              radius,
+              content.position.x,
+              content.position.y,
+            );
+          else
+            ctx.drawImage(
+              images[appearance],
+              content.position.x - radius,
+              content.position.y - radius,
+              radius * 2,
+              radius * 2,
+            );
         }
       }
       const { x, y } = definition.releasePosition;
@@ -574,7 +591,11 @@ export function createRenderer(
     }
     // Outcome marks stay beneath live hazards, shots and the surgeon.
     hitEffects = hitEffects.filter((effect): boolean => effect.life > 0);
-    for (const effect of hitEffects) drawHitEffect(ctx, effect, reducedMotion);
+    for (const effect of hitEffects) {
+      if (effect.kind === "platelet" && effect.split)
+        drawPlateletDisaggregation(ctx, effect, reducedMotion);
+      else drawHitEffect(ctx, effect, reducedMotion);
+    }
     const alpha = state.phase === "playing" ? Math.max(0, Math.min(1, interpolation)) : 1;
     for (const projectile of state.projectiles) {
       const x =
@@ -627,13 +648,16 @@ export function createRenderer(
         target.kind === "plaque"
           ? (palette[(target.id - 1) % palette.length] ?? palette[0])
           : "platelet";
-      ctx.drawImage(
-        images[appearance],
-        -target.radius,
-        -target.radius,
-        target.radius * 2,
-        target.radius * 2,
-      );
+      if (target.kind === "platelet")
+        drawPlatelet(ctx, images.platelet, target.size, target.radius);
+      else
+        ctx.drawImage(
+          images[appearance],
+          -target.radius,
+          -target.radius,
+          target.radius * 2,
+          target.radius * 2,
+        );
       if (target.id === openingCue?.targetId) {
         ctx.beginPath();
         ctx.arc(0, 0, target.radius + 5, 0, Math.PI * 2);
@@ -652,15 +676,21 @@ export function createRenderer(
       ctx.save();
       ctx.globalAlpha = (1 - progress) * 0.85;
       ctx.strokeStyle =
-        effect.kind === "targets_merged"
-          ? "#ffe4a3"
-          : effect.kind === "tissue_eroded"
-            ? "#f1c8d0"
-            : "#dec6ff";
-      ctx.lineWidth = 2;
+        effect.kind === "aspirin_burst"
+          ? "#ebdcff"
+          : effect.kind === "targets_merged"
+            ? "#ffe4a3"
+            : effect.kind === "tissue_eroded"
+              ? "#f1c8d0"
+              : "#dec6ff";
+      ctx.lineWidth = effect.kind === "aspirin_burst" ? 3 : 2;
       const radius = effect.radius;
       ctx.beginPath();
-      ctx.arc(effect.x, effect.y, radius + (reducedMotion ? 0 : progress * 18), 0, Math.PI * 2);
+      const drawnRadius =
+        effect.kind === "aspirin_burst"
+          ? radius * (reducedMotion ? 1 : 0.55 + progress * 0.45)
+          : radius + (reducedMotion ? 0 : progress * 18);
+      ctx.arc(effect.x, effect.y, drawnRadius, 0, Math.PI * 2);
       ctx.stroke();
       if (effect.kind === "targets_merged") {
         ctx.font = "bold 13px system-ui, sans-serif";
@@ -689,7 +719,9 @@ export function createRenderer(
               (state.nextTargetId - 1) % state.level.lipidVariants.length
             ] ?? state.level.lipidVariants[0])
           : "platelet";
-      ctx.drawImage(images[appearance], x - 23, y - 23, 46, 46);
+      if (warning.target.kind === "platelet")
+        drawPlatelet(ctx, images.platelet, warning.target.size, 23, x, y);
+      else ctx.drawImage(images[appearance], x - 23, y - 23, 46, 46);
       ctx.globalAlpha = 1;
       // A fixed arrow remains legible with reduced motion and at the upper wall.
       ctx.beginPath();

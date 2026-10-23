@@ -5,6 +5,59 @@ import type { Projectile, Target, TargetMotionSegment, Velocity } from "./types/
 
 const EPSILON = 1e-9;
 
+export function targetPathVelocity(target: Target, time: number, dt: number): Velocity {
+  const legs = targetPathSegments(target);
+  const leg =
+    legs.find((item) => time >= item.startTime && time < item.endTime) ?? legs[legs.length - 1];
+  if (leg === undefined || leg.endTime === leg.startTime) return { ...target.velocity };
+  const duration = (leg.endTime - leg.startTime) * dt;
+  return { x: (leg.end.x - leg.start.x) / duration, y: (leg.end.y - leg.start.y) / duration };
+}
+
+// Circle-circle entry on the same piecewise paths used by projectiles and tissue.
+// Existing penetration (including newborn siblings) is allowed to separate first.
+export function targetPairContact(
+  lower: Target,
+  higher: Target,
+  after: number = 0,
+): number | undefined {
+  let earliest: number | undefined;
+  for (const a of targetPathSegments(lower)) {
+    for (const b of targetPathSegments(higher)) {
+      const start = Math.max(after, a.startTime, b.startTime);
+      const end = Math.min(a.endTime, b.endTime);
+      if (end <= start) continue;
+      const a0 = sampleSegment(a, start),
+        b0 = sampleSegment(b, start);
+      const a1 = sampleSegment(a, end),
+        b1 = sampleSegment(b, end);
+      const x = a0.x - b0.x,
+        y = a0.y - b0.y;
+      const dx = a1.x - b1.x - x,
+        dy = a1.y - b1.y - y;
+      const radius = lower.radius + higher.radius;
+      const c = x * x + y * y - radius * radius;
+      if (c < -1e-7 || x * dx + y * dy >= -1e-12) continue;
+      const speed = dx * dx + dy * dy;
+      if (speed <= 1e-20) continue;
+      const dot = x * dx + y * dy;
+      const discriminant = dot * dot - speed * c;
+      if (discriminant < 0) continue;
+      const fraction = Math.max(0, (-dot - Math.sqrt(discriminant)) / speed);
+      if (fraction > 1) continue;
+      const time = start + fraction * (end - start);
+      // A wall/pause vertex belongs to its outgoing motion. A circle that has
+      // already turned away there cannot create a zero-time response loop.
+      const av = targetPathVelocity(lower, time, 1),
+        bv = targetPathVelocity(higher, time, 1);
+      if ((x + dx * fraction) * (av.x - bv.x) + (y + dy * fraction) * (av.y - bv.y) >= -1e-10)
+        continue;
+      if (earliest === undefined || time < earliest) earliest = time;
+    }
+  }
+  return earliest;
+}
+
 export function targetPathSegments(target: Target): readonly TargetMotionSegment[] {
   return target.motionSegments.length > 0
     ? target.motionSegments
@@ -179,6 +232,7 @@ export function projectileContact(
   target: Target,
   activeFraction: number = 1,
   growthFraction: number = activeFraction,
+  startFraction: number = 0,
 ): number | undefined {
   if (activeFraction <= 0) return undefined;
   if (
@@ -188,7 +242,7 @@ export function projectileContact(
   )
     return undefined;
   for (const segment of targetPathSegments(target)) {
-    const start = Math.max(0, segment.startTime);
+    const start = Math.max(startFraction, segment.startTime);
     const end = Math.min(activeFraction, segment.endTime);
     if (end < start) continue;
     if (projectile.kind === "stent") {

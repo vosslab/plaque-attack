@@ -1,6 +1,8 @@
 import { FLAT_FLOOR, floorSlope, targetVerticalBounds } from "./arena_geometry";
 import { logicalCoordinate } from "./brands";
+import { sampleSegment, targetPathSegments } from "./collision";
 import { ARENA_WIDTH, STICKY_PAUSE_DURATION } from "./constants";
+import { advanceImpulseTarget } from "./impulse_motion";
 import type { FloorProfile } from "./types/level";
 import type { LogicalPoint } from "./types/player";
 import type { Target, TargetMotionSegment, Velocity } from "./types/simulation";
@@ -40,6 +42,7 @@ function orbitY(target: Target, floor: FloorProfile, x: number, phase: number): 
 }
 
 export function targetVerticalVelocity(target: Target, floor: FloorProfile): number {
+  if (target.motionKind === "impulse") return target.velocity.y;
   const [top, bottom] = targetVerticalBounds(floor, target.position.x, target.radius);
   if (target.kind === "plaque")
     return (
@@ -56,17 +59,23 @@ export function targetVerticalVelocity(target: Target, floor: FloorProfile): num
 }
 
 // Used after a collision has projected the center to free space and reflected its velocity.
-// Reconstruct the local orbit so subsequent ticks depart continuously from that position.
+// Physical impulses retain their velocity; ordinary spawn rephasing keeps its authored orbit.
 export function synchronizeTargetMotion(
   target: Target,
   floor: FloorProfile,
   velocity: Readonly<Velocity>,
+  preserveVerticalSpeed: boolean = false,
 ): void {
   target.position.x = logicalCoordinate(
     Math.max(target.radius, Math.min(ARENA_WIDTH - target.radius, target.position.x)),
   );
   const [top, bottom] = targetVerticalBounds(floor, target.position.x, target.radius);
   target.position.y = logicalCoordinate(Math.max(top, Math.min(bottom, target.position.y)));
+  if (preserveVerticalSpeed || target.motionKind === "impulse") {
+    target.motionKind = "impulse";
+    target.velocity = { ...velocity };
+    return;
+  }
   const cosine = Math.max(-1, Math.min(1, (top + bottom - 2 * target.position.y) / (bottom - top)));
   const depth = (target.position.y - top) / (bottom - top);
   const phase = target.kind === "platelet" ? Math.acos(cosine) : orbitPhase(target.kind, depth);
@@ -79,6 +88,63 @@ export function synchronizeTargetMotion(
   target.fluidAngularSpeed = Math.abs(target.fluidAngularSpeed) * direction;
   target.velocity.x = velocity.x;
   target.velocity.y = targetVerticalVelocity(target, floor);
+}
+
+// Keep the accepted past, discard the old future, and regenerate every remaining sweep.
+export function rewriteTargetPath(
+  target: Target,
+  time: number,
+  position: LogicalPoint,
+  velocity: Velocity,
+  dt: number,
+  floor: FloorProfile,
+): void {
+  const previous = { ...target.previousPosition };
+  const completed: TargetMotionSegment[] = [];
+  for (const leg of targetPathSegments(target)) {
+    if (leg.startTime >= time) break;
+    completed.push(
+      leg.endTime <= time ? leg : { ...leg, endTime: time, end: sampleSegment(leg, time) },
+    );
+  }
+  target.position = { ...position };
+  if (target.kind === "plaque" && target.behavior?.kind === "sticky") {
+    target.behavior.pauseRemaining = 0;
+    target.behavior.resumeVelocityX = velocity.x;
+    target.behavior.resumeVelocityY = velocity.y;
+  }
+  synchronizeTargetMotion(target, floor, velocity, true);
+  if (time < 1) {
+    advanceTarget(target, (1 - time) * dt, floor);
+    completed.push(
+      ...target.motionSegments.map((leg) => ({
+        ...leg,
+        startTime: time + leg.startTime * (1 - time),
+        endTime: time + leg.endTime * (1 - time),
+      })),
+    );
+  }
+  target.previousPosition = previous;
+  target.motionSegments = completed;
+}
+
+export function stopTargetPath(
+  target: Target,
+  time: number,
+  floor: FloorProfile,
+  resumeVelocity: Velocity = { x: 0, y: 0 },
+): void {
+  const point = sampleTargetPath(targetPathSegments(target), time) ?? target.previousPosition;
+  const completed = targetPathSegments(target).filter((leg) => leg.endTime <= time);
+  const crossing = targetPathSegments(target).find(
+    (leg) => leg.startTime < time && leg.endTime > time,
+  );
+  target.motionSegments = [...completed];
+  if (crossing !== undefined)
+    target.motionSegments.push({ ...crossing, endTime: time, end: point });
+  target.motionSegments.push({ startTime: time, endTime: 1, start: point, end: point });
+  target.position = { ...point };
+  synchronizeTargetMotion(target, floor, resumeVelocity, true);
 }
 
 // Linear sampling consumes the exact same bounded travel legs as every sweep consumer.
@@ -101,6 +167,10 @@ export function advanceTarget(target: Target, dt: number, floor: FloorProfile = 
   target.previousPosition = { ...target.position };
   target.motionSegments = [];
   if (!Number.isFinite(dt) || dt <= 0) return;
+  if (target.motionKind === "impulse") {
+    advanceImpulseTarget(target, dt, floor);
+    return;
+  }
   const sticky =
     target.kind === "plaque" && target.behavior?.kind === "sticky" ? target.behavior : undefined;
   const initialPhase = target.fluidPhase;

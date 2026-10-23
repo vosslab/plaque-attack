@@ -62,7 +62,7 @@ export const WEAPON_CONFIGS = {
   aspirin: {
     speed: 700,
     interval: 0.22,
-    activeLimit: 3,
+    activeLimit: 1,
     width: 12,
     range: 340,
     lifetime: 340 / 700,
@@ -191,8 +191,15 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     arena: ARENA_LAYOUTS[16],
     merge: DISABLED_MERGE_RULE,
     briefing:
-      "New tool: aspirin shots travel a short distance and inactivate one platelet hazard. Step beneath each separated target and clear both.",
-    initialTargets: platelets(2, "small"),
+      "Arcade aspirin: break the cluster into three singles, then hit a single to sweep nearby singles. Step beneath it and time your follow-up shot.",
+    initialTargets: [
+      {
+        kind: "platelet",
+        size: "small",
+        position: { x: logicalCoordinate(480), y: logicalCoordinate(210) },
+        direction: 1,
+      },
+    ],
     objective: { kind: "clear", reinforcements: [] },
     fact: "Aspirin reduces platelet activity and helps prevent blood clots.",
   },
@@ -215,24 +222,25 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     arena: ARENA_LAYOUTS[2],
     merge: DISABLED_MERGE_RULE,
     briefing:
-      "New tool: line up one persistent clopidogrel shot through the three platelet hazards. It can inactivate up to three distinct targets.",
+      "Line up one persistent clopidogrel shot through the column. It clears up to three targets directly, including clusters.",
+    // Put the lower ascending single before the middle cluster to keep a clear opening line.
     initialTargets: [
       {
         kind: "platelet",
-        size: "small",
+        size: "tiny",
         position: { x: logicalCoordinate(480), y: logicalCoordinate(150) },
+        direction: 1,
+      },
+      {
+        kind: "platelet",
+        size: "tiny",
+        position: { x: logicalCoordinate(480), y: logicalCoordinate(360) },
         direction: 1,
       },
       {
         kind: "platelet",
         size: "small",
         position: { x: logicalCoordinate(480), y: logicalCoordinate(255) },
-        direction: 1,
-      },
-      {
-        kind: "platelet",
-        size: "small",
-        position: { x: logicalCoordinate(480), y: logicalCoordinate(360) },
         direction: 1,
       },
     ],
@@ -332,8 +340,8 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     arena: ARENA_LAYOUTS[6],
     merge: MERGE_RULES[6],
     briefing:
-      "Build aspirin timing across four platelet hazards. Keep moving and clear each one before the next chapter's current work.",
-    initialTargets: platelets(4, "small"),
+      "Break the cluster, then sweep its singles before they spread. The two loose singles can join a nearby sweep.",
+    initialTargets: mixedPlatelets(1, 2),
     objective: { kind: "clear", reinforcements: [] },
     fact: undefined,
   },
@@ -355,8 +363,8 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     speedMultiplier: 0.9,
     arena: ARENA_LAYOUTS[17],
     merge: MERGE_RULES[17],
-    briefing: "Alternate your attention between small and tiny hazards. Inactivate all six.",
-    initialTargets: mixedPlatelets(3, 3),
+    briefing: "Gather one cluster and three singles, then break and sweep with aspirin.",
+    initialTargets: mixedPlatelets(1, 3),
     objective: { kind: "clear", reinforcements: [] },
     fact: undefined,
   },
@@ -378,8 +386,8 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     speedMultiplier: 0.9,
     arena: ARENA_LAYOUTS[7],
     merge: MERGE_RULES[7],
-    briefing: "Watch alternating outer entries. Inactivate all 12 hazards.",
-    initialTargets: platelets(4, "small"),
+    briefing: "Watch alternating outer entries. Hit a single to sweep nearby singles.",
+    initialTargets: platelets(4, "tiny"),
     objective: { kind: "clear", reinforcements: reinforcements(8, 3, entries([160, 800])) },
     fact: undefined,
   },
@@ -401,9 +409,8 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     speedMultiplier: 0.95,
     arena: ARENA_LAYOUTS[18],
     merge: MERGE_RULES[18],
-    briefing:
-      "Cross the low central basin between raised flanks. Read the left-left-right-right parade and clear 14 hazards.",
-    initialTargets: platelets(4, "small"),
+    briefing: "Cross the basin, break the opening cluster, then sweep the arriving singles.",
+    initialTargets: mixedPlatelets(1, 3),
     objective: {
       kind: "clear",
       reinforcements: reinforcements(10, 2.7, entries([160, 160, 800, 800])),
@@ -428,8 +435,8 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     speedMultiplier: 1,
     arena: ARENA_LAYOUTS[19],
     merge: MERGE_RULES[19],
-    briefing: "Return to the center between outer entries. Inactivate all 16 hazards.",
-    initialTargets: platelets(4, "small"),
+    briefing: "Break the opening cluster, then return to the center between single arrivals.",
+    initialTargets: mixedPlatelets(1, 3),
     objective: {
       kind: "clear",
       reinforcements: reinforcements(12, 2.4, entries([480, 160, 480, 800])),
@@ -454,8 +461,8 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     speedMultiplier: 1.05,
     arena: ARENA_LAYOUTS[20],
     merge: MERGE_RULES[20],
-    briefing: "Track the four-position fan and inactivate all 20 hazards.",
-    initialTargets: platelets(4, "small"),
+    briefing: "Gather each group, break its cluster, and sweep the nearby singles.",
+    initialTargets: mixedPlatelets(1, 3),
     objective: {
       kind: "clear",
       reinforcements: reinforcements(16, 2.1, entries([160, 640, 320, 800])),
@@ -485,7 +492,7 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     // The lower body's ascending orbit keeps the opening column within one slow shot.
     initialTargets: [150, 360, 255].map((y): TargetSpawn => ({
       kind: "platelet",
-      size: "small",
+      size: y === 255 ? "small" : "tiny",
       position: { x: logicalCoordinate(480), y: logicalCoordinate(y) },
       direction: 1,
     })),
@@ -495,7 +502,7 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
         at: 2.5 + (index * (24 - 2.5)) / 8,
         target: {
           kind: "platelet",
-          size: index < 3 ? "small" : "tiny",
+          size: "tiny",
           position: { x: logicalCoordinate(480), y: logicalCoordinate(100) },
           direction: 1,
         },
@@ -523,7 +530,7 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     merge: MERGE_RULES[21],
     briefing:
       "Work the broad central shelf or its lower flanks. Use persistent shots to clear 16 hazards.",
-    initialTargets: platelets(6, "small"),
+    initialTargets: mixedPlatelets(1, 3),
     objective: { kind: "clear", reinforcements: reinforcements(10, 3, entries([320, 640])) },
     fact: undefined,
   },
@@ -546,7 +553,7 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     arena: ARENA_LAYOUTS[9],
     merge: MERGE_RULES[9],
     briefing: "Shots alternate automatically. Find the rhythm and inactivate all 18 hazards.",
-    initialTargets: platelets(6, "small"),
+    initialTargets: mixedPlatelets(1, 3),
     objective: { kind: "clear", reinforcements: reinforcements(12, 2.5, entries([160, 800])) },
     fact: undefined,
   },
@@ -569,7 +576,7 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     arena: ARENA_LAYOUTS[22],
     merge: MERGE_RULES[22],
     briefing: "Read opposing entries followed by an outer fan. Inactivate all 20 hazards.",
-    initialTargets: mixedPlatelets(4, 4),
+    initialTargets: mixedPlatelets(1, 3),
     objective: {
       kind: "clear",
       reinforcements: reinforcements(12, 2.3, entries([320, 640, 160, 800])),
@@ -596,7 +603,7 @@ const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     merge: MERGE_RULES[23],
     briefing:
       "Cross the off-center tissue shoulder as tiny targets change columns. Inactivate all 26 hazards.",
-    initialTargets: mixedPlatelets(4, 6),
+    initialTargets: mixedPlatelets(1, 4),
     objective: {
       kind: "clear",
       reinforcements: reinforcements(16, 2, entries([160, 480, 800, 320, 640])),
