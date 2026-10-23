@@ -7,6 +7,22 @@ the reasoning a later reader needs. Guidance Neil Voss states belongs in
 `docs/active_plans/decisions/`. [PROPAGATED HEADER - ENTRIES BELOW ARE YOURS]
 <!-- VENDORED HEADER: END -->
 
+### Agent playtest evidence
+
+**Decision.** Use separate categorical gameplay and usability ratings, each tied to direct
+scenario evidence. Keep human enjoyment distinct and do not average ratings into a score.
+
+**Why.** Browser observations can show sampled interaction and friction, but cannot establish
+population-level experience or prove enjoyment. One aggregate would hide unlike criteria and
+unequal evidence.
+
+**Consequence.** Record `Meets`, `Concern`, `Fail`, or `Not observed` for all twelve criteria;
+state build, scenario, evidence lane and sample limits. Treat agent findings as bounded evidence,
+not forced approval or a human enjoyment claim.
+
+**Owner.** [PLAYTEST_RUBRICS.md](PLAYTEST_RUBRICS.md) and
+[PLAYTEST_RESULTS.md](PLAYTEST_RESULTS.md).
+
 ### Current documentation screenshots
 
 **Decision.** Refresh the thirteen managed screenshots together through one capture command,
@@ -133,7 +149,8 @@ authoritative code or contract document, rather than a person.
 ### Game specification authority
 
 **Decision.** Use [GAME_SPEC.md](GAME_SPEC.md) as the current gameplay contract for
-Plaque Attack, with [EXPANSION_PLAN.md](EXPANSION_PLAN.md) owning the exact expanded stage matrix.
+Plaque Attack. The current [remix_campaign_plan.md](archive/remix_campaign_plan.md)
+and `src/remix_levels.ts` own the remix composition; the expansion matrix remains historical.
 
 **Why.** The concept needs explicit collision, scoring, progression, and maintenance rules before
 parallel implementation can share reliable contracts.
@@ -142,9 +159,8 @@ parallel implementation can share reliable contracts.
 for antiplatelet stages. Numerical balance settings remain playtest defaults. Specification work
 does not establish implementation, browser acceptance, or deployment.
 
-**Owner.** [GAME_SPEC.md](GAME_SPEC.md), with target/wave composition in
-[EXPANSION_PLAN.md](EXPANSION_PLAN.md) and mechanics placement in
-[STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md).
+**Owner.** [GAME_SPEC.md](GAME_SPEC.md), `src/constants.ts`, `src/remix_levels.ts` and
+[archive/remix_campaign_plan.md](archive/remix_campaign_plan.md).
 
 ### Level configuration contract
 
@@ -177,19 +193,19 @@ and the expansion contracts it defines.
 
 **Decision.** The expanded campaign has 24 levels across four chapters, with stable level IDs in
 this canonical play order: `[1, 16, 2, 3, 4, 5, 6, 17, 7, 18, 19, 20, 8, 21, 9, 22, 23, 10,
-11, 12, 13, 14, 24, 15]`. Preserve the existing Act III mechanics and add Chapter 4 as a
-presentation layer; migrate legacy version-1 saves into validated version-2 data.
+11, 12, 13, 14, 24, 15]`. The remix preserves this order and the first three stages while
+reauthoring later encounters. Historical expansion save decisions are superseded by version 4.
 
 **Why.** The ordered curve brings new players into the campaign gradually, then introduces later
-challenges and chapter presentation without changing the established maintenance rules. Stable IDs
+challenges and chapter presentation with explicit finite and maintenance objectives. Stable IDs
 allow the authored order to evolve independently of saved progress.
 
 **Consequence.** Treat this order and ID mapping as canonical across metadata, navigation, save
-progress, and the rubric. Version-2 migration preserves old settings, unlocked identities, and historical records. Label
-classic versus expanded records explicitly so an old completion cannot count as a new completion.
+progress, and the rubric. Preserve earlier editions and completion facts through version-4 migration;
+keep classic, expanded and remix records separate so historical scores retain their meaning.
 
-**Owner.** [EXPANSION_PLAN.md](EXPANSION_PLAN.md), [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md),
-and the level configuration contract in `src/constants.ts`.
+**Owner.** `src/constants.ts`, `src/remix_levels.ts`, [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md)
+and [archive/remix_campaign_plan.md](archive/remix_campaign_plan.md).
 
 ### Beginner curve tuning
 
@@ -207,22 +223,43 @@ behavior rather than freezing every tunable value.
 
 ### Fluid motion and organic presentation
 
-**Decision.** Use deterministic fluid drift with smooth vertical orbits for the organic expansion;
-replace ballistic floor hops. Size-based lateral speeds and a shared vertical angular rate
-scale per stage. A shared 24-unit wall inset preserves smooth suspended turns and access to the
-short-range firing/contact region. Select the six lipid appearances from stable target IDs in the
-renderer; visual form does not alter medical target identity or physics.
+**Decision.** Use deterministic fluid drift with smooth analytic vertical orbits. Plaques use a
+rounded profile (`k=0.90`) that shortens lower turns; platelets retain their original cosine
+profile. Size-based lateral speeds and a shared vertical angular rate scale per stage. A shared
+24-unit wall inset preserves suspended turns and access to the short-range firing/contact region.
+Select the six lipid appearances from stable target IDs in the renderer; visual form does not
+alter medical target identity or physics.
 
 **Why.** The requested setting is a fluid, gravityless interior-body environment where lipid and
 bubble motion should feel smooth and buoyant. Ballistic bounces suggest gravity and floor contact.
 
-**Consequence.** Keep first-three-level ease as the leading challenge priority. Treat the beginner
-ballistic experiments as superseded and unapplied, not as a completed goal. Source integration and
-isolated rendering do not establish integrated campaign acceptance. The config-derived difficulty
-report uses the current fluid profile; automated evidence does not establish human enjoyment.
+**Consequence.** Keep first-three-level ease as the leading challenge priority. Use the shared
+kind-selected orbit for motion, creation, rephasing and plaque exposure reporting. The scoped local
+trial is accepted: controlled no-fire observations reduce floor-band dwell and travel by 17.4%
+on a flat floor and 14.4% on a wavy floor, while adaptive route pacing is mixed. Platelet control
+motion is unchanged. These results do not establish human enjoyment or universal play improvement;
+final integration accepts the current source, with no human study or universal play-improvement
+claim.
 
 **Owner.** `src/motion.ts`, [EXPANSION_PLAN.md](EXPANSION_PLAN.md),
 [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md), and the renderer asset-loading contract.
+
+### Plaque rounded floor turns
+
+**Decision.** Use the rounded analytic orbit only for plaques and preserve platelet cosine
+motion exactly. Share plaque position, derivative and inverse across motion, creation, rephasing
+and flat-floor exposure estimates.
+
+**Why.** Controlled no-fire observations show lower floor-band dwell and travel (17.4% flat,
+14.4% wavy) with bounds and period preserved. Adaptive routes vary: they do not show a universal
+clear-time or total-exposure improvement. Fixed-center first-stage held fire clears both versions
+at 32.62 seconds with three lives, showing an ordinary alternative to the slower adaptive cleanup.
+
+**Consequence.** Keep the plaque-only profile as the accepted scoped trial. Describe paired
+observations separately from adaptive clear routes, and keep claims limited to these scenarios.
+
+**Owner.** `src/motion.ts`, `src/characters.ts`, `src/difficulty.ts`, and
+[archive/lipid_floor_turn_plan.md](archive/lipid_floor_turn_plan.md).
 
 ### Fixed-tick tissue collision geometry
 
@@ -254,14 +291,15 @@ retaining a tiny parent's slower speed.
 
 ### Gradual stage mechanics introductions
 
-**Decision.** Introduce tissue at stage 4, gentle floor at stage 5, and the first optional pocket
-at stage 9. Lipid merging is available from stage 1 with a rising probability, as described below.
+**Decision.** Introduce tissue at stage 4, gentle floor and optional support at stage 5, and the
+optional hazard-risk pocket at stage 9. Lipid merging is available from stage 1 with rising
+probability. The remix adds currents at stage 8 without changing the first three stages.
 
 **Why.** One new mechanic at a time keeps the learning curve legible while retaining existing
 campaign identities and workloads.
 
-**Consequence.** Stage 6 keeps its original four large plaques and 32 leaf units; it has no
-pocket and needs no capacity compensation. New mechanics require fresh integrated acceptance.
+**Consequence.** Stage 6 keeps its four original large plaques and 32 total authored leaf units
+across two finite groups, with no pocket. New mechanics require fresh integrated acceptance.
 
 **Owner.** [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md).
 
@@ -295,7 +333,7 @@ back to Maya while retaining otherwise valid progress. Roster changes never alte
 
 ### Stable recovery progress
 
-**Decision.** Save campaign-clear facts as canonical-order stable `completedLevelIds` in version 3.
+**Decision.** Save campaign-clear facts as canonical-order stable `completedLevelIds` in version 4.
 Award them only for successful campaign stages; practice and retries preserve the existing set.
 Use a fixed territory for each stable identity and advance patient presentation by cleared count.
 
@@ -304,7 +342,7 @@ especially across inserted campaign stages. Explicit IDs keep map restoration id
 
 **Consequence.** Migrate V1 historical prefixes and completed classic records. Limit ambiguous V2
 unlock prefixes to classic IDs, while expanded records prove their earlier canonical stages.
-Reject malformed V3 completion lists and preserve unsupported saves. Keep active-run resumption
+Reject malformed V3/V4 completion lists and preserve unsupported saves. Keep active-run resumption
 outside persistence. The recovery illustration is an arcade narrative, not a clinical simulation.
 
 **Owner.** `src/save_load.ts`, `src/recovery.ts`, and
@@ -501,3 +539,97 @@ Small hazards can still enter from the sides; cover reduces exposure rather than
 [src/floor_geometry.ts](../src/floor_geometry.ts), and
 [src/player_dimensions.ts](../src/player_dimensions.ts).
 
+
+### Remix interactions and cadence
+
+The remix decisions below incorporate LLM reviewer input adopted by the manager; they are
+design direction, not quotations or guidance attributed to the human.
+
+**Decision.** Keep left/right/fire and the first three stages. Add any-tool flow switches with
+four-second bounded steering and a shared six-second cooldown, optional one-contact shields at
+5/11/16/20/23/24, and clear-gated finales at 6/12/18/24. Stage 18 guarantees clopidogrel piercing;
+19/21/23 use dual maintenance, while 20/22 are finite breathers.
+
+**Why.** Shelter, carving, lane selection and optional support create consequential spatial
+choices; finite relief and distinct earned transformations break up sustained pressure.
+
+**Consequence.** Active/cooling switches pass shots; current expiry restores ordinary drift.
+Support never blocks clear and overload bypasses its nonstacking shield. Phases preserve tissue,
+current and shield; pending hazard releases still block advancement. Devices remain arcade fiction.
+
+**Owner.** `src/remix_levels.ts`, `src/remix_mechanics.ts`, `src/waves.ts`, and
+[archive/remix_campaign_plan.md](archive/remix_campaign_plan.md).
+
+### Quick retry and fair records
+
+**Decision.** Make same-stage retry primary on failure, using entry seed and score, three lives,
+one-second ready and cleared held inputs. Carry run retry count across stages. Failure and retry
+commit no record; true completion or confirmed intentional departure finalizes the displayed
+attempt exactly once. Save version 4 preserves older data and keeps five records per edition.
+
+**Why.** Immediate retries support learning without score farming or erasing historical records.
+
+**Consequence.** Clear recovery and unlocks persist before celebration; the final clear commits
+its completed record there too. Practice never heals or ranks. Remix ties prefer fewer retries,
+then later canonical position and earlier date. Older records gain no invented retry history.
+
+**Owner.** `src/main.ts`, `src/game_state.ts`, `src/save_load.ts`, and `src/types/save.ts`.
+
+### Phase measurements and quiet feedback
+
+**Decision.** Separate first-phase occupancy, all-phase work and maximum-phase concurrency in
+`src/difficulty.ts`. Tie distinct restoration and restrained feedback to actual gameplay events.
+
+**Why.** Total authored leaves overstate simultaneous density, while generic finale art hides
+progress. Neither descriptive measurements nor automated completion establish player enjoyment.
+
+**Consequence.** Named groups retain order and clear gating. Support adds no target workload;
+its tissue cells count once. The renderer preserves cast identity, quiet hazards, mute and reduced
+motion. Short landscape uses a HUD sidebar to preserve a large fixed-world arena. Status content
+scrolls within its own row; Pause keeps a separate persistent row. Completion headings follow
+the objective: maintenance, finite stage, or full campaign restoration.
+
+**Owner.** `src/difficulty.ts`, `src/remix_rendering.ts`, `src/style.css`,
+[DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md) and [ART_DIRECTION.md](ART_DIRECTION.md).
+
+### Remix acceptance evidence
+
+**Decision.** Require an actual-input browser campaign for reachability. Use fixtures for isolated
+mechanics and presentation, with source checks, rendered review and full suites recorded separately.
+
+**Why.** Injected stage state cannot establish that ordinary controls can complete the campaign.
+
+**Consequence.** Match acceptance to the delivered build and retain each check's scope. Automated
+completion establishes reachability; player enjoyment remains an experience judgment.
+
+**Owner.** [active_plans/reports/remix_execution_ledger.md](active_plans/reports/remix_execution_ledger.md).
+
+### Further creative iteration
+
+**Decision.** Assess later ideas by player-visible fun, surprise and mastery. Start a separate
+iteration after the accepted remix closes, drawing on the reviewer-derived direction.
+
+**Why.** New spatial decisions and satisfying payoffs improve play; more infrastructure alone
+does not provide those experiences.
+
+**Consequence.** Give each proposed addition a concrete play benefit and observable experience
+check before expanding systems or tooling.
+
+**Owner.** [FUN_SURVEY.md](FUN_SURVEY.md) and [GAME_SPEC.md](GAME_SPEC.md).
+
+### Stage 23 entry shift
+
+**Decision.** Forecast one right-side entry shift halfway through stage 23's existing maintenance
+objective. Offer crossing to gather or staying left to carve shelter; preserve both switches,
+ordinary warning/spawn handling, cover, shield, score and cooldown state.
+
+**Why.** The reviewer-derived direction favors a legible spatial choice using existing mechanics.
+An optional maintenance field and elapsed-time cue make that choice visible without new combat
+rules or reset state. Actual-input completion establishes route feasibility, not human enjoyment.
+
+**Consequence.** Already announced arrivals keep their targets. Pause freezes cue timing and retry
+uses the normal fresh stage. Difficulty reports include the optional shift as descriptive pattern
+metadata; unchanged target sizes and cadence require no metric formula change.
+
+**Owner.** `src/remix_levels.ts`, `src/waves.ts`, `src/entry_shift.ts`, `src/difficulty.ts`,
+and [GAME_SPEC.md](GAME_SPEC.md).

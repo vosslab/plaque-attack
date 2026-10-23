@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-labelledby="flow-switch-title flow-switch-desc">
+  <title id="flow-switch-title">Fictional flow switch</title>
+  <desc id="flow-switch-desc">Rounded diamond housing with a pale circular target and broad lateral vanes.</desc>
+  <g id="flow-switch-housing" stroke="#352d46" stroke-width="2.6" stroke-linejoin="round">
+    <path d="M18 5q6-5 12 0l13 13q5 6 0 12L30 43q-6 5-12 0L5 30q-5-6 0-12Z" fill="#866580"/>
+    <path d="M6 20h10v10H6q-5-5 0-10Zm36 0H32v10h10q5-5 0-10Z" fill="#d5c1cc"/>
+  </g>
+  <g id="flow-switch-hit-body">
+    <circle cx="24" cy="25" r="12" fill="#baa0b3" stroke="#352d46" stroke-width="2.6"/>
+    <circle cx="24" cy="23" r="10.5" fill="#fff5df"/>
+    <path d="M18 21q2-4 6-4" fill="none" stroke="#fffdf5" stroke-width="2.6" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -1,6 +1,35 @@
+## 2026-10-23
+
+### Additions and New Features
+
+- Add separate gameplay and usability rubrics and record a bounded agent playtest against the
+  current build in [PLAYTEST_RUBRICS.md](PLAYTEST_RUBRICS.md) and
+  [PLAYTEST_RESULTS.md](PLAYTEST_RESULTS.md). Findings retain categorical ratings, exact
+  evidence links, unobserved criteria and sample limits; they do not claim human enjoyment.
+
+### Decisions and Failures
+
+- Keep criterion ratings separate and categorical. Do not average them into an overall score or
+  treat agent review as human enjoyment evidence; see
+  [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md).
+
 ## 2026-10-22
 
 ### Additions and New Features
+
+- Give stage 23 a forecast right-side entry shift at 25 seconds of its existing 50-second
+  maintenance objective. Preserve pending warnings and switch state; offer crossing to gather
+  or staying left to carve shelter. Add static world/HUD cues and include the optional shift
+  in descriptive difficulty-report patterns. Actual-input routes complete both choices with
+  normal/reduced motion; stage 23 failure/retry and adjacent stage 22/24 practice smokes pass.
+  Final integration accepts all milestones. The source gate, full repository pytest, and browser
+  suite pass; human enjoyment remains untested.
+
+- Author the complete 24-stage remix in stable order, preserving the first three stages. Add
+  shootable four-second currents with shared six-second cooldown, six optional support caches,
+  four finite phase finales and distinct earned artery/flow/lining/patient restoration.
+- Add original editable flow-switch, support-capsule and restored-flow SVGs; integrate bounded
+  event feedback and muted-by-default audio while preserving the six cosmetic surgeons.
 
 - Show patient recovery directly after each successful stage, following Bad Cell Day's
   inline completion presentation. Preserve the surgeon close-up, emphasize the cleared route,
@@ -182,6 +211,23 @@
 
 ### Behavior or Interface Changes
 
+- Use a bounded rounded analytic orbit for plaques, sharing position, derivative and inverse
+  across motion, creation and difficulty exposure estimates while preserving platelet motion,
+  bounds, period, levels and controls. Matched no-fire observations reduce floor-band dwell and
+  travel by 17.4% flat and 14.4% wavy; adaptive pacing is mixed. Fixed-center stage-1 held fire
+  clears both variants in 32.62 seconds with three lives. The scoped experience review accepts
+  the trial. Final integration accepts the current source; source checks (70 tests), full pytest
+  (1,344 tests), the local build and all 24 browser checks pass.
+  Refresh all 13 managed screenshots as WebP at quality 90 (647,202 bytes) from the candidate build.
+
+- Make failed-stage retry primary: same entry seed and score, three lives, one-second ready,
+  fresh input and a run retry count. Failure records nothing; completion or confirmed intentional
+  departure finalizes once. Preserve old saves in version 4 with five records per edition.
+- Persist recovery and next unlock at terminal clear before celebration, including the final
+  completed record. Keep practice separate from campaign recovery and ranking.
+- Alternate late maintenance with finite breathers, give stage 18 guaranteed piercing, show
+  current/shield/phase status when relevant, and use a HUD sidebar in short landscape play.
+
 - Present the fixed 960x540 world in a 16:10 play viewport with centered organic margins and
   uniform scaling. Compact the recovery popup into a responsive two-column view and bound dialogs
   to the viewport.
@@ -202,6 +248,16 @@
 
 ### Fixes and Maintenance
 
+- Correct campaign victory to "Circulation restored!" and finite act-three stage/practice clears
+  to "Stage cleared!"; reserve maintenance wording for maintenance objectives. Separate the
+  short-landscape HUD status content from Pause so a persistent control can own its own row.
+
+- Restore ordinary drift magnitude when a current expires. Separate first-phase occupancy,
+  all-phase work and maximum-phase density in difficulty reporting; count support shells once.
+- Refresh canonical gameplay, difficulty, art, retry/save and README contracts for the remix;
+  label older evidence and screenshots by snapshot rather than asserting current acceptance.
+- Mark `devel/report_difficulty.mjs` executable to match its Node shebang and CLI usage.
+
 - Synchronized shared style guides, tests, and repository support files from the starter template.
 
 ### Removals and Deprecations
@@ -219,6 +275,21 @@
   keep Playwright browser binaries under `/private/tmp`.
 
 ### Developer Tests and Notes
+
+- Close M0-M4 and archive the remix campaign plan after independent integration ACCEPT.
+  Preserve the complete original 24-stage actual-input route and its V4 record, unchanged
+  gameplay/runtime/artwork hashes, final UI acceptance, and capped final-build 22-clear replay
+  as distinct evidence. The rendered final-result fixture establishes presentation only.
+- Refresh all thirteen managed quality-90 WebP screenshots and provenance manifest against the
+  stable remix build; capture reports no browser errors. Full source checks pass 64 Node tests.
+  Full browser regression and actual-input campaign evidence remain separately tracked below.
+- Canonical documentation checks pass 493 tests across Markdown links, guidance format, ASCII
+  compliance and source-file line limits using the repository Python environment.
+- Track remix focused checks, fresh full suites, browser completion, rendered review and screenshot
+  refresh separately in
+  [active_plans/reports/remix_execution_ledger.md](active_plans/reports/remix_execution_ledger.md).
+  Authored content and owner-level probes retain their limited scope; final integration accepts
+  the combined evidence recorded there.
 
 - Close the request-review documentation gap with a latest-delivery appendix in
   [REQUEST_REVIEW.md](REQUEST_REVIEW.md). Index clear flow, terrain, compact dialogs, the current

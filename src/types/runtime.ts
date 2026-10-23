@@ -27,6 +27,9 @@ export type AssetId =
   | "aspirin"
   | "clopidogrel"
   | "artery"
+  | "flow-switch"
+  | "support-capsule"
+  | "restored-flow"
   | SceneId
   | LipidVariant;
 export type AssetImages = Readonly<Record<AssetId, HTMLImageElement>>;

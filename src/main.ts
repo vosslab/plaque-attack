@@ -1,4 +1,5 @@
 import { loadAssets } from "./assets";
+import { installAcceptanceHook } from "./acceptance";
 import { createAudio } from "./audio";
 import { campaignPosition, getLevel, isLevelUnlocked, LEVEL_IDS, nextLevelId } from "./constants";
 import {
@@ -10,7 +11,13 @@ import {
   settingsPanel,
   surgeonChooser,
 } from "./dialogs";
-import { advanceLevel, createSimulation, pauseSimulation, resumeSimulation } from "./game_state";
+import {
+  advanceLevel,
+  createSimulation,
+  pauseSimulation,
+  resumeSimulation,
+  retryLevel,
+} from "./game_state";
 import { createInputController } from "./input";
 import { createRecoveryMap } from "./recovery";
 import { createRenderer } from "./renderer";
@@ -49,6 +56,7 @@ function main(): void {
     reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
   };
   const canvas = element("arena");
+  installAcceptanceHook(runtime);
   if (!(canvas instanceof HTMLCanvasElement)) throw new Error("Game canvas is missing");
   const arena: HTMLCanvasElement = canvas;
   let assets: AssetLoadState = { kind: "loading" };
@@ -65,7 +73,7 @@ function main(): void {
   bestScore.id = "menu_best_score";
   button("play_campaign").insertAdjacentElement("beforebegin", bestScore);
   function updateBestScore(): void {
-    const best = runtime.save.records[0];
+    const best = runtime.save.records.find((record) => record.campaign === "remix");
     bestScore.hidden = best === undefined;
     bestScore.textContent = best === undefined ? "" : `Best score: ${best.score.toLocaleString()}`;
   }
@@ -76,6 +84,7 @@ function main(): void {
     runtime.storageStatus = saveSave(runtime.save, runtime.storageStatus);
   };
   const dialogs = createDialogs((open): void => {
+    input.clear();
     pendingAdvance = undefined;
     if (!open) runtime.dialog = undefined;
   });
@@ -122,7 +131,7 @@ function main(): void {
       (body, close, footer): void => {
         paragraph(
           body,
-          "Your current run will end without a high-score record. Unlocked levels and settings stay saved on this device.",
+          "Your current attempt score will be recorded and this campaign will end. Unlocked levels and settings stay saved on this device.",
         );
         footer.append(
           action("Keep playing", close, true),
@@ -134,7 +143,7 @@ function main(): void {
       },
       (): void => {
         if (confirmed) {
-          campaignStarted = false;
+          finalizeCampaign();
           destination();
         } else if (runtime.simulation?.phase === "paused" || celebration !== undefined) resume();
       },
@@ -143,8 +152,38 @@ function main(): void {
   function quit(): void {
     leaveCampaign(menu);
   }
+  function finalizeCampaign(): void {
+    const state = runtime.simulation;
+    if (!campaignStarted || state?.mode !== "campaign" || state.recordCommitted) return;
+    const date = new Date().toISOString();
+    const entry = {
+      campaign: "remix",
+      score: state.score,
+      levelReached: state.level.id,
+      outcome: state.phase === "campaign_complete" ? "completed" : "ended",
+      retryCount: state.remix.retry.retryCount,
+      date,
+    } as const;
+    runtime.save = addRecord(runtime.save, entry);
+    const rank = runtime.save.records
+      .filter((record) => record.campaign === "remix")
+      .findIndex(
+        (record) =>
+          record.date === date &&
+          record.score === entry.score &&
+          record.levelReached === entry.levelReached &&
+          record.outcome === entry.outcome &&
+          record.campaign === "remix" &&
+          record.retryCount === entry.retryCount,
+      );
+    recordRank = rank < 0 ? undefined : rank + 1;
+    state.recordCommitted = true;
+    campaignStarted = false;
+    persist();
+  }
   function briefing(level: LevelId, mode: RunMode): void {
     recordRank = undefined;
+    newlyRestoredLevelId = undefined;
     celebration = undefined;
     runtime.simulation = createSimulation(getLevel(level), mode);
     screen({ kind: "briefing", levelId: level });
@@ -303,6 +342,29 @@ function main(): void {
     fire: "Hold Space to fire",
     split: "Smaller fragments move faster",
   };
+  function commitClearProgress(): void {
+    const state = runtime.simulation;
+    if (
+      state?.mode !== "campaign" ||
+      (state.phase !== "level_complete" && state.phase !== "campaign_complete")
+    )
+      return;
+    let changed = false;
+    if (!runtime.save.completedLevelIds.includes(state.level.id)) {
+      runtime.save = markLevelCompleted(runtime.save, state.level.id);
+      newlyRestoredLevelId = state.level.id;
+      changed = true;
+    }
+    const next = nextLevelId(state.level.id);
+    if (next !== undefined && !isLevelUnlocked(next, runtime.save.unlockedLevel)) {
+      runtime.save.unlockedLevel = next;
+      changed = true;
+    }
+    // Clear credit belongs to the terminal collision, before a player can leave celebration.
+    // The finalizer persists both the final route and its exactly-once completed record.
+    if (state.phase === "campaign_complete") finalizeCampaign();
+    else if (changed) persist();
+  }
   function finish(): void {
     const state = runtime.simulation;
     if (
@@ -311,45 +373,6 @@ function main(): void {
     )
       return;
     input.clear();
-    newlyRestoredLevelId = undefined;
-    if (state.mode === "campaign") {
-      const campaignCompleted = state.phase === "campaign_complete";
-      const clearedStage = state.phase === "level_complete" || campaignCompleted;
-      if (clearedStage) {
-        const wasRestored = runtime.save.completedLevelIds.includes(state.level.id);
-        runtime.save = markLevelCompleted(runtime.save, state.level.id);
-        newlyRestoredLevelId = wasRestored ? undefined : state.level.id;
-        if (state.phase === "level_complete") {
-          const next = nextLevelId(state.level.id);
-          if (next !== undefined && !isLevelUnlocked(next, runtime.save.unlockedLevel)) {
-            runtime.save.unlockedLevel = next;
-          }
-        }
-        persist();
-      }
-      if ((state.phase === "game_over" || campaignCompleted) && !state.recordCommitted) {
-        const date = new Date().toISOString();
-        runtime.save = addRecord(runtime.save, {
-          campaign: "expanded",
-          score: state.score,
-          levelReached: state.level.id,
-          outcome: campaignCompleted ? "completed" : "ended",
-          date,
-        });
-        const rank = runtime.save.records.findIndex(
-          (record) =>
-            record.campaign === "expanded" &&
-            record.date === date &&
-            record.score === state.score &&
-            record.levelReached === state.level.id &&
-            record.outcome === (campaignCompleted ? "completed" : "ended"),
-        );
-        recordRank = rank < 0 ? undefined : rank + 1;
-        state.recordCommitted = true;
-        persist();
-        campaignStarted = false;
-      }
-    }
     screen({
       kind:
         state.phase === "game_over"
@@ -409,6 +432,7 @@ function main(): void {
         renderer?.render(state, 0, runtime.save.settings.surgeonId);
         finish();
       } else if (state.phase === "level_complete" || state.phase === "campaign_complete") {
+        commitClearProgress();
         celebration = { elapsed: 0, duration: 2.2 };
         celebrationRendered = false;
         screen({ kind: "celebration" }, arena);
@@ -460,6 +484,7 @@ function main(): void {
     const next = advanceLevel(runtime.simulation);
     if (next === undefined) return;
     runtime.simulation = next;
+    newlyRestoredLevelId = undefined;
     celebration = undefined;
     screen({ kind: "briefing", levelId: next.level.id });
     showBriefing(next.level, false);
@@ -467,7 +492,17 @@ function main(): void {
   button("retry_button").addEventListener("click", (): void => {
     const state = runtime.simulation;
     if (state === undefined) return;
-    briefing(state.mode === "practice" ? state.level.id : 1, state.mode);
+    if (runtime.screen.kind === "campaign_result") {
+      leaveCampaign((): void => briefing(1, "campaign"));
+      return;
+    }
+    if (runtime.screen.kind !== "game_over" && state.mode !== "practice") return;
+    runtime.simulation = retryLevel(state);
+    recordRank = undefined;
+    newlyRestoredLevelId = undefined;
+    celebration = undefined;
+    screen({ kind: "gameplay" }, arena);
+    audio.unlock();
   });
   button("practice_current").addEventListener("click", (): void => {
     const state = runtime.simulation;

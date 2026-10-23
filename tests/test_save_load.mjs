@@ -90,7 +90,7 @@ test("version one migration preserves classic results, settings and stable unloc
     status: "available",
     save: {
       ...legacy,
-      version: 3,
+      version: 4,
       settings: { ...legacy.settings, surgeonId: DEFAULT_SURGEON_ID, surgeonChosen: false },
       records: [{ ...legacyRecord, campaign: "classic" }],
       completedLevelIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
@@ -214,4 +214,73 @@ test("only an explicit true surgeon choice survives the save boundary", () => {
   assert.equal(validateSave(absent)?.settings.surgeonChosen, false);
   assert.equal(validateSave(invalid)?.settings.surgeonChosen, false);
   assert.equal(validateSave(invalidIdentity)?.settings.surgeonChosen, false);
+});
+
+test("V4 retains five records per edition and ranks remix score then retries", (context) => {
+  let save = defaultSave();
+  for (const campaign of ["classic", "expanded", "remix"]) {
+    for (let i = 0; i < 7; i += 1) {
+      const entry = { ...record(campaign === "remix" ? 500 : i * 100, 1, i + 1), campaign };
+      if (campaign === "remix") entry.retryCount = 6 - i;
+      save = addRecord(save, entry);
+    }
+  }
+  assert.equal(save.version, 4);
+  assert.equal(save.records.length, 15);
+  for (const campaign of ["classic", "expanded", "remix"]) {
+    const entries = save.records.filter((entry) => entry.campaign === campaign);
+    assert.equal(entries.length, 5);
+    if (campaign === "remix")
+      assert.deepEqual(
+        entries.map((entry) => entry.retryCount),
+        [0, 1, 2, 3, 4],
+      );
+    else {
+      assert.deepEqual(
+        entries.map((entry) => entry.score),
+        [600, 500, 400, 300, 200],
+      );
+      assert.ok(entries.every((entry) => !("retryCount" in entry)));
+    }
+  }
+  let stored = null;
+  storageFixture(context, {
+    getItem: () => stored,
+    setItem: (_key, value) => {
+      stored = value;
+    },
+  });
+  assert.equal(saveSave(save, "available"), "available");
+  assert.deepEqual(loadSave(), { save, status: "available" });
+  const higher = addRecord(save, { ...record(501, 1, 10), campaign: "remix", retryCount: 100 });
+  assert.equal(higher.records[0].score, 501);
+});
+
+test("V2 and V3 migrate settings, progress and old records without inventing retries", () => {
+  for (const version of [2, 3]) {
+    const old = { ...defaultSave(), version, unlockedLevel: 3, records: [record(900, 3, 1)] };
+    if (version === 3) old.completedLevelIds = [1, 16];
+    else delete old.completedLevelIds;
+    const migrated = validateSave(old);
+    assert.equal(migrated.version, 4);
+    assert.deepEqual(migrated.settings, old.settings);
+    assert.equal(migrated.unlockedLevel, 3);
+    assert.deepEqual(migrated.records, old.records);
+    assert.deepEqual(migrated.completedLevelIds, version === 3 ? [1, 16] : [1, 16, 2]);
+    assert.ok(!("retryCount" in migrated.records[0]));
+  }
+});
+
+test("remix records require a nonnegative integer retry count and V4 edition", () => {
+  const entry = { ...record(100, 1, 1), campaign: "remix", retryCount: 0 };
+  for (const retryCount of [undefined, -1, 1.5, "2", Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+    assert.equal(
+      validateSave({ ...defaultSave(), records: [{ ...entry, retryCount }] }),
+      undefined,
+    );
+  }
+  for (const version of [2, 3]) {
+    assert.equal(validateSave({ ...defaultSave(), version, records: [entry] }), undefined);
+  }
+  assert.equal(validateSave({ ...defaultSave(), records: [entry] }).records[0].retryCount, 0);
 });

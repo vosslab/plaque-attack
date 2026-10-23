@@ -2,7 +2,7 @@ import { campaignPosition, LEVEL_IDS } from "./constants";
 import { DEFAULT_SURGEON_ID, isSurgeonId } from "./surgeons";
 import type { LevelId } from "./types/level";
 import type {
-  CampaignRecord,
+  CampaignRecordV4,
   SaveFile,
   SaveLoadResult,
   StorageStatus,
@@ -14,7 +14,7 @@ const MAX_SAVE_LENGTH = 8192;
 
 export function defaultSave(): SaveFile {
   return {
-    version: 3,
+    version: 4,
     settings: {
       music: false,
       effects: false,
@@ -44,7 +44,7 @@ function legacyLevel(value: unknown): value is LevelId {
   return typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= 15;
 }
 
-function record(value: unknown, legacy = false): CampaignRecord | undefined {
+function record(value: unknown, legacy = false, allowRemix = true): CampaignRecordV4 | undefined {
   if (
     !object(value) ||
     !Number.isSafeInteger(value.score) ||
@@ -52,7 +52,10 @@ function record(value: unknown, legacy = false): CampaignRecord | undefined {
     value.score < 0 ||
     !level(value.levelReached) ||
     (legacy && !legacyLevel(value.levelReached)) ||
-    (!legacy && value.campaign !== "classic" && value.campaign !== "expanded") ||
+    (!legacy &&
+      value.campaign !== "classic" &&
+      value.campaign !== "expanded" &&
+      !(allowRemix && value.campaign === "remix")) ||
     (!legacy && value.campaign === "classic" && !legacyLevel(value.levelReached)) ||
     (value.outcome !== "completed" && value.outcome !== "ended") ||
     (value.outcome === "completed" && value.levelReached !== 15) ||
@@ -63,16 +66,25 @@ function record(value: unknown, legacy = false): CampaignRecord | undefined {
   const timestamp = Date.parse(value.date);
   if (!Number.isFinite(timestamp) || new Date(timestamp).toISOString() !== value.date)
     return undefined;
-  return {
-    campaign: legacy ? "classic" : value.campaign === "classic" ? "classic" : "expanded",
+  const fields = {
     score: value.score,
     levelReached: value.levelReached,
     outcome: value.outcome,
     date: value.date,
-  };
+  } as const;
+  if (!legacy && value.campaign === "remix") {
+    if (
+      typeof value.retryCount !== "number" ||
+      !Number.isSafeInteger(value.retryCount) ||
+      value.retryCount < 0
+    )
+      return undefined;
+    return { ...fields, campaign: "remix", retryCount: value.retryCount };
+  }
+  return { ...fields, campaign: legacy || value.campaign === "classic" ? "classic" : "expanded" };
 }
 
-function recordPosition(record: CampaignRecord): number {
+function recordPosition(record: CampaignRecordV4): number {
   return record.campaign === "classic"
     ? record.levelReached
     : campaignPosition(record.levelReached);
@@ -88,7 +100,7 @@ function completedIds(entries: readonly LevelId[]): LevelId[] {
   return LEVEL_IDS.filter((id) => entries.includes(id));
 }
 
-function v1CompletedIds(unlockedLevel: LevelId, records: readonly CampaignRecord[]): LevelId[] {
+function v1CompletedIds(unlockedLevel: LevelId, records: readonly CampaignRecordV4[]): LevelId[] {
   const completeClassic = records.some(
     (entry) => entry.campaign === "classic" && entry.outcome === "completed",
   );
@@ -97,7 +109,7 @@ function v1CompletedIds(unlockedLevel: LevelId, records: readonly CampaignRecord
   return LEVEL_IDS.filter((id) => id < unlockedLevel && id <= 15);
 }
 
-function v2CompletedIds(unlockedLevel: LevelId, records: readonly CampaignRecord[]): LevelId[] {
+function v2CompletedIds(unlockedLevel: LevelId, records: readonly CampaignRecordV4[]): LevelId[] {
   const inferred = new Set<LevelId>(canonicalPrefix(unlockedLevel, true));
   for (const entry of records) {
     if (entry.campaign === "classic" && entry.outcome === "completed") {
@@ -113,25 +125,34 @@ function v2CompletedIds(unlockedLevel: LevelId, records: readonly CampaignRecord
   return completedIds([...inferred]);
 }
 
-function rank(records: readonly CampaignRecord[]): CampaignRecord[] {
-  return [...records]
-    .sort(
-      (a, b) =>
-        b.score - a.score || recordPosition(b) - recordPosition(a) || a.date.localeCompare(b.date),
-    )
-    .slice(0, 5);
+function rank(records: readonly CampaignRecordV4[]): CampaignRecordV4[] {
+  return (["remix", "expanded", "classic"] as const).flatMap((edition) =>
+    records
+      .filter((entry) => entry.campaign === edition)
+      .sort((a, b) => {
+        const retries =
+          a.campaign === "remix" && b.campaign === "remix" ? a.retryCount - b.retryCount : 0;
+        return (
+          b.score - a.score ||
+          retries ||
+          recordPosition(b) - recordPosition(a) ||
+          a.date.localeCompare(b.date)
+        );
+      })
+      .slice(0, 5),
+  );
 }
 
 /** ASVS 1.5.2 / 2.2.1: allowlist every deserialized value and rebuild the known schema. */
 export function validateSave(value: unknown): SaveFile | undefined {
   if (
     !object(value) ||
-    (value.version !== 1 && value.version !== 2 && value.version !== 3) ||
+    (value.version !== 1 && value.version !== 2 && value.version !== 3 && value.version !== 4) ||
     !level(value.unlockedLevel) ||
     (value.version === 1 && !legacyLevel(value.unlockedLevel)) ||
     !object(value.settings) ||
     !Array.isArray(value.records) ||
-    value.records.length > 5
+    value.records.length > (value.version === 4 ? 15 : 5)
   )
     return undefined;
   const settings = value.settings;
@@ -147,14 +168,14 @@ export function validateSave(value: unknown): SaveFile | undefined {
     if (!tutorial(entry) || completedTutorials.includes(entry)) return undefined;
     completedTutorials.push(entry);
   }
-  const records: CampaignRecord[] = [];
+  const records: CampaignRecordV4[] = [];
   for (const entry of value.records) {
-    const parsed = record(entry, value.version === 1);
+    const parsed = record(entry, value.version === 1, value.version === 4);
     if (parsed === undefined) return undefined;
     records.push(parsed);
   }
   let restored: LevelId[];
-  if (value.version === 3) {
+  if (value.version === 3 || value.version === 4) {
     if (
       !Array.isArray(value.completedLevelIds) ||
       value.completedLevelIds.length > LEVEL_IDS.length
@@ -172,7 +193,7 @@ export function validateSave(value: unknown): SaveFile | undefined {
     restored = v2CompletedIds(value.unlockedLevel, records);
   }
   return {
-    version: 3,
+    version: 4,
     unlockedLevel: value.unlockedLevel,
     // A cosmetic choice must never discard earned progress. Older and tampered values simply
     // fall back to the default roster member while the rest of the save remains usable.
@@ -209,7 +230,8 @@ export function loadSave(): SaveLoadResult {
     value.version !== undefined &&
     value.version !== 1 &&
     value.version !== 2 &&
-    value.version !== 3
+    value.version !== 3 &&
+    value.version !== 4
   )
     return { save: defaultSave(), status: "unsupported" };
   const save = validateSave(value);
@@ -232,7 +254,7 @@ export function saveSave(save: SaveFile, status: StorageStatus): StorageStatus {
   return "available";
 }
 
-export function addRecord(save: SaveFile, entry: CampaignRecord): SaveFile {
+export function addRecord(save: SaveFile, entry: CampaignRecordV4): SaveFile {
   const validated = record(entry);
   if (validated === undefined) return save;
   return { ...save, records: rank([...save.records, validated]) };

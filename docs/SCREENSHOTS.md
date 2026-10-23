@@ -4,6 +4,24 @@ All final documentation screenshots use WebP encoded at quality 90. The current 
 [screenshots/manifest.json](screenshots/manifest.json), including capture time, browser version,
 production build hashes, dimensions, byte sizes, image hashes and scene provenance.
 
+## Current production UI refresh
+
+The 2026-10-22 refresh replaces all thirteen managed views with quality-90 WebPs from the
+production build recorded in [screenshots/manifest.json](screenshots/manifest.json). The set
+totals 647,202 bytes, with no capture/browser errors or PNG intermediates. The capture owner
+inspected the encoded menu, chooser, recovery comparison, gameplay, terrain and clear-sequence views
+for coherence and readability. The build includes the accepted lipid orbit motion. Staged-save and fixture
+descriptions remain separate from actual-input play provenance.
+
+The manifest SHA-256 is
+`17809f29a0cbb7add90adf173b8d5b1edacc6ca261fb0ccad7dafe3364f1126e`.
+The refresh used a bundled equivalent of the command below, with an explicit workspace root
+to preserve the no-Git-command scope. Its exact execution is recorded in the manifest, including
+`PLAYWRIGHT_BROWSERS_PATH=/private/tmp/plaque-attack-playwright-browsers`; no rebuild intervened.
+A screenshot refresh does not prove all-stage completion or the full browser suite. Integrated
+acceptance belongs to
+[active_plans/reports/remix_execution_ledger.md](active_plans/reports/remix_execution_ledger.md).
+
 ## Capture the current game
 
 Use the normal Node/npm setup and installed Playwright Chromium described in
@@ -44,7 +62,7 @@ Inspect each encoded WebP at its intended display size, especially captions, sma
 the patient/heart artwork. Update links and captions when a view changes. Historical ignored
 capture runs retain their original provenance; they are not the current documentation corpus.
 
-## Latest verification
+## Historical pre-remix verification
 
 The 2026-10-22 refresh captured all thirteen views without browser errors. The encoded images
 were visually inspected, and all decoded dimensions, file hashes and build hashes match the
@@ -61,5 +79,5 @@ rotations or drop-shadow filters. Native Firefox 158.0.1 and Chromium desktop/mo
 show the simplified composition intact. Clean-profile Firefox also rendered the previous CSS
 correctly, while the user's session remained broken. These captures verify the mitigation's
 appearance, not a reproduced root cause; confirmation in the affected session remains outstanding.
-[ART_DIRECTION.md](ART_DIRECTION.md#scientist-cast-verification) records the accompanying game
+[ART_DIRECTION.md](ART_DIRECTION.md#historical-scientist-cast-verification) records the accompanying game
 verification and evidence limits.

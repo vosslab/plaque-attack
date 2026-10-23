@@ -1,3 +1,4 @@
+import type { ProjectileId } from "./brands";
 import type { SimulationEvent } from "./types/events";
 import type { Settings } from "./types/save";
 import { streakMilestone } from "./scoring";
@@ -15,6 +16,9 @@ export function createAudio(): {
   let effects = false;
   let paused = true;
   let destroyed = false;
+  let lastHitProjectile: ProjectileId | undefined;
+  let consecutiveHits = 0;
+  let lastShotProjectile: ProjectileId | undefined;
   let nextBeat = 0;
   let beat = 0;
   let musicTimer: ReturnType<typeof setInterval> | undefined;
@@ -111,7 +115,12 @@ export function createAudio(): {
     setSettings: (settings: Settings): void => {
       music = settings.music;
       effects = settings.effects;
-      if (!effects) stopVoices(effectVoices);
+      if (!effects) {
+        stopVoices(effectVoices);
+        lastHitProjectile = undefined;
+        consecutiveHits = 0;
+        lastShotProjectile = undefined;
+      }
       syncMusic();
     },
     consumeEvents: (events: readonly SimulationEvent[]): void => {
@@ -123,6 +132,11 @@ export function createAudio(): {
       for (const event of events) {
         switch (event.type) {
           case "shot":
+            if (lastShotProjectile !== undefined && event.projectileId <= lastShotProjectile) {
+              lastHitProjectile = undefined;
+              consecutiveHits = 0;
+            }
+            lastShotProjectile = event.projectileId;
             tone(
               event.kind === "stent" ? 460 : event.kind === "aspirin" ? 680 : 340,
               0.09,
@@ -134,15 +148,27 @@ export function createAudio(): {
             );
             break;
           case "target_hit": {
+            consecutiveHits = event.projectileId === lastHitProjectile ? consecutiveHits + 1 : 1;
+            lastHitProjectile = event.projectileId;
+            const splitPitch = event.size === "large" ? 180 : event.size === "medium" ? 250 : 340;
             tone(
-              event.split ? 220 : 620,
+              event.split ? splitPitch : 620,
               0.12,
               0.04,
               now,
               effectVoices,
               "sine",
-              event.split ? 440 : 880,
+              event.split ? splitPitch * 2 : 880,
             );
+            if (consecutiveHits > 1)
+              tone(
+                700 + Math.min(consecutiveHits, 5) * 120,
+                0.18,
+                0.025,
+                now + 0.035,
+                effectVoices,
+                "triangle",
+              );
             const milestone = streakMilestone(event.streak);
             if (milestone !== undefined) {
               const notes = milestone === 3 ? [659.25, 880, 1318.51] : [523.25, 659.25, 1046.5];
@@ -162,6 +188,25 @@ export function createAudio(): {
             break;
           case "pocket_released":
             tone(600, 0.18, 0.022, now, effectVoices, "sine", 320);
+            break;
+          case "flow_activated":
+            tone(220, 0.34, 0.028, now, effectVoices, "sine", 660);
+            tone(330, 0.25, 0.018, now + 0.08, effectVoices, "sine", 990);
+            break;
+          case "support_released":
+            tone(520, 0.16, 0.025, now, effectVoices, "triangle", 780);
+            break;
+          case "shield_collected":
+            tone(659.25, 0.22, 0.025, now, effectVoices);
+            tone(987.77, 0.3, 0.025, now + 0.09, effectVoices);
+            break;
+          case "shield_absorbed":
+            tone(880, 0.19, 0.035, now, effectVoices, "triangle", 440);
+            tone(660, 0.24, 0.02, now + 0.04, effectVoices, "sine", 330);
+            break;
+          case "finale_phase_started":
+            tone(392, 0.18, 0.025, now, effectVoices);
+            tone(523.25, 0.24, 0.025, now + 0.13, effectVoices);
             break;
           case "targets_merged":
             tone(180, 0.24, 0.025, now, effectVoices, "sine", 310);

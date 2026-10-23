@@ -64,6 +64,7 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
 - Prioritize Luna subagents, use Sol 6.1 for hard coding tasks, and use Astra for SVG artwork.
 - Keep working independently while I am away; finish the requested work and verification.
 - Git commands and staging are out of scope, except for `git mv`.
+- Make rubrics and have agents test the game.
 - Make the stent more organic; the existing design looks more like a trellis than a stent.
 - Zoom in on the surgeon after level completion so their celebration actions are easier to see.
 - Keep HUMAN_GUIDANCE for durable guidance, not one-off requests or individual bug fixes.

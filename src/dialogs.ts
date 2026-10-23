@@ -1,7 +1,7 @@
 import { campaignPosition } from "./constants";
 import { SURGEON_IDS, SURGEONS } from "./surgeons";
 import { action, element } from "./ui";
-import type { CampaignRecord, Settings } from "./types/save";
+import type { CampaignRecordV4, Settings } from "./types/save";
 import type { SurgeonId } from "./types/surgeon";
 
 export function createDialogs(onChange: (open: boolean) => void): {
@@ -270,18 +270,29 @@ export function firstSurgeonChooser(
   footer.append(start);
 }
 
-export function scoresPanel(body: HTMLElement, records: readonly CampaignRecord[]): void {
+export function scoresPanel(body: HTMLElement, records: readonly CampaignRecordV4[]): void {
   if (records.length === 0)
     paragraph(
       body,
-      "No campaign records yet. Finish a campaign or reach the end of a run to set your first score.",
+      "No campaign records yet. Complete a campaign or choose to end your run to set your first score.",
     );
-  const list = document.createElement("ol");
-  for (const record of records) {
-    const item = document.createElement("li");
-    item.textContent = `${record.score.toLocaleString()} points / ${record.campaign === "classic" ? "Classic 15" : "Expanded 24"} / Stage ${record.campaign === "classic" ? record.levelReached : campaignPosition(record.levelReached)} / ${record.outcome === "completed" ? "Completed" : "Run ended"} / ${new Date(record.date).toLocaleDateString()}`;
-    list.append(item);
+  for (const edition of ["remix", "expanded", "classic"] as const) {
+    const entries = records.filter((record) => record.campaign === edition);
+    if (entries.length === 0) continue;
+    const heading = document.createElement("h3");
+    heading.textContent =
+      edition === "remix" ? "Remix 24" : edition === "expanded" ? "Expanded 24" : "Classic 15";
+    const list = document.createElement("ol");
+    for (const record of entries) {
+      const item = document.createElement("li");
+      const retries = record.campaign === "remix" ? ` / Retries: ${record.retryCount}` : "";
+      item.textContent = `${record.score.toLocaleString()} points / ${heading.textContent} / Stage ${record.campaign === "classic" ? record.levelReached : campaignPosition(record.levelReached)} / ${record.outcome === "completed" ? "Completed" : "Run ended"}${retries} / ${new Date(record.date).toLocaleDateString()}`;
+      list.append(item);
+    }
+    body.append(heading, list);
   }
-  body.append(list);
-  paragraph(body, "Top five campaigns on this device. Practice scores are unranked.");
+  paragraph(
+    body,
+    "Top five campaigns per edition on this device. Remix ties favor fewer retries. Practice scores are unranked.",
+  );
 }

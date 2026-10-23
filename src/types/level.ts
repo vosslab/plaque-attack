@@ -90,10 +90,25 @@ export type PocketDefinition = {
   })[];
 };
 
+// Optional aid has no hazard contents and never participates in clear conditions.
+export type SupportPocketDefinition = {
+  readonly id: string;
+  readonly shellCells: readonly TissueCellReference[];
+  readonly breachCells: readonly TissueCellReference[];
+  readonly releasePosition: Readonly<LogicalPoint>;
+};
+
+export type FlowSwitchDefinition = {
+  readonly id: string;
+  readonly position: Readonly<LogicalPoint>;
+  readonly laneX: LogicalPoint["x"];
+};
+
 export type ArenaLayout = {
   readonly floor: FloorProfile;
   readonly tissue: readonly TissuePatch[];
   readonly pockets: readonly PocketDefinition[];
+  readonly supportPockets?: readonly SupportPocketDefinition[];
 };
 
 export type MergeRule = {
@@ -103,9 +118,20 @@ export type MergeRule = {
   readonly budget: number;
 };
 
+export type FinalePhase = {
+  readonly name: string;
+  readonly targets: readonly TargetSpawn[];
+};
+
+export type RestorationKind =
+  "artery_opening" | "restored_flow" | "restored_lining" | "patient_recovery";
+
 export type ClearObjective = {
   kind: "clear";
   reinforcements: readonly ScheduledSpawn[];
+  // When present, phases own every group, including the first. Legacy target lists are empty.
+  phases?: readonly [FinalePhase, ...FinalePhase[]];
+  restoration?: RestorationKind;
 };
 
 export type MaintenanceObjective = {
@@ -116,6 +142,12 @@ export type MaintenanceObjective = {
   // Entry choice belongs to simulation; cycle makes authored rhythms repeatable.
   entryOrder: "seeded" | "cycle";
   entries: readonly TargetSpawn[];
+  // New selections change at this active-play time; announced arrivals stay intact.
+  entryShift?: {
+    readonly at: number;
+    readonly entries: readonly TargetSpawn[];
+    readonly laneX: LogicalPoint["x"];
+  };
 };
 
 export type LevelObjective = ClearObjective | MaintenanceObjective;
@@ -130,6 +162,7 @@ export type LevelConfig = {
   weapon: WeaponMode;
   speedMultiplier: number;
   arena: ArenaLayout;
+  flowSwitches?: readonly FlowSwitchDefinition[];
   merge: MergeRule;
   initialTargets: readonly TargetSpawn[];
   objective: LevelObjective;

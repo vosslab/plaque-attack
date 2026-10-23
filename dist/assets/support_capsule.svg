@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-labelledby="support-capsule-title support-capsule-desc">
+  <title id="support-capsule-title">Contact shield capsule</title>
+  <desc id="support-capsule-desc">A pale rounded capsule with a dark shield and an embossed check.</desc>
+  <g id="support-capsule-body" stroke="#293d49" stroke-width="2.4" stroke-linejoin="round">
+    <rect x="4" y="2.5" width="24" height="27" rx="10" fill="#afc6cb"/>
+    <path d="M5 14V13a11 11 0 0 1 22 0v1Z" fill="#fff8df" stroke="none"/>
+    <path d="M8 8q3-3 7-3" fill="none" stroke="#fffdf5" stroke-linecap="round"/>
+  </g>
+  <g id="support-capsule-shield" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m16 9 7 3v6q0 5-7 8-7-3-7-8v-6Z" fill="#385967" stroke="#293d49" stroke-width="1.5"/>
+    <path d="m12 17 3 3 5-6" fill="none" stroke="#fff8df" stroke-width="2.5"/>
+  </g>
+</svg>

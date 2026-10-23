@@ -1,3 +1,4 @@
+import { absorbContact, advanceFlow, advanceSupport, steerCurrent } from "./remix_mechanics";
 import { logicalCoordinate } from "./brands";
 import { playerSupportY } from "./arena_geometry";
 import { sweptTargetPlayerContact } from "./collision";
@@ -20,7 +21,7 @@ import {
   hasPendingTargets,
   resolveTargetTissue,
 } from "./tissue";
-import { advanceWaves, clearObjectiveSatisfied } from "./waves";
+import { advanceFinale, advanceWaves, clearObjectiveSatisfied } from "./waves";
 import { fireWeapon, resolveProjectileHits } from "./weapons";
 
 function damage(
@@ -105,6 +106,8 @@ export const stepSimulation: SimulationStep = (state, input, dt) => {
     state.player.contactInvulnerabilityRemaining - dt,
   );
   if (input.fire) fireWeapon(state, events);
+  advanceFlow(state, dt);
+  steerCurrent(state, dt);
   const tissue = freezeTissue(state);
   for (const target of state.targets) advanceTarget(target, dt, state.level.arena.floor);
   resolveTargetTissue(state, dt, tissue);
@@ -116,12 +119,15 @@ export const stepSimulation: SimulationStep = (state, input, dt) => {
       (target) =>
         target.activeFromTick <= state.tick && sweptTargetPlayerContact(target, state.player),
     );
-  if (contact) damage(state, "contact", events);
+  const contactDamage = contact && !absorbContact(state, events);
+  if (contactDamage) damage(state, "contact", events);
   commitTissueErosion(state, tissue, events);
+  advanceSupport(state, dt, tissue, events);
   state.elapsed += dt;
   advanceWaves(state, dt, events);
   advancePocketReleases(state, dt, events);
-  advanceOverload(state, dt, contact, previouslyOverloaded, events);
+  advanceOverload(state, dt, contactDamage, previouslyOverloaded, events);
+  advanceFinale(state, dt, events);
   awardSurvival(state, events);
   if (state.player.lives <= 0) {
     state.phase = "game_over";

@@ -1,4 +1,5 @@
 import { ARENA_LAYOUTS, MERGE_RULES } from "./arena_layouts";
+import { remixCampaign } from "./remix_levels";
 import { logicalCoordinate } from "./brands";
 import type {
   ArenaLayout,
@@ -143,7 +144,7 @@ export const DEFAULT_ARENA: ArenaLayout = {
 
 export const DISABLED_MERGE_RULE: MergeRule = { probability: 0, cooldown: 0, budget: 0 };
 
-export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
+const BASE_LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
   1: {
     id: 1,
     act: 1,
@@ -774,6 +775,29 @@ export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
     },
     fact: undefined,
   },
+};
+
+export const LEVELS: Readonly<Record<LevelId, LevelConfig>> = {
+  ...BASE_LEVELS,
+  3: remixCampaign(BASE_LEVELS[3]),
+  4: remixCampaign(BASE_LEVELS[4]),
+  5: remixCampaign(BASE_LEVELS[5]),
+  17: remixCampaign(BASE_LEVELS[17]),
+  7: remixCampaign(BASE_LEVELS[7]),
+  18: remixCampaign(BASE_LEVELS[18]),
+  19: remixCampaign(BASE_LEVELS[19]),
+  20: remixCampaign(BASE_LEVELS[20]),
+  21: remixCampaign(BASE_LEVELS[21]),
+  9: remixCampaign(BASE_LEVELS[9]),
+  22: remixCampaign(BASE_LEVELS[22]),
+  23: remixCampaign(BASE_LEVELS[23]),
+  10: remixCampaign(BASE_LEVELS[10]),
+  11: remixCampaign(BASE_LEVELS[11]),
+  12: remixCampaign(BASE_LEVELS[12]),
+  13: remixCampaign(BASE_LEVELS[13]),
+  14: remixCampaign(BASE_LEVELS[14]),
+  24: remixCampaign(BASE_LEVELS[24]),
+  15: remixCampaign(BASE_LEVELS[15]),
 };
 
 export const LEVEL_IDS: readonly LevelId[] = [

@@ -43,7 +43,22 @@ export type SaveFileV3 = {
   records: CampaignRecord[];
   completedLevelIds: LevelId[];
 };
-export type SaveFile = SaveFileV3;
+export type RemixCampaignRecord = LegacyCampaignRecord & {
+  campaign: "remix";
+  retryCount: number;
+};
+// Legacy editions retain their original validated shape, without invented retry history.
+export type CampaignRecordV4 = CampaignRecord | RemixCampaignRecord;
+export type SaveFileV4 = {
+  version: 4;
+  settings: Settings;
+  unlockedLevel: LevelId;
+  // The persistence owner validates and retains five records per campaign edition.
+  records: CampaignRecordV4[];
+  completedLevelIds: LevelId[];
+};
+// Persistence activates V4 atomically with migration, validation and record callers.
+export type SaveFile = SaveFileV4;
 export type StorageStatus = "available" | "unavailable" | "malformed" | "unsupported";
 export type SaveLoadResult = { save: SaveFile; status: StorageStatus };
 // Validation consumes unknown; unsupported data must remain intact.

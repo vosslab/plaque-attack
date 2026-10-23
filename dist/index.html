@@ -85,6 +85,7 @@
           <h2 id="briefing_title" tabindex="-1">Stage 1: First blockage</h2>
           <p id="briefing_feel" class="stage_feel"></p>
           <p id="briefing_objective" class="panel_intro"></p>
+          <ul id="briefing_tactics" class="briefing_tactics" hidden></ul>
           <div class="tool_card">
             <img id="briefing_tool_art" src="assets/stent.svg" alt="" />
             <div>
@@ -129,33 +130,42 @@
 
       <section id="gameplay" class="gameplay" aria-label="Arcade arena" hidden>
         <div class="game_hud">
-          <div class="hud_level">
-            <span class="small_label">On the clock</span
-            ><strong id="hud_level">Stage 1: First blockage</strong>
-          </div>
-          <div class="hud_lives">
-            <span class="small_label">Lives</span><strong id="hud_lives">3 / 3</strong>
-          </div>
-          <div class="hud_score" title="Hits since last damage. Missed shots keep your streak.">
-            <span class="small_label">Score / <span id="hud_streak">0-hit streak</span></span>
-            <div class="score_readout">
-              <strong id="hud_score">000000</strong><span id="hud_multiplier">x1 points</span>
+          <div class="hud_content">
+            <div class="hud_level">
+              <span class="small_label">On the clock</span
+              ><strong id="hud_level">Stage 1: First blockage</strong>
             </div>
-          </div>
-          <div class="hud_time">
-            <span class="small_label" id="hud_time_label">Elapsed</span
-            ><strong id="hud_time">00:00</strong>
+            <div class="hud_lives">
+              <span class="small_label">Lives</span><strong id="hud_lives">3 / 3</strong>
+            </div>
+            <div class="hud_score" title="Hits since last damage. Missed shots keep your streak.">
+              <span class="small_label">Score / <span id="hud_streak">0-hit streak</span></span>
+              <div class="score_readout">
+                <strong id="hud_score">000000</strong><span id="hud_multiplier">x1 points</span>
+              </div>
+            </div>
+            <div class="hud_time">
+              <span class="small_label" id="hud_time_label">Elapsed</span
+              ><strong id="hud_time">00:00</strong>
+            </div>
+            <div class="hud_objective">
+              <span id="hud_objective">Clear all plaque</span
+              ><strong id="hud_warning"></strong>
+            </div>
+            <div class="hud_weapon">
+              <span class="small_label">Tool</span><strong id="hud_weapon">Coronary stent</strong>
+            </div>
+            <div id="hud_tactics" class="hud_tactics" aria-label="Stage tactics" hidden>
+              <span id="hud_phase" class="tactic_badge phase_badge" hidden></span>
+              <span id="hud_flow" class="tactic_badge flow_badge" hidden></span>
+              <span id="hud_shield" class="tactic_badge shield_badge" hidden></span>
+              <span id="hud_retries" class="tactic_badge" hidden></span>
+            </div>
+            <span id="hud_status" class="visually_hidden" role="status" aria-atomic="true"></span>
           </div>
           <button id="pause_button" class="icon_button" type="button" aria-label="Pause game">
             <span aria-hidden="true">&#10074;&#10074;</span>
           </button>
-          <div class="hud_objective">
-            <span id="hud_objective">Clear all plaque</span
-            ><strong id="hud_warning" role="status"></strong>
-          </div>
-          <div class="hud_weapon">
-            <span class="small_label">Tool</span><strong id="hud_weapon">Coronary stent</strong>
-          </div>
         </div>
         <div class="arena_frame">
           <canvas

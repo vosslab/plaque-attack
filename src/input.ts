@@ -32,6 +32,8 @@ export function createInputController(
     if (!isActive()) return;
     if (["ArrowLeft", "ArrowRight", "KeyA", "KeyD", "Space"].includes(event.code)) {
       event.preventDefault();
+      // Clearing controls requires a fresh press, even if the browser repeats a held key.
+      if (event.repeat && !keys.has(event.code)) return;
       keys.add(event.code);
     }
   };

@@ -17,6 +17,7 @@ import { sampleTargetPath } from "./motion";
 import { streakMilestone } from "./scoring";
 import { drawMembrane } from "./artery_art";
 import { celebrationMotion, idleBodyAngle } from "./surgeon_motion";
+import { createRemixRendering } from "./remix_rendering";
 
 type Particle = { x: number; y: number; vx: number; vy: number; life: number; color: string };
 type HitEffect = {
@@ -53,6 +54,7 @@ export function createRenderer(
   const context = canvas.getContext("2d");
   if (context === null) throw new Error("Canvas 2D is unavailable. Try another browser.");
   const ctx = context;
+  const remixRendering = createRemixRendering(ctx, images, reducedMotion);
   let particles: Particle[] = [];
   let hitEffects: HitEffect[] = [];
   let arenaEffects: ArenaEffect[] = [];
@@ -86,6 +88,7 @@ export function createRenderer(
   }
 
   function applyEvents(events: readonly SimulationEvent[]): void {
+    remixRendering.consumeEvents(events);
     for (const event of events) {
       if (event.type === "shot") firingRemaining = 0.16;
       if (event.type === "damage") {
@@ -438,6 +441,7 @@ export function createRenderer(
     const newLevel =
       state !== lastSimulation || state.level.id !== lastLevel || state.tick < lastTick;
     if (newLevel) {
+      remixRendering.clear();
       particles = [];
       hitEffects = [];
       arenaEffects = [];
@@ -469,6 +473,7 @@ export function createRenderer(
     lastLevel = state.level.id;
     lastSimulation = state;
     lastCelebrationElapsed = celebrationElapsed;
+    remixRendering.advance(dt);
     firingRemaining = Math.max(0, firingRemaining - dt);
     damageRemaining = Math.max(0, damageRemaining - dt);
     // Only renderer-owned effects advance on the celebration clock. Gameplay stays frozen.
@@ -547,6 +552,7 @@ export function createRenderer(
     // Scene art retains its editable decorative lower wall. Extend the adjacent clean
     // lumen color beneath it so only the geometry-owned floor describes solid ground.
     ctx.drawImage(images[state.level.scene], 0, 480, ARENA_WIDTH, 1, 0, 480, ARENA_WIDTH, 60);
+    remixRendering.drawRestoration(state);
     drawFloor(
       state,
       cameraProgress > 0 ? left : 0,
@@ -555,6 +561,7 @@ export function createRenderer(
     );
     drawPockets(state);
     drawTissue(state);
+    remixRendering.drawDevices(state);
     const sceneHasImplant =
       state.level.scene === "scene-stented-lumen" || state.level.scene === "scene-healed-flow";
     if (state.level.act >= 2 && !sceneHasImplant) {
@@ -727,6 +734,7 @@ export function createRenderer(
       ctx.restore();
     }
     drawSurgeon(state, surgeonId, celebration);
+    remixRendering.drawFeedback(state);
     for (const particle of particles) {
       ctx.globalAlpha = Math.max(0, particle.life / 0.42);
       ctx.fillStyle = particle.color;
@@ -807,6 +815,7 @@ export function createRenderer(
     resize,
     destroy: (): void => {
       destroyed = true;
+      remixRendering.clear();
       particles = [];
       hitEffects = [];
       arenaEffects = [];

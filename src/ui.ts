@@ -1,5 +1,6 @@
 import { campaignPosition, getLevel, LEVEL_IDS, nextLevelId, OVERLOAD_DURATION } from "./constants";
 import { hitMultiplier } from "./scoring";
+import { getEntryShiftCue } from "./entry_shift";
 import type { LevelConfig, WeaponMode } from "./types/level";
 import type { AppScreen } from "./types/runtime";
 import type { SimulationState } from "./types/simulation";
@@ -70,6 +71,27 @@ export function showBriefing(level: LevelConfig, practice: boolean): void {
       "Sealed pockets are optional. Breach one to release extra hazards after a short warning.",
     );
   element("briefing_objective").textContent = [level.briefing, ...mechanics].join(" ");
+  const tactics = element("briefing_tactics");
+  tactics.replaceChildren();
+  const instructions: string[] = [];
+  if (level.flowSwitches?.length)
+    instructions.push(
+      "Shoot a ready flow switch with any tool to pull hazards toward its marked lane for 4 seconds. All switches then cool for 6 seconds; shots pass through active or cooling switches.",
+    );
+  if (level.arena.supportPockets?.length)
+    instructions.push(
+      "Optional support: carve the marked pocket, then walk to collect its capsule. One shield absorbs one contact; it does not stack. Overload damage bypasses it. Support never blocks a clear.",
+    );
+  if (level.objective.kind === "clear" && level.objective.phases)
+    instructions.push(
+      `Clear each finite group: ${level.objective.phases.map((phase) => phase.name).join(" / ")}. Watch for the next-phase warning; your carved openings, current and shield carry forward.`,
+    );
+  for (const instruction of instructions) {
+    const item = document.createElement("li");
+    item.textContent = instruction;
+    tactics.append(item);
+  }
+  tactics.hidden = instructions.length === 0;
   const position = campaignPosition(level.id);
   element("briefing_feel").textContent =
     position <= 3
@@ -84,9 +106,11 @@ export function showBriefing(level: LevelConfig, practice: boolean): void {
   element("briefing_weapon").textContent = TOOL_NAMES[level.weapon];
   element("briefing_tool_description").textContent = TOOL_DETAILS[level.weapon];
   element("briefing_caption").textContent =
-    level.act === 1
-      ? "Arcade model: real stents hold arteries open."
-      : "New target: platelet activation. Antiplatelet drugs help prevent clot formation.";
+    instructions.length > 0
+      ? "Arcade fiction: flow switches, carving and contact shields are game mechanics, not cardiovascular treatments."
+      : level.act === 1
+        ? "Arcade model: real stents hold arteries open."
+        : "New target: platelet activation. Antiplatelet drugs help prevent clot formation.";
   const tool = element("briefing_tool_art");
   const target = element("briefing_target_art");
   if (tool instanceof HTMLImageElement)
@@ -101,6 +125,12 @@ function clock(seconds: number): string {
   return `${String(Math.floor(whole / 60)).padStart(2, "0")}:${String(whole % 60).padStart(2, "0")}`;
 }
 
+function tactic(id: string, text: string): void {
+  const node = element(id);
+  node.hidden = text === "";
+  if (node.textContent !== text) node.textContent = text;
+}
+
 export function updateHud(state: Readonly<SimulationState>): void {
   const { level } = state;
   element("hud_level").textContent =
@@ -112,10 +142,15 @@ export function updateHud(state: Readonly<SimulationState>): void {
   element("hud_multiplier").textContent = `x${hitMultiplier(state.streak)} points`;
   element("hud_weapon").textContent = TOOL_NAMES[level.weapon];
   const objective = level.objective;
+  const completed = state.phase === "level_complete" || state.phase === "campaign_complete";
   element("hud_time_label").textContent =
     objective.kind === "maintenance" ? "Remaining" : "Elapsed";
   element("hud_time").textContent = clock(
-    objective.kind === "maintenance" ? objective.duration - state.elapsed : state.elapsed,
+    objective.kind === "maintenance"
+      ? completed
+        ? 0
+        : objective.duration - state.elapsed
+      : state.elapsed,
   );
   element("hud_objective").textContent =
     objective.kind === "maintenance"
@@ -129,7 +164,8 @@ export function updateHud(state: Readonly<SimulationState>): void {
   if (sealed > 0) element("hud_objective").textContent += ` / Optional pockets: ${sealed}`;
   if (pending > 0) element("hud_objective").textContent += ` / Releasing pockets: ${pending}`;
   if (deferred > 0) element("hud_objective").textContent += ` / Pending hazards: ${deferred}`;
-  const expired = objective.kind === "maintenance" && state.elapsed >= objective.duration;
+  const expired =
+    objective.kind === "maintenance" && !completed && state.elapsed >= objective.duration;
   const countdown =
     state.overloadElapsed > 0
       ? `Reduce hazards: ${Math.max(0, OVERLOAD_DURATION - state.overloadElapsed).toFixed(1)} s`
@@ -141,7 +177,72 @@ export function updateHud(state: Readonly<SimulationState>): void {
     pending > 0 ? "Opened pockets must finish releasing" : "",
     deferred > 0 ? "Clear hazards to make room for pending fragments" : "",
   ].filter(Boolean);
+  const phases = objective.kind === "clear" ? objective.phases : undefined;
+  const finale = state.remix.finale;
+  const phase = phases && finale ? phases[finale.phaseIndex] : undefined;
+  const nextPhase = phases && finale ? phases[finale.phaseIndex + 1] : undefined;
+  const entryCue = state.phase === "playing" ? getEntryShiftCue(state) : undefined;
+  const entrySide = entryCue && entryCue.laneX >= 480 ? "Right" : "Left";
+  const entryStatus = entryCue
+    ? entryCue.phase === "forecast"
+      ? `${entrySide}-side arrivals coming: cross to gather, or keep carving shelter`
+      : `New arrivals: ${entrySide.toLowerCase()}`
+    : "";
+  const phaseText =
+    phase && finale
+      ? finale.transitionRemaining > 0 && nextPhase
+        ? `Next: ${nextPhase.name}`
+        : `Phase ${finale.phaseIndex + 1}/${phases?.length}: ${phase.name}`
+      : entryCue
+        ? entryCue.phase === "forecast"
+          ? `${entrySide}-side arrivals in ${Math.ceil(entryCue.remaining)}s`
+          : `New arrivals: ${entrySide.toLowerCase()}`
+        : "";
+  if (finale && finale.transitionRemaining > 0 && nextPhase)
+    warnings.push(`Next group: ${nextPhase.name} - get ready`);
+  tactic("hud_phase", phaseText);
+  const flow = state.remix.flow;
+  const hasFlow = (level.flowSwitches?.length ?? 0) > 0;
+  const lane =
+    flow.kind === "active"
+      ? (level.flowSwitches?.findIndex((entry) => entry.id === flow.switchId) ?? -1) + 1
+      : 0;
+  const flowLabel =
+    flow.kind === "ready"
+      ? "Flow ready"
+      : flow.kind === "active"
+        ? `Current: lane ${lane}`
+        : "Flow cooling";
+  tactic(
+    "hud_flow",
+    hasFlow ? `${flowLabel}${flow.kind === "ready" ? "" : ` / ${Math.ceil(flow.remaining)}s`}` : "",
+  );
+  element("hud_flow").dataset.state = flow.kind;
+  const hasSupport = state.remix.supportPockets.length > 0 || state.remix.contactShield;
+  const supportReleased = state.remix.supportPockets.some((pocket) => pocket.status === "released");
+  const shieldText = state.remix.contactShield
+    ? "Shield: 1 contact"
+    : supportReleased
+      ? "Support: walk to collect"
+      : "Shield: empty";
+  tactic("hud_shield", hasSupport ? shieldText : "");
+  element("hud_shield").dataset.state = state.remix.contactShield ? "armed" : "empty";
+  const retries = state.remix.retry.retryCount;
+  tactic("hud_retries", retries > 0 ? `Retries: ${retries}` : "");
+  element("hud_tactics").hidden = !phaseText && !hasFlow && !hasSupport && retries === 0;
   element("hud_warning").textContent = warnings.join(" / ");
+  // Live announcements describe changes, not the visual clocks or target counts.
+  const status = [
+    entryCue ? entryStatus : phaseText,
+    hasFlow ? flowLabel : "",
+    hasSupport ? shieldText : "",
+    state.overloadElapsed > 0 ? "Overload: reduce hazards" : "",
+    ...warnings.filter((warning) => warning !== countdown),
+  ]
+    .filter(Boolean)
+    .join(". ");
+  const statusNode = element("hud_status");
+  if (statusNode.textContent !== status) statusNode.textContent = status;
 }
 
 export function showResult(state: Readonly<SimulationState>, recordRank?: number): void {
@@ -155,15 +256,17 @@ export function showResult(state: Readonly<SimulationState>, recordRank?: number
         : "Your shift continues";
   element("result_title").textContent = lost
     ? "Run ended"
-    : final || state.level.objective.kind === "maintenance"
-      ? "Maintenance complete!"
-      : state.level.act === 1
-        ? "Plaque cleared!"
-        : state.level.act === 2
-          ? "Platelet activity controlled!"
-          : "Maintenance complete!";
+    : final && state.mode !== "practice"
+      ? "Circulation restored!"
+      : state.level.objective.kind === "maintenance"
+        ? "Maintenance complete!"
+        : state.level.act === 1
+          ? "Plaque cleared!"
+          : state.level.act === 2
+            ? "Platelet activity controlled!"
+            : "Stage cleared!";
   element("result_summary").textContent =
-    `Stage ${campaignPosition(state.level.id)}: ${state.level.name}. Points earned this level: ${(state.score - state.levelStartScore).toLocaleString()}. Total score: ${state.score.toLocaleString()}. Lives remaining: ${state.player.lives} / 3.${recordRank === undefined ? "" : ` High-score rank: ${recordRank} / 5.`}`;
+    `Stage ${campaignPosition(state.level.id)}: ${state.level.name}. Points earned this level: ${(state.score - state.levelStartScore).toLocaleString()}. Total score: ${state.score.toLocaleString()}. Lives remaining: ${state.player.lives} / 3. Retries: ${state.remix.retry.retryCount}.${lost ? ` Retry this stage from its entry score of ${state.levelStartScore.toLocaleString()} with 3 lives and the same opening. Each retry adds to the run retry count; this failure saves no record.` : ""}${recordRank === undefined ? "" : ` High-score rank: ${recordRank} / 5.`}`;
   element("result_fact").textContent =
     state.level.fact ??
     getLevel(state.level.act === 1 ? 3 : state.level.act === 2 ? 6 : 11).fact ??
@@ -176,14 +279,14 @@ export function showResult(state: Readonly<SimulationState>, recordRank?: number
       : `Next: Stage ${campaignPosition(next)} - ${getLevel(next).name} \u2192`;
   button("retry_button").hidden = !lost && !final && state.mode !== "practice";
   button("retry_button").textContent =
-    state.mode === "practice" ? "Retry practice" : final ? "Play again" : "Retry campaign";
+    state.mode === "practice" ? "Retry practice" : final ? "Play again" : "Retry this stage";
   element("result_keyboard_hint").textContent =
     state.mode === "practice"
       ? "Press Enter or Space to retry practice."
       : final
         ? "Press Enter or Space to play again."
         : lost
-          ? "Press Enter or Space to retry the campaign."
+          ? "Press Enter or Space to retry this stage. Release, then press again when ready."
           : "Press Enter or Space for the next stage.";
   element("result_title").focus();
 }

@@ -1,6 +1,7 @@
 import { randomSeed, targetId } from "./brands";
 import { createTarget } from "./characters";
 import { MAX_TARGETS, SPAWN_WARNING_DURATION } from "./constants";
+import { FINALE_TRANSITION_DURATION } from "./remix_mechanics";
 import { hasPendingTargets } from "./tissue";
 import type { SimulationEvent } from "./types/events";
 import type { TargetSpawn } from "./types/level";
@@ -9,10 +10,13 @@ import type { SimulationState } from "./types/simulation";
 function nextEntry(state: SimulationState): TargetSpawn | undefined {
   const objective = state.level.objective;
   if (objective.kind === "clear") return objective.reinforcements[state.waves.spawned]?.target;
-  if (objective.entryOrder === "cycle")
-    return objective.entries[state.waves.spawned % objective.entries.length];
+  const entries =
+    objective.entryShift !== undefined && state.elapsed >= objective.entryShift.at
+      ? objective.entryShift.entries
+      : objective.entries;
+  if (objective.entryOrder === "cycle") return entries[state.waves.spawned % entries.length];
   state.seed = randomSeed((Math.imul(state.seed, 1664525) + 1013904223) >>> 0);
-  return objective.entries[state.seed % objective.entries.length];
+  return entries[state.seed % entries.length];
 }
 
 export function advanceWaves(state: SimulationState, dt: number, events: SimulationEvent[]): void {
@@ -61,9 +65,52 @@ export function advanceWaves(state: SimulationState, dt: number, events: Simulat
 export function clearObjectiveSatisfied(state: SimulationState): boolean {
   return (
     state.level.objective.kind === "clear" &&
+    (state.level.objective.phases === undefined ||
+      state.remix.finale?.phaseIndex === state.level.objective.phases.length - 1) &&
     state.targets.length === 0 &&
     !hasPendingTargets(state) &&
     state.waves.spawned === state.level.objective.reinforcements.length &&
     state.waves.warning === undefined
   );
+}
+
+export function advanceFinale(state: SimulationState, dt: number, events: SimulationEvent[]): void {
+  const objective = state.level.objective;
+  const finale = state.remix.finale;
+  if (
+    objective.kind !== "clear" ||
+    objective.phases === undefined ||
+    finale === undefined ||
+    finale.phaseIndex >= objective.phases.length - 1
+  )
+    return;
+  if (state.targets.length > 0 || hasPendingTargets(state)) {
+    finale.transitionRemaining = 0;
+    return;
+  }
+  if (finale.transitionRemaining === 0) {
+    finale.transitionRemaining = FINALE_TRANSITION_DURATION;
+    return;
+  }
+  finale.transitionRemaining = Math.max(0, finale.transitionRemaining - dt);
+  if (finale.transitionRemaining > 1e-9) return;
+  finale.transitionRemaining = 0;
+  finale.phaseIndex += 1;
+  const phase = objective.phases[finale.phaseIndex];
+  if (phase === undefined) throw new Error("Missing finale phase");
+  state.targets = phase.targets.map((spawn) =>
+    createTarget(
+      spawn,
+      targetId(state.nextTargetId++),
+      state.level.speedMultiplier,
+      state.tick + 1,
+      state.level.arena.floor,
+    ),
+  );
+  events.push({
+    type: "finale_phase_started",
+    name: phase.name,
+    phaseIndex: finale.phaseIndex,
+    phaseCount: objective.phases.length,
+  });
 }

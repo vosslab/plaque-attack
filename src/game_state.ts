@@ -1,4 +1,5 @@
 import { logicalCoordinate, randomSeed, targetId } from "./brands";
+import { createRemixState } from "./remix_mechanics";
 import { playerSupportY } from "./arena_geometry";
 import type { RandomSeed } from "./brands";
 import { createTarget } from "./characters";
@@ -17,7 +18,12 @@ export function createSimulation(
     level.objective.kind === "clear"
       ? (level.objective.reinforcements[0]?.at ?? Infinity)
       : level.objective.spawnInterval;
+  const initialTargets =
+    level.objective.kind === "clear" && level.objective.phases !== undefined
+      ? level.objective.phases[0].targets
+      : level.initialTargets;
   const state: SimulationState = {
+    remix: createRemixState(level, seed),
     mode,
     phase: "ready",
     resumePhase: "ready",
@@ -30,13 +36,13 @@ export function createSimulation(
       lives,
       contactInvulnerabilityRemaining: 0,
     },
-    targets: level.initialTargets.map((spawn, index) =>
+    targets: initialTargets.map((spawn, index) =>
       createTarget(spawn, targetId(index + 1), level.speedMultiplier, 0, level.arena.floor),
     ),
     projectiles: [],
     tick: 0,
     seed,
-    nextTargetId: level.initialTargets.length + 1,
+    nextTargetId: initialTargets.length + 1,
     nextProjectileId: 1,
     readyRemaining: READY_DURATION,
     elapsed: 0,
@@ -97,5 +103,26 @@ export function advanceLevel(state: Readonly<SimulationState>): SimulationState 
   if (state.mode !== "campaign" || state.phase !== "level_complete") return undefined;
   const next = nextLevelId(state.level.id);
   if (next === undefined) return undefined;
-  return createSimulation(getLevel(next), state.mode, state.score, state.player.lives, state.seed);
+  const result = createSimulation(
+    getLevel(next),
+    state.mode,
+    state.score,
+    state.player.lives,
+    state.seed,
+  );
+  result.remix.retry.retryCount = state.remix.retry.retryCount;
+  return result;
+}
+
+export function retryLevel(state: Readonly<SimulationState>): SimulationState {
+  const result = createSimulation(
+    state.level,
+    state.mode,
+    state.levelStartScore,
+    STARTING_LIVES,
+    state.remix.retry.entrySeed,
+  );
+  result.readyRemaining = 1;
+  result.remix.retry.retryCount = state.remix.retry.retryCount + 1;
+  return result;
 }

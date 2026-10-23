@@ -3,7 +3,6 @@ import test from "node:test";
 import { logicalCoordinate, projectileId, targetId } from "../src/brands.ts";
 import { createTarget } from "../src/characters.ts";
 import {
-  ARENA_HEIGHT,
   FIXED_STEP,
   getLevel,
   nextLevelId,
@@ -19,6 +18,7 @@ import {
   resumeSimulation,
 } from "../src/game_state.ts";
 import { stepSimulation } from "../src/simulation.ts";
+import { synchronizeTargetMotion } from "../src/motion.ts";
 
 const idle = { left: false, right: false, fire: false };
 
@@ -65,7 +65,7 @@ test("a large plaque family needs fifteen separate hits and eight final removals
       entity.position = { x: logicalCoordinate(100 + index * 100), y: logicalCoordinate(200) };
       entity.velocity = { x: 0, y: 0 };
       entity.fluidAngularSpeed = 0;
-      entity.fluidPhase = Math.acos((ARENA_HEIGHT / 2 - 200) / (ARENA_HEIGHT / 2 - entity.radius));
+      synchronizeTargetMotion(entity, state.level.arena.floor, entity.velocity);
     });
     state.projectiles = [shot(state, "stent")];
     const before = state.targets.length;
@@ -151,7 +151,7 @@ test("a piercing drug shot inactivates at most three distinct targets", () => {
 });
 
 test("a projectile removal prevents contact damage; simultaneous overload and contact cost one life", () => {
-  const state = playing(10);
+  const state = playing(11);
   const maximum = state.level.objective.safeMaximum;
   state.targets = [target(state, "platelet", "tiny", state.player.position.x, 510)];
   state.projectiles = [shot(state, "aspirin", state.player.position.x, 510)];
@@ -180,7 +180,7 @@ test("a projectile removal prevents contact damage; simultaneous overload and co
 
 test("pause freezes every simulation clock and entity, including ready and pending arrivals", () => {
   for (const phase of ["ready", "playing"]) {
-    const state = playing(10);
+    const state = playing(11);
     state.phase = phase;
     state.fireCooldown = 0.5;
     state.player.contactInvulnerabilityRemaining = 1;
@@ -221,7 +221,7 @@ test("an empty finite wave waits for its telegraphed pending target", () => {
 });
 
 test("maintenance equality is safe and recovery resets continuous overload", () => {
-  const state = playing(10);
+  const state = playing(11);
   state.waves.nextSpawnAt = Infinity;
   const maximum = state.level.objective.safeMaximum;
   const safe = Array.from({ length: maximum }, () => target(state));
@@ -245,7 +245,8 @@ test("maintenance equality is safe and recovery resets continuous overload", () 
 });
 
 test("maintenance expiry discards spawns, retains overload, caps survival, then completes once safe", () => {
-  const state = playing(15);
+  // Keep final-stage completion coverage with an explicit maintenance fixture.
+  const state = playing(15, "campaign", { objective: getLevel(11).objective });
   const objective = state.level.objective;
   state.targets = Array.from({ length: objective.safeMaximum + 1 }, () => target(state));
   state.elapsed = objective.duration - FIXED_STEP;

@@ -4,7 +4,8 @@ A browser arcade game for gamers and biology enthusiasts: choose one of six surg
 
 **[Play Plaque Attack in your browser](https://vosslab.github.io/plaque-attack/)**
 No installation or account required. Bring your arcade reflexes; the biology is optional.
-The screenshots below show the current game, including the redesigned surgeon cast.
+The screenshots below illustrate the surgeon cast, recovery map and tissue carving.
+[docs/SCREENSHOTS.md](docs/SCREENSHOTS.md) records capture provenance and refresh status.
 
 <!-- screenshots:begin (managed by screenshot-docs) -->
 ![First-run surgeon chooser: six individual teammates with the same abilities](docs/screenshots/surgeon_roster.webp)
@@ -28,23 +29,27 @@ The campaign changes the goal as you progress:
 | --- | --- | --- |
 | 1-6: Plaque Patrol | Stent | Split plaque, starting with three deliberately gentle rounds |
 | 7-12: Platelet Pop | Aspirin | Clear platelet hazards arriving in changing patterns |
-| 13-18: Pulse Partners | Clopidogrel, then alternating shots | Time persistent shots, then try a short maintenance round |
-| 19-24: Flow State | Alternating aspirin and clopidogrel | Maintain a safe hazard count through 40-60-second rounds |
+| 13-18: Pulse Partners | Clopidogrel and alternating shots | Gather targets, pierce columns and finish a three-group lining finale |
+| 19-24: Flow State | Alternating aspirin and clopidogrel | Alternate maintenance with finite breathers, then restore the rhythm |
 
 - Carve tissue shelter with any shot, or use an open lane; hazards also erode cover on contact.
-- Follow the sloping floor automatically, and choose whether to open optional membrane pockets.
-- Carry three lives through the campaign, earning hit, completion, and no-damage bonuses.
+- Follow sloping floors automatically; shoot switches to gather hazards into a firing lane.
+- Discover optional support, carve its shell and walk over to collect a one-contact shield.
+- Clear four finite chapter finales with different groups and visible restoration.
+- Carry three lives between clears; retry a failed stage quickly with its entry score and fresh lives.
+- Track retries fairly in remix records while keeping historical scores in separate editions.
 - Practice unlocked levels with fresh lives and an unranked score; use keyboard or touch controls.
 - Choose among six original surgeon portraits with the same movement, collision, and weapons.
 - Restore coronary routes after campaign clears and watch the patient become more active.
 - Keep selection, recovery, unlocks and scores locally; sound starts muted and motion follows your preference.
 
-The opening six stages now progress through 7, 10, 15, 25, 37, and 60 mandatory plaque hits,
-with slower drift before the chapter finale. The current six-stage assisted run cleared all six
-with three lives and no damage. [docs/RECOVERY_ROSTER_ACCEPTANCE.md](docs/RECOVERY_ROSTER_ACCEPTANCE.md)
-records this delivery's verification and limits. The earlier full-campaign completion/replay in
-[docs/MECHANICS_ACCEPTANCE.md](docs/MECHANICS_ACCEPTANCE.md) predates this tuning. Automated
-reachability does not establish human enjoyment.
+All 24 remixed stages are authored; the first three retain their gentle opening balance.
+Shootable currents last four seconds and share a six-second cooldown. Support is optional,
+nonstacking and protects against one contact; overload still requires reducing hazards.
+The four finales restore the artery opening, flow, lining and patient activity in distinct ways.
+Current checks and remaining integrated acceptance are tracked in
+[docs/active_plans/reports/remix_execution_ledger.md](docs/active_plans/reports/remix_execution_ledger.md).
+Older completion runs describe earlier snapshots; automated reachability does not prove enjoyment.
 
 The tools are arcade metaphors: real stents support narrowed arteries, and antiplatelet drugs reduce
 platelet activity and clot formation. The recovery illustration is an arcade story payoff, not a clinical treatment model. Its drugs
@@ -111,7 +116,8 @@ limit. An overload warning gives you time to bring the count back down before lo
 - [docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md) explains how the static `dist/` build fits GitHub Pages setup.
 - [docs/PLAYWRIGHT_USAGE.md](docs/PLAYWRIGHT_USAGE.md) explains browser-test setup and execution.
 - [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md) explains the repeatable WebP screenshot refresh and demonstration states.
-- [docs/EXPANSION_PLAN.md](docs/EXPANSION_PLAN.md) defines the ordered 24-stage campaign and stable level identities.
+- [docs/archive/remix_campaign_plan.md](docs/archive/remix_campaign_plan.md) defines the current campaign, retry and record contracts.
+- [docs/EXPANSION_PLAN.md](docs/EXPANSION_PLAN.md) preserves the historical expansion matrix.
 - [docs/RECOVERY_ROSTER_PLAN.md](docs/RECOVERY_ROSTER_PLAN.md) records the roster and recovery contract.
 - [docs/DIFFICULTY_RUBRIC.md](docs/DIFFICULTY_RUBRIC.md) explains the challenge curve and tool-introduction resets.
 - [docs/active_plans/active/organic_expansion.md](docs/active_plans/active/organic_expansion.md) records the completed expansion and acceptance status.

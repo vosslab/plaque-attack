@@ -132,6 +132,38 @@ export type MergeState = {
   lastAttemptTicks: Map<string, number>;
 };
 
+// One current and its cooldown are shared by every switch in the stage.
+export type FlowState =
+  | { kind: "ready" }
+  | { kind: "active"; switchId: string; remaining: number }
+  | { kind: "cooldown"; remaining: number };
+
+export type RuntimeSupportPocket = {
+  id: string;
+  status: "sealed" | "released" | "collected";
+  capsulePosition: LogicalPoint | undefined;
+};
+
+export type FinaleState = {
+  phaseIndex: number;
+  transitionRemaining: number;
+};
+
+export type StageRetryState = {
+  // Capture before any stage RNG advances; levelStartScore owns the score checkpoint.
+  entrySeed: RandomSeed;
+  // A run total, carried across stage advances; practice never commits a campaign record.
+  retryCount: number;
+};
+
+export type RemixState = {
+  flow: FlowState;
+  supportPockets: RuntimeSupportPocket[];
+  contactShield: boolean;
+  finale: FinaleState | undefined;
+  retry: StageRetryState;
+};
+
 export type SimulationState = {
   mode: RunMode;
   phase: SimulationPhase;
@@ -159,6 +191,7 @@ export type SimulationState = {
   waves: WaveState;
   arena: ArenaState;
   merge: MergeState;
+  remix: RemixState;
 };
 
 // Pure of browser I/O; the sole owner mutates state and returns this tick's events.

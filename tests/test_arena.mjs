@@ -160,6 +160,29 @@ test("hazard reflection rephases motion and does not expose its erosion to same-
   assert.ok(hazard.position.y < before, "next orbit step continues away from tissue");
 });
 
+test("generated wall-turn legs reach projectile, player and merge consumers", () => {
+  for (const kind of ["plaque", "platelet"]) {
+    const state = playing();
+    const hazard = target(state, ARENA_WIDTH - 104, 200, "tiny", kind);
+    hazard.velocity.x = 400;
+    advanceTarget(hazard, 0.5, state.level.arena.floor);
+    const wallX = ARENA_WIDTH - hazard.radius;
+    assert.ok(hazard.motionSegments.length > 2);
+    assert.ok(hazard.motionSegments.some((leg) => leg.end.x === wallX));
+    assert.ok(
+      hazard.motionSegments.every((leg) => (leg.endTime - leg.startTime) * 0.5 <= 1 / 120 + 1e-12),
+    );
+    assert.equal(hazard.velocity.x, -400);
+    const compatibleShot = kind === "plaque" ? "stent" : "aspirin";
+    assert.notEqual(projectileContact(shot(state, compatibleShot, wallX, 200), hazard), undefined);
+    assert.equal(sweptTargetPlayerContact(hazard, { position: point(wallX, 246) }), true);
+    const merging = mergeState();
+    merging.targets = [{ ...hazard, kind: "plaque" }, target(merging, wallX, 200)];
+    merging.targets[0].id = merging.nextTargetId++;
+    assert.equal(mergeEvents(merging).length, 1);
+  }
+});
+
 test("collision consumers follow reflected legs instead of their false chord", () => {
   const state = playing();
   const hazard = target(state, 300, 200, "tiny", "platelet");
@@ -330,11 +353,10 @@ test("first three stages keep their baseline arena; floor support and firing sha
   }
 });
 
-test("authored cover clears the surgeon across slopes and preserves the central firing lane", () => {
-  const shotHalfWidth =
-    Math.max(...Object.values(WEAPON_CONFIGS).map((weapon) => weapon.width)) / 2;
+test("authored cover clears the surgeon across slopes and allows a central lane to be carved", () => {
   for (const id of LEVEL_IDS) {
-    const { floor, tissue } = getLevel(id).arena;
+    const level = getLevel(id);
+    const { floor, tissue } = level.arena;
     for (const patch of tissue.filter((entry) => entry.pocketId === undefined)) {
       for (const cell of patch.cells) {
         const left = cell.position.x - PLAYER_WIDTH / 2;
@@ -345,13 +367,39 @@ test("authored cover clears the surgeon across slopes and preserves the central 
             `Level ${id}, cell ${cell.id}: surgeon must pass safely at x=${x}`,
           );
         }
-        assert.ok(
-          cell.position.x + 12 < ARENA_WIDTH / 2 - shotHalfWidth ||
-            cell.position.x > ARENA_WIDTH / 2 + shotHalfWidth,
-          `Level ${id}, cell ${cell.id}: central shots must reach the arena`,
-        );
       }
     }
+    // Isolate cover access from encounter hazards while using the stage's actual tool,
+    // firing cooldown, projectile travel and carving behavior.
+    const state = playing({
+      ...level,
+      speedMultiplier: 0,
+      initialTargets: [],
+      objective: { kind: "clear", reinforcements: [] },
+    });
+    const top = Math.min(
+      300,
+      ...tissue.flatMap((patch) => patch.cells.map((cell) => cell.position.y)),
+    );
+    const kind = level.weapon === "stent" ? "plaque" : "platelet";
+    state.targets = [target(state, ARENA_WIDTH / 2, top - 24, "tiny", kind)];
+    const shotCycle = Math.max(
+      ...Object.values(WEAPON_CONFIGS).map((weapon) => weapon.interval + weapon.lifetime),
+    );
+    const timeout =
+      (tissue.reduce((count, patch) => count + patch.cells.length, 0) +
+        (level.flowSwitches?.length ?? 0) +
+        2) *
+      shotCycle;
+    let reached = false;
+    for (let elapsed = 0; elapsed < timeout && !reached; elapsed += FIXED_STEP) {
+      const events = stepSimulation(state, { ...idle, fire: true }, FIXED_STEP);
+      reached = events.some((event) => event.type === "target_hit");
+      assert.equal(state.player.lives, 3, `Level ${id}: carving must be safe from cover`);
+      assert.ok(state.player.position.x >= PLAYER_WIDTH / 2);
+      assert.ok(state.player.position.x <= ARENA_WIDTH - PLAYER_WIDTH / 2);
+    }
+    assert.ok(reached, `Level ${id}: legal center shots must open access above cover`);
   }
 });
 

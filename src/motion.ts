@@ -5,13 +5,49 @@ import type { FloorProfile } from "./types/level";
 import type { LogicalPoint } from "./types/player";
 import type { Target, TargetMotionSegment, Velocity } from "./types/simulation";
 
+const PLAQUE_ORBIT_SHAPE = 0.9;
+const PLAQUE_ORBIT_ANGLE = Math.asin(PLAQUE_ORBIT_SHAPE);
+
+// Normalized depth and phase derivative share the same kind-selected orbit contract.
+export function orbitPosition(kind: Target["kind"], phase: number): number {
+  if (kind === "platelet") return (1 - Math.cos(phase)) / 2;
+  return (1 - Math.asin(PLAQUE_ORBIT_SHAPE * Math.cos(phase)) / PLAQUE_ORBIT_ANGLE) / 2;
+}
+
+export function orbitSlope(kind: Target["kind"], phase: number): number {
+  if (kind === "platelet") return Math.sin(phase) / 2;
+  const cosine = PLAQUE_ORBIT_SHAPE * Math.cos(phase);
+  return (
+    (PLAQUE_ORBIT_SHAPE * Math.sin(phase)) /
+    (2 * PLAQUE_ORBIT_ANGLE * Math.sqrt(1 - cosine * cosine))
+  );
+}
+
+// The descending half-orbit is monotonic; callers choose the travel direction separately.
+export function orbitPhase(kind: Target["kind"], normalizedY: number): number {
+  const depth = Math.max(0, Math.min(1, normalizedY));
+  const cosine =
+    kind === "platelet"
+      ? 1 - 2 * depth
+      : Math.sin((1 - 2 * depth) * PLAQUE_ORBIT_ANGLE) / PLAQUE_ORBIT_SHAPE;
+  return Math.acos(Math.max(-1, Math.min(1, cosine)));
+}
+
 function orbitY(target: Target, floor: FloorProfile, x: number, phase: number): number {
   const [top, bottom] = targetVerticalBounds(floor, x, target.radius);
+  if (target.kind === "plaque") return top + (bottom - top) * orbitPosition(target.kind, phase);
   return (top + bottom) / 2 - ((bottom - top) / 2) * Math.cos(phase);
 }
 
 export function targetVerticalVelocity(target: Target, floor: FloorProfile): number {
   const [top, bottom] = targetVerticalBounds(floor, target.position.x, target.radius);
+  if (target.kind === "plaque")
+    return (
+      (bottom - top) * orbitSlope(target.kind, target.fluidPhase) * target.fluidAngularSpeed +
+      floorSlope(floor, target.position.x) *
+        target.velocity.x *
+        orbitPosition(target.kind, target.fluidPhase)
+    );
   return (
     ((bottom - top) / 2) * target.fluidAngularSpeed * Math.sin(target.fluidPhase) +
     (floorSlope(floor, target.position.x) * target.velocity.x * (1 - Math.cos(target.fluidPhase))) /
@@ -32,8 +68,12 @@ export function synchronizeTargetMotion(
   const [top, bottom] = targetVerticalBounds(floor, target.position.x, target.radius);
   target.position.y = logicalCoordinate(Math.max(top, Math.min(bottom, target.position.y)));
   const cosine = Math.max(-1, Math.min(1, (top + bottom - 2 * target.position.y) / (bottom - top)));
-  const phase = Math.acos(cosine);
-  const drift = (floorSlope(floor, target.position.x) * velocity.x * (1 - cosine)) / 2;
+  const depth = (target.position.y - top) / (bottom - top);
+  const phase = target.kind === "platelet" ? Math.acos(cosine) : orbitPhase(target.kind, depth);
+  const drift =
+    target.kind === "platelet"
+      ? (floorSlope(floor, target.position.x) * velocity.x * (1 - cosine)) / 2
+      : floorSlope(floor, target.position.x) * velocity.x * depth;
   const direction = Math.sign(velocity.y - drift) || Math.sign(target.fluidAngularSpeed) || 1;
   target.fluidPhase = phase;
   target.fluidAngularSpeed = Math.abs(target.fluidAngularSpeed) * direction;

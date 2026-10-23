@@ -1,6 +1,6 @@
 import { logicalCoordinate } from "./brands";
 import { FLAT_FLOOR, targetVerticalBounds } from "./arena_geometry";
-import { targetVerticalVelocity } from "./motion";
+import { orbitPhase, targetVerticalVelocity } from "./motion";
 import type { TargetId } from "./brands";
 import { ARENA_WIDTH, FLUID_ANGULAR_SPEED, TARGET_PRESETS } from "./constants";
 import type { FloorProfile, PlaqueSize, TargetSpawn } from "./types/level";
@@ -23,8 +23,9 @@ export function createTarget(
   };
   const amplitude = (bottom - top) / 2;
   const phase =
-    Math.acos(Math.max(-1, Math.min(1, ((top + bottom) / 2 - position.y) / amplitude))) *
-    (id % 2 === 0 ? -1 : 1);
+    (spawn.kind === "platelet"
+      ? Math.acos(Math.max(-1, Math.min(1, ((top + bottom) / 2 - position.y) / amplitude)))
+      : orbitPhase(spawn.kind, (position.y - top) / (bottom - top))) * (id % 2 === 0 ? -1 : 1);
   const angularSpeed = FLUID_ANGULAR_SPEED * speedMultiplier;
   const body = {
     id,

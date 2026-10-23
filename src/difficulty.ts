@@ -17,8 +17,15 @@ import {
   WEAPON_CONFIGS,
 } from "./constants";
 import { createSimulation } from "./game_state";
-import { advanceTarget } from "./motion";
-import type { LevelConfig, PlaqueSize, ProjectileKind, TargetSpawn } from "./types/level";
+import { advanceTarget, orbitPhase } from "./motion";
+import type {
+  FinalePhase,
+  LevelConfig,
+  MaintenanceObjective,
+  PlaqueSize,
+  ProjectileKind,
+  TargetSpawn,
+} from "./types/level";
 import { advanceWaves } from "./waves";
 
 type TargetMetrics = {
@@ -94,8 +101,10 @@ type LevelMeasurement = {
   tool: LevelConfig["weapon"];
   objective: "clear" | "maintenance";
   authoredTeachingReason: string;
+  initialTargetCount: number;
   initial: TargetMetrics;
   finiteAndInitial: TargetMetrics | undefined;
+  maximumPhaseLeafCeiling: number | undefined;
   recurring:
     | {
         distribution: string;
@@ -122,7 +131,11 @@ type LevelMeasurement = {
     | undefined;
   pattern: {
     order: string;
-    entries: readonly TargetSpawn[] | readonly import("./types/level").ScheduledSpawn[];
+    entryShift?: MaintenanceObjective["entryShift"];
+    entries:
+      | readonly TargetSpawn[]
+      | readonly import("./types/level").ScheduledSpawn[]
+      | readonly FinalePhase[];
   };
   idealThroughputCeiling: number;
   optimisticFiringWorkSeconds: number | undefined;
@@ -274,6 +287,12 @@ function mechanicsMetrics(level: LevelConfig, mandatory: readonly TargetSpawn[])
     level.objective.kind === "maintenance" &&
     level.objective.entries.some((target) => target.kind === "plaque");
   const mergeExtraHitBound = level.merge.probability > 0 ? level.merge.budget : 0;
+  const phases = level.objective.kind === "clear" ? level.objective.phases : undefined;
+  const plaqueLeaves = (targets: readonly TargetSpawn[]): number =>
+    targetMetrics(
+      targets.filter((target) => target.kind === "plaque"),
+      level,
+    ).leafCeiling;
   return {
     arena: arenaMetrics(level),
     optionalPocketTargets,
@@ -288,10 +307,9 @@ function mechanicsMetrics(level: LevelConfig, mandatory: readonly TargetSpawn[])
         : undefined,
     maximumPlaqueLeafCapacity: recurringPlaque
       ? undefined
-      : targetMetrics(
-          allAuthored.filter((target) => target.kind === "plaque"),
-          level,
-        ).leafCeiling,
+      : phases === undefined
+        ? plaqueLeaves(allAuthored)
+        : Math.max(...phases.map((phase) => plaqueLeaves(phase.targets))) + plaqueLeaves(optional),
     allAuthoredLeafCapacity:
       level.objective.kind === "clear" ? targetMetrics(allAuthored, level).leafCeiling : undefined,
   };
@@ -305,10 +323,7 @@ export function fluidMetrics(level: LevelConfig, size: PlaqueSize): FluidMetrics
     flatHeight !== undefined &&
     level.arena.floor.controlPoints.every((point) => point.y === flatHeight);
   const amplitude = (flatHeight ?? ARENA_HEIGHT) / 2 - preset.radius - FLUID_WALL_INSET;
-  const threshold = Math.max(
-    -1,
-    Math.min(1, -1 + (PLAYER_HITBOX_HEIGHT - FLUID_WALL_INSET) / amplitude),
-  );
+  const overlapDepth = 1 - (PLAYER_HITBOX_HEIGHT - FLUID_WALL_INSET) / (2 * amplitude);
   const periodSeconds = (2 * Math.PI) / (FLUID_ANGULAR_SPEED * level.speedMultiplier);
   const spawn: TargetSpawn = {
     kind: "plaque",
@@ -332,7 +347,9 @@ export function fluidMetrics(level: LevelConfig, size: PlaqueSize): FluidMetrics
   return {
     size,
     periodSeconds,
-    analyticVerticalOverlapEstimate: flat ? 1 - Math.acos(threshold) / Math.PI : undefined,
+    analyticVerticalOverlapEstimate: flat
+      ? 1 - orbitPhase("plaque", overlapDepth) / Math.PI
+      : undefined,
     analyticScope: flat ? "constant-height flat floor only" : "not applicable to a varying floor",
     sampled: {
       steps,
@@ -387,12 +404,22 @@ function sampleArrivals(level: LevelConfig, seed: number): ArrivalSample | undef
 }
 
 export function measureLevel(level: LevelConfig): LevelMeasurement {
-  const initial = targetMetrics(level.initialTargets, level);
   const objective = level.objective;
+  const phases = objective.kind === "clear" ? objective.phases : undefined;
+  const initialTargets = phases === undefined ? level.initialTargets : phases[0].targets;
+  const initial = targetMetrics(initialTargets, level);
   const finite =
-    objective.kind === "clear" ? objective.reinforcements.map((entry) => entry.target) : [];
-  const combined = targetMetrics([...level.initialTargets, ...finite], level);
-  const mechanics = mechanicsMetrics(level, [...level.initialTargets, ...finite]);
+    phases !== undefined
+      ? phases.slice(1).flatMap((phase) => [...phase.targets])
+      : objective.kind === "clear"
+        ? objective.reinforcements.map((entry) => entry.target)
+        : [];
+  const combined = targetMetrics([...initialTargets, ...finite], level);
+  const maximumPhaseLeafCeiling =
+    phases === undefined
+      ? undefined
+      : Math.max(...phases.map((phase) => targetMetrics(phase.targets, level).leafCeiling));
+  const mechanics = mechanicsMetrics(level, [...initialTargets, ...finite]);
   const entryMetrics =
     objective.kind === "maintenance"
       ? objective.entries.map((entry) => targetMetrics([entry], level))
@@ -432,8 +459,10 @@ export function measureLevel(level: LevelConfig): LevelMeasurement {
     tool: level.weapon,
     objective: objective.kind,
     authoredTeachingReason: level.briefing,
+    initialTargetCount: initialTargets.length,
     initial,
     finiteAndInitial: objective.kind === "clear" ? combined : undefined,
+    maximumPhaseLeafCeiling,
     recurring,
     workloadKind:
       objective.kind === "clear"
@@ -449,7 +478,7 @@ export function measureLevel(level: LevelConfig): LevelMeasurement {
     load:
       objective.kind === "maintenance"
         ? {
-            initialOccupancy: level.initialTargets.length / objective.safeMaximum,
+            initialOccupancy: initialTargets.length / objective.safeMaximum,
             arrivalsPerOverloadWindow: (arrivalRate * OVERLOAD_DURATION) / objective.safeMaximum,
             safeMaximum: objective.safeMaximum,
           }
@@ -463,9 +492,15 @@ export function measureLevel(level: LevelConfig): LevelMeasurement {
           }
         : undefined,
     pattern:
-      objective.kind === "maintenance"
-        ? { order: objective.entryOrder, entries: objective.entries }
-        : { order: "scheduled; empty arena may accelerate", entries: objective.reinforcements },
+      phases !== undefined
+        ? { order: "ordered clear-gated phases; first group is initial", entries: phases }
+        : objective.kind === "maintenance"
+          ? {
+              order: objective.entryOrder,
+              entries: objective.entries,
+              ...(objective.entryShift === undefined ? {} : { entryShift: objective.entryShift }),
+            }
+          : { order: "scheduled; empty arena may accelerate", entries: objective.reinforcements },
     idealThroughputCeiling,
     optimisticFiringWorkSeconds:
       objective.kind === "clear" ? combined.workload / idealThroughputCeiling : undefined,
@@ -475,7 +510,9 @@ export function measureLevel(level: LevelConfig): LevelMeasurement {
         objective.kind === "clear"
           ? combined.movement
           : (recurring?.movement?.mean ?? initial.movement),
-      leafCeiling: objective.kind === "clear" ? combined.leafCeiling : initial.leafCeiling,
+      leafCeiling:
+        maximumPhaseLeafCeiling ??
+        (objective.kind === "clear" ? combined.leafCeiling : initial.leafCeiling),
       verticalExposure: fluidMotion.find((item) => item.size === "tiny")!.sampled
         .verticalOverlapFraction,
       precision:
@@ -579,7 +616,9 @@ export function difficultyReport(): Report {
         "Floor relief and exact smoothstep maximum slope describe geometry. Open firing lanes are raw gaps in the union of occupied-cell x projections, before projectile-width and player-bound trimming.",
         "Full tissue removal shot bounds assume productive shots only, 1-3 occupied cells per shot, and no hazard erosion. They are not required completion work: cover may be bypassed, hazards carve it, and missed/redundant shots are unbounded.",
         "Unopened pocket removal trees are optional and separate from mandatory workload. Finite clear-stage hit bounds add at most one hit per budgeted successful merge, shared across all targets. Maintenance totals remain play-dependent.",
-        "Maximum plaque leaf capacity sums initial, finite scheduled and all optional pocket plaque leaves, irrespective of scheduling. Merges conserve this mass. Recurring plaque entries have no finite authored total; platelet capacity still requires runtime admission.",
+        "Phases own initial targets and every finite group. Total workload and allAuthoredLeafCapacity sum every group as authored potential, not simultaneous density. The leaf axis uses the maximum phase leaf ceiling; clear-gated phase arrivals have no fixed arrival rate.",
+        "Maximum plaque leaf capacity sums initial, finite scheduled and optional pocket plaque leaves for unphased stages; phased stages use the maximum phase plaque leaves plus optional pocket leaves. Merges conserve leaf mass. Recurring plaque entries have no finite authored total; platelet capacity still requires runtime admission.",
+        "Support pockets contain no hazard targets and add no removal work. Their shell tissue remains in occupied cover geometry and productive carving-shot bounds.",
         "Scheduler-only no-fire samples continue to expiry without damage, firing or target removal; they are not survival/completion runs.",
         "Nominal opportunities floor(duration/interval) do not reproduce warning, expiry or capacity rules. Maintenance workload and leaf totals are not guaranteed.",
         "Ideal throughput assumes perfect useful hits, ignoring travel and active caps; stent also has one live projectile. Optimistic firing work is not completion time.",

@@ -1,5 +1,42 @@
 # Plaque Attack art direction
 
+## Remix devices and restoration
+
+The current remix preserves the established six-surgeon cast and chunky arcade style. The
+editable sources [flow_switch.svg](../src/assets/flow_switch.svg),
+[support_capsule.svg](../src/assets/support_capsule.svg) and
+[restored_flow.svg](../src/assets/restored_flow.svg) add fictional devices and restoration.
+They are required preloaded images, with semantic groups, local paints and standalone accessible
+titles/descriptions. Canvas owns their live state cues.
+
+The switch uses a plum diamond housing, lateral vanes and a pale circular hit body at 48 logical
+pixels. Solid ready rings, dashed cooling rings, arrows, lane boundaries and text communicate
+ready/active/cooldown states. The support capsule draws at 26 logical pixels with a pill body
+and shield/check silhouette, distinct from platelet hazards and hazard-pocket shells. The
+surgeon's armed shield is a static outline; absorption receives a separate brief cue.
+
+Keep the hazard field quiet. Bounded, event-driven feedback distinguishes carving, split sizes,
+current activation, capsule release/collection, shield absorption, named groups and same-projectile
+multi-hit. Coalesce repeated nearby carving labels. Audio follows the same real consequences,
+starts muted and respects pause and voice limits. Reduced motion keeps labels and earned shapes
+while removing decorative movement; paused play freezes presentation clocks.
+
+The transparent 960x540 restoration source supplies broad pearl/rose currents and smooth lining.
+`src/remix_rendering.ts` clips it into four distinct consequences of cleared groups: a widening
+artery fissure, continuous restored flow, a gathered column with floor-following lining, and a
+widening final fan with the established patient/surgeon payoff. Reveal only actually earned
+restoration, including partial progress on failure. These fictional arcade images make no new
+claim about cardiovascular treatment or cure.
+
+Standalone asset inspection and focused renderer probes are recorded in
+[active_plans/reports/remix_assets.md](active_plans/reports/remix_assets.md) and
+[active_plans/reports/remix_renderer.md](active_plans/reports/remix_renderer.md). They do not
+establish integrated action readability or current campaign acceptance. The current rendered,
+responsive and actual-input proof belongs to
+[active_plans/reports/remix_execution_ledger.md](active_plans/reports/remix_execution_ledger.md).
+[SCREENSHOTS.md](SCREENSHOTS.md) owns managed image provenance. All earlier verification sections
+below describe their named historical snapshots, not acceptance of this remix.
+
 ## Scientist-inspired ensemble
 
 Build a tangible, playful illustrated world with six memorable surgeon personalities, artery
@@ -313,7 +350,7 @@ its limits; the historical twelve-asset checks above do not prove these addition
 The later basin, shelf and shoulder variants, rendered evidence and geometry/completion checks
 are recorded in [FLOOR_VARIATION.md](FLOOR_VARIATION.md).
 
-## Scientist cast verification
+## Historical scientist cast verification
 
 The 2026-10-22 revision uses Astra-authored final SVGs and independent Luna visual review.
 The production renderer's native-size [cast sheet](screenshots/art_identity_roster.webp)

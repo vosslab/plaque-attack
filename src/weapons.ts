@@ -1,3 +1,5 @@
+import { activateFlow, projectileSwitchContact } from "./remix_mechanics";
+import type { FlowSwitchDefinition } from "./types/level";
 import { logicalCoordinate, projectileId, targetId } from "./brands";
 import { createTarget, nextPlaqueSize } from "./characters";
 import {
@@ -108,6 +110,8 @@ export function resolveProjectileHits(
   let minimumTime = 0;
   for (;;) {
     let best: { projectile: Projectile; target: Target; time: number } | undefined;
+    let flowContact:
+      { projectile: Projectile; definition: FlowSwitchDefinition; time: number } | undefined;
     let solid:
       { projectile: Projectile; cell: TissueTick["cells"][number]; time: number } | undefined;
     for (const projectile of state.projectiles) {
@@ -127,6 +131,25 @@ export function resolveProjectileHits(
         )
           solid = { projectile, ...hit };
       }
+      if (shotSweep !== undefined && state.remix.flow.kind === "ready") {
+        for (const definition of state.level.flowSwitches ?? []) {
+          const time = projectileSwitchContact(
+            projectile,
+            definition,
+            shotSweep.active,
+            shotSweep.growth,
+          );
+          if (
+            time !== undefined &&
+            time >= minimumTime &&
+            (flowContact === undefined ||
+              time < flowContact.time ||
+              (time === flowContact.time && projectile.id < flowContact.projectile.id))
+          ) {
+            flowContact = { projectile, definition, time };
+          }
+        }
+      }
       for (const target of state.targets) {
         if (target.activeFromTick > state.tick) continue;
         const sweep = sweeps.get(projectile);
@@ -144,10 +167,20 @@ export function resolveProjectileHits(
         }
       }
     }
-    if (solid !== undefined && (best === undefined || solid.time <= best.time)) {
+    if (
+      solid !== undefined &&
+      (best === undefined || solid.time <= best.time) &&
+      (flowContact === undefined || solid.time <= flowContact.time)
+    ) {
       minimumTime = solid.time;
       queueProjectileErosion(tissue, solid.cell);
       consumed.add(solid.projectile);
+      continue;
+    }
+    if (flowContact !== undefined && (best === undefined || flowContact.time < best.time)) {
+      minimumTime = flowContact.time;
+      consumed.add(flowContact.projectile);
+      activateFlow(state, flowContact.definition, events);
       continue;
     }
     if (best === undefined) break;

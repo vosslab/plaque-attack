@@ -70,6 +70,26 @@ export type TargetsMergedEvent = {
   position: LogicalPoint;
 };
 
+export type FlowActivatedEvent = {
+  type: "flow_activated";
+  switchId: string;
+  position: LogicalPoint;
+  laneX: LogicalPoint["x"];
+};
+export type SupportReleasedEvent = {
+  type: "support_released";
+  pocketId: string;
+  position: LogicalPoint;
+};
+export type ShieldCollectedEvent = { type: "shield_collected"; position: LogicalPoint };
+export type ShieldAbsorbedEvent = { type: "shield_absorbed"; position: LogicalPoint };
+export type FinalePhaseStartedEvent = {
+  type: "finale_phase_started";
+  name: string;
+  phaseIndex: number;
+  phaseCount: number;
+};
+
 export type SimulationEvent =
   | ShotEvent
   | TargetHitEvent
@@ -82,4 +102,9 @@ export type SimulationEvent =
   | TissueErodedEvent
   | PocketBreachedEvent
   | PocketReleasedEvent
-  | TargetsMergedEvent;
+  | TargetsMergedEvent
+  | FlowActivatedEvent
+  | SupportReleasedEvent
+  | ShieldCollectedEvent
+  | ShieldAbsorbedEvent
+  | FinalePhaseStartedEvent;

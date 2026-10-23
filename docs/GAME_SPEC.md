@@ -5,16 +5,19 @@ cardiovascular surgeon along the floor, fire upward, dodge drifting hazards, and
 plaque into progressively smaller fragments. The campaign then shifts to antiplatelet tools and
 the sustained control of small platelet hazards.
 
-Status: current source contract, 2026-10-22. The expanded game has 24 stages in four chapters,
-with deterministic fluid motion, original organic SVG art, tissue shelter, automatic floor
-following, optional membrane pockets, and bounded plaque merging. Six cosmetic surgeons and a
-persistent patient recovery map extend that baseline. Current delivery evidence is in
-[RECOVERY_ROSTER_ACCEPTANCE.md](RECOVERY_ROSTER_ACCEPTANCE.md); historical mechanics evidence
-is in [MECHANICS_ACCEPTANCE.md](MECHANICS_ACCEPTANCE.md).
-[EXPANSION_PLAN.md](EXPANSION_PLAN.md) owns the exact stage matrix, stable IDs, chapter metadata,
-and migration contract; [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md) owns challenge measurements.
-[STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md#stage-placement-matrix) owns the single
-mechanics placement matrix. Numerical balance values remain tunable.
+Status: current source contract, 2026-10-22. All 24 stages are authored in four chapters,
+with the first three stages preserved. The remix adds shootable flow switches, optional contact
+shields, finite phase finales, quick stage retries and distinct earned restoration.
+[archive/remix_campaign_plan.md](archive/remix_campaign_plan.md)
+owns the approved remix contract; `src/constants.ts` exposes canonical order and
+`src/remix_levels.ts` owns the remixed content. Numerical balance remains tunable.
+[DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md) owns descriptive measurements.
+
+Current source/build checks, actual-input completion and rendered acceptance are tracked in
+[active_plans/reports/remix_execution_ledger.md](active_plans/reports/remix_execution_ledger.md).
+[EXPANSION_PLAN.md](EXPANSION_PLAN.md), [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md),
+and [RECOVERY_ROSTER_ACCEPTANCE.md](RECOVERY_ROSTER_ACCEPTANCE.md) retain earlier contracts and
+evidence; their old content placements and acceptance runs do not establish remix acceptance.
 
 ## Product and scope
 
@@ -29,7 +32,7 @@ mechanics placement matrix. Numerical balance values remain tunable.
 | Campaign | 24 stages in four six-stage chapters; three mechanical acts |
 | Visual direction | Colorful vector art, readable silhouettes, polished browser-arcade presentation |
 | Delivery | Static TypeScript application, HTML5 Canvas arena, HTML menus and HUD |
-| Persistence | Local surgeon selection, recovery IDs, settings, unlocks, and five best campaign scores |
+| Persistence | Local surgeon selection, recovery IDs, settings, unlocks, and five best scores per campaign edition |
 
 The first release includes the whole campaign, tutorial prompts, pause, practice, local scores,
 sound controls, and the three weapon modes. Multiplayer, accounts, online leaderboards, a shop,
@@ -61,7 +64,8 @@ surgeons have the same abilities. The selected appearance persists locally and i
 arena and chooser previews. The same full chooser is accessible from briefing and results. Movement, hitbox, muzzle, fire cadence, weapon behavior, scoring,
 and progression belong to shared gameplay configuration; roster entries contain presentation only.
 
-A campaign clear adds its stable level ID once to the patient's recovery map. Every successful
+A campaign clear adds its stable level ID once to the patient's recovery map and saves the next
+unlock immediately at terminal clear, before the interruptible celebration. Every successful
 result displays the patient and coronary recovery artwork directly, emphasizing the cleared
 route before the player continues. The detailed browsing map remains available by button.
 Replayed clears, failed runs, and practice cannot duplicate or remove recovery; practice results
@@ -130,8 +134,8 @@ Final campaign, game-over and practice results use their own play-again/retry ac
 a next-level action. The shortcut activates on release of the fresh press.
 
 Successful clears freeze terminal gameplay state while rendering the final pop for approximately
-0.3 seconds, followed by a brief cosmetic surgeon celebration; results appear at approximately
-1.2 seconds total. The celebration changes presentation only, with no gameplay jump, collider,
+0.3 seconds, followed by a brief cosmetic surgeon celebration; results appear after the approximately
+2.2-second presentation. The celebration changes presentation only, with no gameplay jump, collider,
 hazard, timer, health or score change. Reduced motion shows static victory feedback. Game over
 keeps its immediate result path. These durations are tunable presentation defaults. Task rationale
 and acceptance evidence belong to [CLEAR_FLOW.md](CLEAR_FLOW.md).
@@ -151,23 +155,26 @@ nonblocking landscape suggestion. Menus remain usable in portrait; landscape is 
 touch-play orientation. Keep touch controls outside the arena with at least 56 CSS-pixel targets.
 
 Leaving the tab or losing window focus pauses the simulation and clears held inputs. Resuming
-requires an explicit action. Each level starts with a three-second ready countdown. Ordinary
+requires an explicit action. Ordinary stage entry uses a three-second ready countdown; same-stage retry uses one second. Ordinary
 damage and contact invulnerability do not interrupt play or introduce another countdown.
 
 ## Target physics and splitting
 
-Use steady lateral drift and smooth sinusoidal vertical circulation. There is no gravity,
-ballistic launch, or floor impact. Walls reflect lateral travel while retaining overshoot.
-Size-based lateral speeds are 72/84/94/104 units/s from large to tiny, with a shared angular
-rate of 0.6 radians/s; both scale by the level speed multiplier. Targets normally pass through
-each other; all lipid stages permit occasional equal-size plaque coalescence. Decorative particles do not collide.
+Use steady lateral drift and smooth analytic vertical circulation. Plaques use a rounded orbit
+that shortens prolonged lower turns; platelets retain the original cosine orbit. There is no
+gravity, ballistic launch, or floor impact. Walls reflect lateral travel while retaining
+overshoot. Size-based lateral speeds are 72/84/94/104 units/s from large to tiny, with a
+shared angular rate of 0.6 radians/s; both scale by the level speed multiplier. Targets normally
+pass through each other; all lipid stages permit occasional equal-size plaque coalescence.
+Decorative particles do not collide.
 
-On flat floors, the orbit is centered at half the arena height with amplitude
-`H/2 - radius - FLUID_WALL_INSET`. On raised floors, its center and amplitude follow the local
-ceiling/floor envelope. The shared 24-unit inset keeps bodies suspended; vertical speed reaches
-zero smoothly at each turn. Tissue contacts deflect the same continuous fluid path. Initial phase derives from clamped
-spawn height and stable target ID. Every size visits the lower firing and player-contact region,
-including aspirin's shorter range. This is a predictable arcade model, not a fluid solver.
+On flat floors, each kind uses the full reachable vertical range, with a 24-unit wall inset;
+on raised floors, its bounds follow the local ceiling/floor envelope. Plaques use the rounded
+analytic profile `q=(1-asin(k*cos(p))/asin(k))/2`, with `k=0.90`; platelets use the original
+cosine profile. Both turn smoothly, and tissue contacts deflect the same continuous fluid path.
+Initial phase derives from clamped spawn height and stable target ID. Every size visits the
+lower firing and player-contact region, including aspirin's shorter range. This is a predictable
+arcade model, not a fluid solver.
 
 | Size | Radius | Successful stent hit |
 | --- | --- | --- |
@@ -207,12 +214,30 @@ firing lanes; terrain height alone does not guarantee safety.
 
 ## Tissue, pockets, and coalescence
 
-Stages 1-3 keep their flat arena, slow fluid drift and original workload. Tissue first appears at
-stage 4, a gentle floor at stage 5, merging at stage 6, and an optional pocket at stage 9. Later
-stages interleave mechanics with breathing spaces at tool/objective introductions. The complete
-opening workload is 7, 10, 15, 25, 37, and 60 mandatory hits; speeds are 0.55, 0.60, 0.65,
-0.75, 0.85, and 1.00. [DIFFICULTY_REVIEW.md](DIFFICULTY_REVIEW.md) records the stage-4/5
-correction and its evidence. The placement matrix lives only in [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md#stage-placement-matrix).
+Stages 1-3 keep their flat arena, slow fluid drift and original workload. Stage 4 introduces
+tissue, stage 5 adds optional support and floor following, and stage 6 divides its four original
+large plaque families into two alternating-side pairs. Mandatory plaque hit work remains
+7, 10, 15, 25, 37, and 60 before optional hazards or merges. The authored configuration owns
+all placement and counts; [DIFFICULTY_REVIEW.md](DIFFICULTY_REVIEW.md) retains earlier tuning evidence.
+
+### Flow and optional support
+
+Any equipped tool can activate a ready fictional flow switch by shooting it. The activating shot
+is consumed; active and cooling devices pass shots onward. One selected lane attracts hazards
+horizontally for four seconds, followed by a shared six-second cooldown across all switches.
+Steering changes horizontal velocity within the size/level speed bound and preserves the vertical
+orbit and collision solver. Expiry restores ordinary drift magnitude, preserving direction with
+a deterministic fallback for zero velocity. Currents first appear at stage 8, selectable lanes at
+10, and piercing combinations at 14. These are arcade devices, not clinical equipment.
+
+Optional support occurs at display stages 5, 11, 16, 20, 23 and 24. Carve its visible shell,
+then walk into the slowly descending capsule to collect one contact shield. Shields do not stack
+or award points. One ordinary contact consumes the shield, preserves life and streak, and grants
+normal contact invulnerability. Overload bypasses the shield, including a tick with absorbed
+contact. Sealed, released or uncollected support never blocks a phase or stage clear. Support
+shells and capsules have different silhouettes from optional hazard pockets and platelet targets.
+
+### Tissue and hazard pockets
 
 Tissue consists of visible 12x12 solid cells, separate from decorative scenery and the permanent
 floor. Every projectile, including stents and piercing clopidogrel, ends at its first tissue
@@ -232,7 +257,7 @@ contact damage. Only active hazards count toward overload; unopened contents rem
 Only same-size plaque below large can merge into the next preset size; platelets never merge.
 Stages 1-6 use a 5%, 8%, 12%, 16%, 20%, and 25% chance per eligible new contact entry.
 Their cooldowns are 3, 3, 2.5, 2, 1.75, and 1.5 seconds; successful-merge budgets are
-1, 1, 2, 3, 4, and 5. Stage 6 retains four large initial plaques and 32 leaf units.
+1, 1, 2, 3, 4, and 5. Stage 6 retains four large plaques across two phases and 32 total authored leaf units.
 Persistent overlap does not reroll. Merged direction follows averaged parent horizontal velocity,
 with lower-ID direction breaking a near-zero tie; speed comes from the new size preset times level
 speed. Splits inherit remaining cooldown, and new merged targets activate next tick. Merges
@@ -290,36 +315,46 @@ Tools have unlimited ammunition; cooldowns and active-shot limits define the fir
 
 ### Ordered chapters and mechanical acts
 
-Campaign display order is separate from stable level ID. The canonical 24-row matrix lives in
-[EXPANSION_PLAN.md](EXPANSION_PLAN.md#concrete-stage-matrix); update that matrix and its owning
-configuration together rather than maintaining a second numeric table here.
+Campaign display order is separate from stable level ID. Preserve this order:
+
+```text
+[1,16,2,3,4,5,6,17,7,18,19,20,8,21,9,22,23,10,11,12,13,14,24,15]
+```
+
+The approved remix plan and exposed source configuration own composition and placements.
 
 | Display stages | Chapter | Tools and objectives |
 | --- | --- | --- |
-| 1-6 | Plaque Patrol | Stent; clear all plaque families |
-| 7-12 | Platelet Pop | Aspirin; clear initial hazards and finite reinforcements |
-| 13-18 | Pulse Partners | Clopidogrel, then dual; finite clears and a 40-second maintenance introduction |
-| 19-24 | Flow State | Dual; maintain inclusive safe limits for 40-60 seconds |
+| 1-6 | Plaque Patrol | Stent; finite plaque clears, ending with two alternating-side pairs |
+| 7-12 | Platelet Pop | Aspirin; currents, shelter and finite clears; three-group switchback finale |
+| 13-18 | Pulse Partners | Clopidogrel at 13-14 and 18; dual at 15-17; finite clears |
+| 19-24 | Flow State | Dual; maintenance at 19/21/23, finite breathers at 20/22, three-group finale at 24 |
 
-The first three stages require seven, ten, and fifteen plaque hits, respectively, with speed
-multipliers 0.55, 0.60, and 0.65. They remain ordinary clear rounds with no forced lesson timer.
-Later chapters introduce tools with explicit difficulty resets. The rubric explains those resets
-and within-block progression; a single increasing number is not a substitute for varied play.
+The first three stages require seven, ten and fifteen hits, with speed multipliers 0.55, 0.60
+and 0.65. Later introductions deliberately reset pressure. Tool changes and spatial choices
+matter more than a single increasing difficulty score.
 
-The mechanical `act` field remains 1-3 for plaque intervention, pharmaceutical treatment, and
-maintenance. The `chapter` field owns the four-part presentation. Six new scene SVGs and six
-editable lipid SVGs supply the organic visual variety. Lipid form selection uses stable target IDs
-in the renderer; appearance changes neither target identity nor collision or weapon behavior.
+The mechanical `act` field describes objective families; `chapter` owns four-part presentation.
+Stable IDs drive progress, target identities drive cosmetic lipid variation, and neither changes
+collision rules. Drug stages retain the installed stent and contain only small/tiny platelets.
+Finite arrivals count as remaining even when the arena is empty; warnings may advance the next
+finite arrival. Maintenance cycles through authored entries; seeded selection is also supported.
 
-The stent rounds use authored visible starting positions and unlimited elapsed time. Four large
-plaques can create 32 tiny descendants, so the existing 32-target capacity remains necessary.
-Tooltips teach movement, firing, and fragmentation without requiring reading before play.
+### Finite chapter finales
 
-Drug stages retain the installed stent and use only small/tiny platelet targets. Finite clears count
-scheduled hazards as remaining: an empty interval is not a win. If the arena is empty, the next
-finite arrival may advance after its warning. Maintenance entries cycle through authored locations,
-starting at the first list entry; seeded selection remains supported by the simulation contract.
-The final result says "Maintenance complete", with no claim that coronary disease is cured.
+| Stage | Groups and player decision | Earned restoration |
+| --- | --- | --- |
+| 6 | Original four large plaques in two alternating-side pairs | Fissure widens into an opened artery |
+| 12 | Redirect left entries, reposition right, then handle crossing volley | Continuous restored flow |
+| 18 | Carve aperture, gather a column, pierce with clopidogrel, clean up | Restored lining |
+| 24 | Outer opening, crossing optional-shield risk, final fan | Full patient and surgeon payoff |
+
+Each finale starts with its first finite group. All targets and committed hazard releases must
+resolve before the warned transition to the next named group. Tissue occupancy, current state,
+shield and elapsed time persist across groups; optional support never blocks advancement.
+Restoration follows actually cleared groups, including partial earned restoration on failure.
+Reduced motion shows the same earned shapes statically. No timer padding or recurring maintenance
+is added to these finales. Final victory remains an arcade recovery story, not a disease cure.
 
 ### Maintenance state rules
 
@@ -338,6 +373,15 @@ The final result says "Maintenance complete", with no claim that coronary diseas
 
 The objective is sustained management with recoverable overload, not a requirement to keep at
 least one hazard alive. Clearing everything is always safe; the next scheduled wave still arrives.
+
+Display stage 23 (stable ID 24) keeps its 50-second maintenance duration and safe maximum of five.
+Its opening entries favor the left; at 25 seconds, newly selected entries shift right. Forecast the
+destination with a gold world bracket and a concise HUD countdown, then identify new right-side
+arrivals. The briefing offers crossing right to gather or staying left to carve shelter. Both
+switches remain available through their normal cooldowns. Existing announced arrivals retain their
+targets and normal warning/spawn path; cover, shield, score and current state persist. Cue timing
+follows active elapsed time, with static meaning under mute and reduced motion and ordinary retry
+reset. This spatial choice is a design hypothesis; automated route completion does not prove fun.
 
 ### Fair spawning
 
@@ -362,13 +406,15 @@ If the player remains overlapped when invulnerability expires, another contact c
 The HUD shows three heart slots plus a text count; hearts represent game lives, not a clinical
 measurement. Decorative blood flow is not a second health meter.
 
-At zero lives, freeze the arena and show "Run ended" with the score and level reached. "Retry
-campaign" starts at level 1 with three lives and zero score. "Practice this level" restarts the
-current unlocked level with three lives and an unranked score. This makes difficult levels
-learnable without changing the campaign's survival challenge.
+At zero lives, freeze the arena and show "Run ended". The primary action, "Retry this stage",
+reconstructs that stage with its entry seed and entry score, three lives, reset local state and a
+one-second ready interval. It skips the briefing and clears held input so a fresh press is needed.
+Retry count increments and carries through later stages. Failure and retry do not commit records.
+Practice uses its own retry and never heals campaign progress or enters ranked records.
 
-Campaigns finish at display stage 24 (stable level ID 15). Main-menu level select offers any unlocked level in practice mode.
-Practice success never unlocks later campaign levels or enters the campaign leaderboard.
+Campaigns finish at display stage 24 (stable ID 15). A confirmed intentional departure to menu,
+restart or practice finalizes the displayed attempt score once; canceling departure resumes the
+same attempt. An active run remains in memory only and does not resume after reload.
 
 ## Scoring and records
 
@@ -400,11 +446,16 @@ A piercing shot awards each target once. Target IDs and resolved events prevent 
 Level completion awards its bonuses once even if the Continue button is pressed repeatedly.
 For reference, one large plaque is 3,200 base target points before multipliers and level bonuses.
 
-The local top-five list stores campaign score, level reached, completed/ended status, and date.
-Rank by score, then position reached, then earlier record for an exact tie. Expanded records use
-canonical order; classic records retain their original 15-level order. Commit one record when a
-campaign ends through defeat or completion. Practice and abandoned runs do not enter the list.
-Use automatic labels rather than requiring names or accounts.
+Local records are separated by edition: `classic`, `expanded` and current `remix`, with up to
+five records each. Remix records include score, stable stage reached, completed/ended status,
+run retry count and date. Rank by descending score, then fewer retries, then later canonical
+position, then earlier date. Legacy editions retain their original record shape and ordering.
+Do not invent retry history for older records.
+
+True campaign completion or confirmed intentional departure commits one record exactly once.
+A failed stage remains retryable without a record; practice stays unranked. The final clear saves
+its earned recovery and completed record before celebration, so departure during celebration
+cannot discard or duplicate either. Use automatic labels without accounts or player names.
 
 Settings and unlocked levels persist between visits. An active campaign stays in memory while
 paused; a reload returns to the menu. In-progress campaign resumption is outside the first release.
@@ -421,12 +472,14 @@ explains that progress cannot be saved. Keep existing unsupported save data inta
 | Successful clear | Last pop, then brief surgeon victory; frozen terminal gameplay state | Wait briefly for result |
 | Pause | Frozen arena, objective and controls | Resume, restart practice when applicable, main menu |
 | Level result | Patient recovery art, cleared route, objective achieved, points, lives, keyboard hint, optional fact | Continue, patient recovery, choose surgeon, read the real medicine |
-| Game over | Run ended, score, level reached, record placement if earned | Retry campaign, practice level, main menu |
-| Campaign result | Patient recovery art, maintenance complete, score, final lives, record | Play again, main menu |
+| Game over | Run ended, score, stage, retry explanation; no failure record | Retry this stage, practice level, main menu |
+| Campaign result | Patient recovery art, final finite clear, score, final lives, retry count, record | Play again, main menu |
 
 Gameplay HUD priority is lives and objective, then tool, then score. Intervention levels show
 "Elapsed 01:25"; maintenance shows "Remaining 01:25" and `Active hazards: 4 / 6`. Finite waves show
-their remaining total. The overload countdown stays visible adjacent to the count.
+their remaining total. The overload countdown stays visible adjacent to the count. Phase names,
+current ready/active/cooldown, optional support or armed shield, and positive retry counts appear
+when relevant. Live announcements track meaningful state changes rather than per-frame countdowns.
 
 Use "Plaque cleared!" after Act I rounds, "Platelet activity controlled!" after Act II clear
 rounds, and "Maintenance complete!" after timed rounds. Avoid "artery cured" and medical-emergency
@@ -515,7 +568,8 @@ focus. Start with one stylesheet and low specificity; add cascade layers only if
 ownership. Avoid scattered overrides and per-element inline presentation rules.
 
 The page uses a centered, width-constrained shell and a grid of HUD, arena, and controls. The HUD
-wraps into readable rows instead of shrinking labels. Menus use fluid content height and scroll
+wraps into readable rows instead of shrinking labels. Short landscape play uses a compact HUD
+sidebar and a large arena; the fixed logical world and external touch controls remain intact. Menus use fluid content height and scroll
 within short viewports. Match the Canvas backing dimensions to the displayed size and device pixel
 ratio while retaining the fixed logical coordinate system.
 
@@ -618,19 +672,21 @@ spawning, invulnerability, overload, and survival scoring together.
 
 ### Persistence and delivery
 
-Use one versioned local-storage key, `plaque_trouble_save`, with explicit validation and bounded
-record counts. Version-3 saves include `settings.surgeonId` and a canonical-order
-`completedLevelIds` set. Missing or invalid cosmetic IDs use Maya without losing earned progress.
-Version-1 migration restores known classic IDs before its historical unlocked level; a completed
-classic record restores all 15 classic IDs. Version-2 migration conservatively restores only
-classic IDs before its canonical unlocked identity, plus any expanded prefix proved by an
-expanded record. A completed expanded record restores all 24 IDs; a completed classic record restores classic IDs only. No unlock-only inference
-awards inserted stages. Duplicate or unknown V3 completion IDs make the save malformed. Preserve
-legacy settings, tutorial flags, stable unlocked IDs, and records. Tag historical records as `classic` and current records as `expanded`; a legacy
-completed record is not a 24-stage completion. Invalid or newer unknown versions retain their
-original bytes under read-only failure behavior. Use text rendering for stored/displayed values. Store no patient information,
-credentials, analytics identifiers, or personal player details. Storage failures affect saving,
-not the ability to start a game.
+Use one local-storage key, `plaque_trouble_save`, with explicit validation and bounded records.
+Version 4 preserves valid version 1-3 settings, surgeon selection, unlocks, completion IDs and
+records, then adds the remix edition and its retry count. Keep five records per edition, up to
+15 total, with historical classic and expanded records separate from remix ranking.
+
+Completion remains a canonical-order set of stable IDs, independent of unlock permissions.
+Version-1 migration restores known classic IDs before its unlocked level; completed classic
+records prove those 15 IDs. Version-2 migration conservatively restores classic prefixes and
+expanded prefixes proved by expanded records. A completed expanded record proves all 24 IDs.
+Version-3/4 completion lists reject duplicate or unknown IDs. Invalid cosmetic IDs use Maya
+without discarding otherwise valid progress. No active run is persisted.
+
+Malformed or unsupported saves retain their original bytes under read-only failure behavior.
+Storage failure affects saving, not play. Render stored values as text and store no patient
+information, credentials, analytics identifiers or personal player details.
 
 `src/main.ts` is the application entry, `src/index.html` the host, and `src/style.css` the shell.
 Keep asset URLs relative so GitHub Pages project subpaths work. Preload required art before the
@@ -647,20 +703,17 @@ performance. Prioritize input and collision stability over effects if frame time
 
 ## Implementation and evidence ownership
 
-Historical 15-level evidence remains in
-[game_implementation.md](active_plans/active/game_implementation.md). The accepted earlier
-24-stage expansion and mechanics records predate the current roster/recovery delivery. Follow
-[organic_expansion.md](active_plans/active/organic_expansion.md) and
-[STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md) for current implementation and evidence status.
+The current implementation contract and milestone evidence live in
+[archive/remix_campaign_plan.md](archive/remix_campaign_plan.md) and
+[active_plans/reports/remix_execution_ledger.md](active_plans/reports/remix_execution_ledger.md).
+All 24 stages are authored; that fact does not establish current full-campaign browser acceptance.
+Each source owner records focused checks. Final acceptance additionally requires the rebuilt
+production consumer, repository checks, actual-input campaign completion, responsive keyboard/touch
+journeys and independent rendered review. Consult the ledger for which gates have actually passed.
 
-Each source owner reports focused compilation and meaningful behavior checks. Final acceptance
-requires repository checks, a production build, browser journeys and rendered review. The current
-roster/recovery delivery additionally verifies map transitions and migration, with ordinary-input
-simulation scoped to the opening six stages. The earlier 24-stage completion/replay belongs to
-the mechanics baseline and is not a fresh full-campaign run of this tuning. A failed gate returns
-to its source owner.
-Keep isolated art rendering, fixture enumeration, automated completion, and human playtesting
-separate when describing what passed.
+Historical 15-stage, expansion, mechanics and roster/recovery evidence remain useful for their
+original snapshots. They are not fresh proof of this remix. Keep isolated asset rendering,
+synthetic fixtures, actual-input completion and optional human feedback distinct.
 
 ## Acceptance and playtesting
 
@@ -678,11 +731,11 @@ optional human feedback may improve tuning but never blocks a milestone.
 | Merging | Equal-size eligible plaque only; seeded entry attempts, inherited cooldown, conserved leaf mass, finite work bound and new-size speed |
 | Tools | Stent limits one active shot; aspirin hits once; clopidogrel hits distinct targets up to its limit; dual alternates on successful fires |
 | Target identity | Drugs never score against plaque; platelet hazards never split into cholesterol |
-| Lives | One damage event per tick, correct contact invulnerability, overload independent, zero lives ends the run |
-| Finite waves | Empty intervals do not complete a level with scheduled hazards remaining |
+| Lives | One life loss per tick; shield absorbs ordinary contact, overload bypasses; zero lives offers same-stage retry |
+| Finite waves | Scheduled/pending hazards block clear; phases preserve tissue/current/shield; optional support does not block |
 | Maintenance | Equality is safe; continuous overload costs a life; recovery resets the warning; expiry resolves as specified |
 | Pause | All simulation clocks stop; no stuck inputs or queued arrivals after focus loss and resume |
-| Scoring | No duplicate hits, completion bonuses, survival seconds, or run records; practice stays unranked |
+| Scoring | No duplicate rewards/records; failure records nothing; completion/departure finalizes once; practice unranked |
 | Progress | All 24 stages are reachable and completable through normal rules; unlock and retry behavior is consistent |
 | Storage | Valid records reload; invalid or unavailable storage leaves the game playable |
 | Visuals | Distinct silhouettes, measured contrast, readable HUD, no cropped arena or hidden controls at required sizes |
@@ -715,8 +768,7 @@ The following choices make the supplied concept executable while keeping its cen
 - Keep elapsed time in clear levels, countdown time in maintenance, and no optional blood-flow
   meter that could be mistaken for a simulated clinical quantity.
 
-All balance values remain subject to playtesting. This specification and the canonical expansion
-contracts define current behavior. Fresh integrated browser review, repository gates, and the
-current roster/recovery evidence belong to [RECOVERY_ROSTER_ACCEPTANCE.md](RECOVERY_ROSTER_ACCEPTANCE.md).
-The earlier 24-stage mechanics completion/replay predates the stage-4/5 tuning and does not
-constitute a fresh full-campaign run of this delivery.
+All balance values remain tunable. The current acceptance record is
+[active_plans/reports/remix_execution_ledger.md](active_plans/reports/remix_execution_ledger.md).
+Prior full-campaign completion belongs to its historical source snapshot and does not establish
+actual-input completion, rendered acceptance or remote publication for this remix.

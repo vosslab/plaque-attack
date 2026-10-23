@@ -147,7 +147,9 @@ test("movement and held fire split plaque, and P and Escape freeze and resume th
   await expect(page.locator("#hud_level")).toHaveText("Stage 2: Little trouble");
 });
 
-test("a campaign ends once, records its score, and offers a fresh retry", async ({ page }) => {
+test("a failed campaign retries its stage and records only a confirmed departure", async ({
+  page,
+}) => {
   test.setTimeout(120_000);
   await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
     key: save_key,
@@ -168,7 +170,7 @@ test("a campaign ends once, records its score, and offers a fresh retry", async 
     .filter({ has: page.getByRole("heading", { name: "Run ended", exact: true }) });
   await expect(result).toBeVisible();
   await expect(result.getByRole("heading", { name: "Run ended" })).toBeFocused();
-  await expect(result).toContainText("High-score rank: 1 / 5");
+  await expect(result).not.toContainText("High-score rank");
   await expect(page.locator("#result_recovery")).toBeHidden();
   await expect(page.locator("#result_recovery_note")).toBeHidden();
   await expect(result.getByRole("button", { name: /^Next: Stage / })).toBeHidden();
@@ -179,19 +181,14 @@ test("a campaign ends once, records its score, and offers a fresh retry", async 
     records: { campaign: string; levelReached: number; outcome: string }[];
     completedLevelIds: number[];
   };
-  expect(data.version).toBe(3);
+  expect(data.version).toBe(4);
   expect(data.completedLevelIds).toEqual([1]);
-  expect(data.records).toHaveLength(1);
-  expect(data.records[0]).toMatchObject({
-    campaign: "expanded",
-    levelReached: 1,
-    outcome: "ended",
-  });
+  expect(data.records).toHaveLength(0);
   await page.clock.runFor(10_000);
   expect(await page.evaluate((key) => localStorage.getItem(key), save_key)).toBe(saved);
-  await result.getByRole("button", { name: "Retry campaign", exact: true }).click();
-  await expect(page.getByRole("heading", { name: /^Stage 1:/ })).toBeVisible();
-  await startLevel(page);
+  await result.getByRole("button", { name: "Retry this stage", exact: true }).click();
+  await page.clock.runFor(100);
+  await expect(page.getByRole("region", { name: "Arcade arena" })).toBeVisible();
   await expect(page.locator("#hud_lives")).toContainText("3 / 3");
   await expect(page.locator("#hud_score")).toHaveText("000000");
   await page.keyboard.press("p");
@@ -201,8 +198,12 @@ test("a campaign ends once, records its score, and offers a fresh retry", async 
   await page.getByRole("button", { name: "High scores", exact: true }).click();
   const scores = page.getByRole("dialog", { name: "High scores", exact: true });
   await expect(scores.getByRole("listitem")).toHaveCount(1);
-  await expect(scores).toContainText("Expanded 24 / Stage 1 / Run ended");
-  expect(await page.evaluate((key) => localStorage.getItem(key), save_key)).toBe(saved);
+  await expect(scores).toContainText("Remix 24 / Stage 1 / Run ended / Retries: 1");
+  const ended = JSON.parse(
+    (await page.evaluate((key) => localStorage.getItem(key), save_key)) ?? "null",
+  ) as { records: unknown[] };
+  expect(ended.records).toHaveLength(1);
+  expect(ended.records[0]).toMatchObject({ campaign: "remix", score: 0, retryCount: 1 });
 });
 
 test("prior progress unlocks the drug and maintenance practice modes without ranking", async ({
@@ -224,7 +225,7 @@ test("prior progress unlocks the drug and maintenance practice modes without ran
   await controlledPage(page);
   const chosenSave = await page.evaluate((key) => localStorage.getItem(key), save_key);
   expect(JSON.parse(chosenSave ?? "null")).toMatchObject({
-    version: 3,
+    version: 4,
     unlockedLevel: 15,
     settings: { surgeonId: "maya", surgeonChosen: true },
     records: [{ campaign: "classic", score: 1234, levelReached: 15, outcome: "completed" }],
@@ -247,18 +248,14 @@ test("prior progress unlocks the drug and maintenance practice modes without ran
     await expect(page.locator("#hud_level")).toContainText("Practice");
     await expect(page.locator("#hud_weapon")).toHaveText(tool);
     await page.clock.runFor(4000);
-    await expect(page.locator("#hud_time_label")).toHaveText(
-      ordinal === 24 ? "Remaining" : "Elapsed",
-    );
-    await expect(page.locator("#hud_objective")).toContainText(
-      ordinal === 24 ? "Active platelet hazards:" : "Hazards remaining:",
-    );
+    await expect(page.locator("#hud_time_label")).toHaveText("Elapsed");
+    await expect(page.locator("#hud_objective")).toContainText("Hazards remaining:");
     await page.keyboard.press("p");
     await page.getByRole("button", { name: "Restart practice", exact: true }).click();
     await page.clock.runFor(100);
     await expect(page.locator("#hud_level")).toContainText(`Stage ${ordinal}:`);
     await expect(page.locator("#hud_score")).toHaveText("000000");
-    await untilRunEnds(page);
+    await untilRunEnds(page, true);
     const result = page
       .getByRole("region")
       .filter({ has: page.getByRole("heading", { name: "Run ended", exact: true }) });
@@ -266,10 +263,11 @@ test("prior progress unlocks the drug and maintenance practice modes without ran
     await expect(result).toContainText("Practice / Unranked");
     await expect(result).not.toContainText("High-score rank");
     await result.getByRole("button", { name: "Retry practice", exact: true }).click();
-    await expect(
-      page.getByRole("heading", { name: new RegExp(`^Stage ${ordinal}:`) }),
-    ).toBeVisible();
-    await page.getByRole("button", { name: "Back to menu", exact: true }).click();
+    await page.clock.runFor(100);
+    await expect(page.getByRole("region", { name: "Arcade arena" })).toBeVisible();
+    await page.keyboard.press("p");
+    await page.getByRole("button", { name: "Main menu", exact: true }).click();
+    await page.clock.runFor(1);
   }
   expect(await page.evaluate((key) => localStorage.getItem(key), save_key)).toBe(chosenSave);
   await page.getByRole("button", { name: "Settings", exact: true }).click();
@@ -282,7 +280,7 @@ test("prior progress unlocks the drug and maintenance practice modes without ran
     unlockedLevel: number;
     records: { campaign: string; levelReached: number; outcome: string }[];
   };
-  expect(migrated.version).toBe(3);
+  expect(migrated.version).toBe(4);
   expect(migrated.unlockedLevel).toBe(15);
   expect(migrated.records).toHaveLength(1);
   expect(migrated.records[0]).toMatchObject({

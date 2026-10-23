@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="restored-flow-title restored-flow-desc">
+  <title id="restored-flow-title">Restored arcade flow</title>
+  <desc id="restored-flow-desc">Transparent decorative overlay of broad flowing curves and a smooth lining, an arcade restoration motif.</desc>
+  <g id="restored-flow-currents" fill="none" stroke-linecap="round">
+    <path d="M22 197C230 127 318 246 508 193S775 133 938 179" stroke="#5f4059" stroke-width="13" opacity=".16"/>
+    <path d="M22 194C230 124 318 243 508 190S775 130 938 176" stroke="#fff5e8" stroke-width="8" opacity=".35"/>
+    <path d="M42 291C233 238 338 322 524 279S788 239 918 265" stroke="#65465d" stroke-width="11" opacity=".14"/>
+    <path d="M42 288C233 235 338 319 524 276S788 236 918 262" stroke="#ffe4df" stroke-width="6" opacity=".34"/>
+    <path d="M100 358C308 310 436 384 631 337S823 307 888 320" stroke="#fff5e8" stroke-width="5" opacity=".25"/>
+  </g>
+  <g id="restored-flow-lining" fill="none" stroke-linecap="round">
+    <path d="M12 473C212 455 322 479 480 467S744 454 948 470" stroke="#65465d" stroke-width="12" opacity=".24"/>
+    <path d="M12 469C212 451 322 475 480 463S744 450 948 466" stroke="#ffe4df" stroke-width="8" opacity=".44"/>
+    <path d="M24 479C218 464 322 487 480 475S741 463 936 478" stroke="#fff8ec" stroke-width="3" opacity=".35"/>
+  </g>
+</svg>
