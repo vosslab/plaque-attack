@@ -5,8 +5,9 @@ cardiovascular surgeon along the floor, fire upward, dodge drifting hazards, and
 plaque into progressively smaller fragments. The campaign introduces aspirin and clopidogrel in
 its first three displays, then builds skill with their platelet hazards and sustained control.
 
-Status: gameplay contract, 2026-10-23. The core interaction revision below is approved but not yet
-implemented; track its work in [core_interactions_revision.md](active_plans/active/core_interactions_revision.md).
+Status: gameplay contract, 2026-10-23. The core interaction revision is implemented and candidate 3
+is accepted within its documented source, browser, and independent-review scope. Evidence and limits:
+[core_interactions_revision.md](active_plans/active/core_interactions_revision.md).
 All 24 stages are authored in four chapters.
 The approved early-weapon progression keeps the stable display order and stage 1 configuration,
 introduces aspirin at display 2 and clopidogrel at display 3, then builds mastery and combinations.
@@ -186,13 +187,26 @@ level's probability, cooldown, and success budget. A break or split never rolls 
 Decorative particles do not collide. The event and path contract is in
 [CORE_INTERACTIONS_DESIGN.md](CORE_INTERACTIONS_DESIGN.md).
 
-On flat floors, each kind uses the full reachable vertical range, with a 24-unit wall inset;
-on raised floors, its bounds follow the local ceiling/floor envelope. Plaques use the rounded
-analytic profile `q=(1-asin(k*cos(p))/asin(k))/2`, with `k=0.90`; platelets use the original
-cosine profile. Both turn smoothly. Tissue contact enters the corrected impulse path. Initial phase
-derives from clamped spawn height and stable target ID. Every size visits the
-lower firing and player-contact region, including aspirin's shorter range. This is a predictable
-arcade model, not a fluid solver.
+Before its first physical impulse, each kind's analytic orbit uses the full reachable vertical
+range on flat floors, with a 24-unit wall inset; on raised floors, its bounds follow the local
+ceiling/floor envelope. Plaques use the rounded analytic profile
+`q=(1-asin(k*cos(p))/asin(k))/2`, with `k=0.90`; platelets use the original cosine profile.
+After physical contact, every plaque and platelet enters persistent fluid motion with vertical
+acceleration `a_y = -60 sign(y - 270)`, toward the fixed arena midpoint. Velocity stays continuous
+at the midpoint. Integrate exact parabolic segments, splitting at midpoint crossings; reflection at
+the true wall, ceiling, and curved-floor boundaries preserves speed. Resolved free flight conserves
+kinetic energy plus potential `V(y) = 60 |y - 270|`, subject to floor normal-offset tolerance.
+An entire vertical orbit with amplitude `|y - 270| + vy^2 / (2g) <= g * (1/120)^2 / 8`,
+with `g = 60`, settles invisibly to `y = 270, vy = 0` while retaining `vx`. This threshold
+is the existing sweep curvature error (about 0.000521 px); settling only removes energy, at most
+0.03125 per unit mass per event, and bounds equilibrium work. Accepted collision chords span at
+most 1/120 s, with derivative-velocity error at most 0.25 px/s and curvature error at most
+0.000521 px. Pair contacts use those chords; exact instantaneous analytic pair energy is not
+promised. Displaced targets return naturally to
+the lower firing/play region in seconds as a consequence of this shared field. Representative
+encounters verify useful cleanup through ordinary controls; the field applies globally after an
+impulse, without a target-, weapon-, stage-, or reachability-specific rule.
+This is a predictable arcade model, not a fluid solver or literal medical claim.
 
 Authored plaque variants change encounter choices without changing controls. A sticky plaque
 pauses as a whole body at a sidewall for 0.65 seconds of active play, shows its remaining hold,
@@ -321,9 +335,10 @@ next shot only after both the active-shot restriction and cooldown permit it.
 
 ### Aspirin
 
-Aspirin fires a small white tablet token vertically at 700 units per second. Initial firing interval
-is 0.22 seconds, range is 340 logical units, and the maximum is three active shots. A hit on a small
-platelet disaggregates it into three tiny platelet hazards on the following tick; that hit awards no
+Aspirin fires a small white capsule vertically at 700 units per second. It allows one active shot,
+with a minimum firing interval of 0.22 seconds and a range of 340 logical units. Holding fire can
+launch another capsule after the current shot is consumed and the interval permits it. A hit on a
+small platelet disaggregates it into three tiny platelet hazards on the following tick; that hit awards no
 score or streak credit. A hit on a tiny platelet triggers a local-radius burst that clears existing
 active tiny platelets only. The burst excludes aggregates, plaques, and targets born during the
 same tick. Resolve burst removals in deterministic target-ID order and award score and streak once
@@ -823,7 +838,7 @@ optional human feedback may improve tuning but never blocks a milestone.
 | Tissue | Every shot kind stops at first solid, cuts up to three cells, and uses frozen occupancy; hazard entry erosion and reflected paths remain consistent |
 | Pockets | Sealed contents optional; breached contents warn, wait safely at capacity, release once and block completion while pending |
 | Merging | Equal-size eligible plaque only; seeded entry attempts, inherited cooldown, conserved leaf mass, finite work bound and new-size speed |
-| Tools | Stent limits one active shot; aspirin small hits create three tiny targets and tiny hits burst; clopidogrel removes platelet targets along its path; dual alternates on successful fires |
+| Tools | Stent limits one active shot; aspirin allows one live capsule, with held fire resuming after consumption and its interval; aspirin small hits fan and tiny hits burst; clopidogrel removes platelet targets along its path; dual alternates on successful fires |
 | Target identity | Drugs never score against plaque; platelet hazards never split into cholesterol |
 | Lives | One life loss per tick; shield absorbs ordinary contact, overload bypasses; zero lives offers same-stage retry |
 | Finite waves | Scheduled/pending hazards block clear; phases preserve tissue/current/shield; optional support does not block |

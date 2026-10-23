@@ -2,11 +2,21 @@
 
 ### Core interaction design
 
-- Document the implemented chronological contact and swept-path contract, including authored orbit
-  until first physical impulse, persistent free-fluid velocity, and speed-preserving reflections at
-  walls, ceiling, and curved floor. Record aspirin's safe three-piece fan, break-and-sweep help,
-  positive-score audio feedback, and weapon-aware workload estimates. Browser acceptance and fresh
-  reviews remain pending.
+- Implement chronological all-pair contacts and corrected swept paths, eligible rare plaque merges,
+  and aspirin's one-capsule three-child fan followed by tiny-only local bursts. Keep clopidogrel's
+  direct path and THROUGH feedback distinct. Rebalance encounters and use three-lobed platelet art.
+- Replace inverse-orbit-slope rephasing with authored orbit until physical impulse, then a shared
+  restoring field for every plaque and platelet. Document exact resolved parabolas, numerical
+  floor-offset tolerance, loss-only sub-resolution settling, and bounded collision approximations.
+- Final-source static checks, 123 Node checks, build, and fresh specification/quality reviews pass.
+  Six final-build actual-control routes clear with three lives, including all three stage-12 phases
+  in 17.950 s and stage 24 at phone size with simultaneous touch preflight and keyboard traversal.
+  These targeted routes use actual motion/flight data;
+  they do not establish a same-controller speedup over the earlier blind route. Independent integration
+  accepts final pair/merge/burst and maintenance failure/retry evidence. Browser validation composes
+  24 full-run passes with one corrected retry-case focused pass and fresh review, rather than a clean
+  25-case rerun. Record final acceptance and limits in the
+  [core_interactions_revision_ledger.md](active_plans/reports/core_interactions_revision_ledger.md).
 
 ### Gameplay exploration
 
@@ -21,8 +31,15 @@
 - Reject prototype 1 acceptance after ordinary target ID 21 reached speed 37,745 at 11.9 seconds and
   extended target ID 8 followed a crash path. The cause was inverse-orbit-slope rephasing near a
   turning point; physical impulses now enter persistent free-fluid motion. The prototype's aspirin
-  fan also cleared stages nearly instantly, prompting a safe three-piece spread correction. Runtime,
-  browser, and review gates remain open; these failures do not establish a final verdict.
+  fan also cleared stages nearly instantly, prompting a safe three-piece spread correction.
+  Candidate 2 then
+  exposed a stage-12 phase-2 platelet outside every aspirin firing column for at least 15 seconds;
+  independent integration rejected its constant-velocity motion. Those historical reach/time values
+  explain the shared-field correction and are not permanent tuning requirements. Candidate 3
+  resolves that access finding and is accepted after fresh final integration. Correct the retry
+  test setup to seek actual contact with earned score instead of expecting blind opening-stage
+  death within 240 seconds; preserve rollback, entry-seed, and record assertions without product
+  changes, state injection, or timeout inflation.
 
 - Complete the selected three-encounter finale: display 12 (stable ID 20) earns the left-current
   baseline at x=320 after phase one; the manual right switch at x=640 overrides it for four seconds,

@@ -142,23 +142,37 @@ test("retry rolls back the current attempt and only confirmed departure finalize
       );
     }),
   ).toBe(true);
-  await page.keyboard.down("Space");
-  for (let elapsed = 0; elapsed < 15000 && (await snapshot(page)).score === 0; elapsed += 250) {
-    await page.clock.runFor(250);
+  // Approach hazards deliberately: blind sweeps can survive circulating fragments indefinitely.
+  // Earn points after two contacts, keeping a scored failed attempt for the rollback assertions.
+  for (let elapsed = 0; elapsed < 30000; elapsed += 100) {
+    const encounter = await page.evaluate(() => {
+      const observation = window.__plaqueAcceptance?.();
+      if (observation?.simulation === undefined) throw new Error("Missing contact setup snapshot");
+      const state = observation.simulation;
+      const lowest = state.targets.reduce((selected, target) =>
+        target.position.y + target.radius > selected.position.y + selected.radius
+          ? target
+          : selected,
+      );
+      return {
+        screen: observation.screen,
+        lives: state.player.lives,
+        score: state.score,
+        direction: lowest.position.x < state.player.position.x ? "ArrowLeft" : "ArrowRight",
+      };
+    });
+    if (encounter.screen === "game_over") break;
+    await page.keyboard.up(encounter.direction === "ArrowLeft" ? "ArrowRight" : "ArrowLeft");
+    await page.keyboard.down(encounter.direction);
+    if (encounter.lives === 1 && encounter.score === 0) await page.keyboard.down("Space");
+    else await page.keyboard.up("Space");
+    await page.clock.runFor(100);
   }
+  await page.keyboard.up("ArrowLeft");
+  await page.keyboard.up("ArrowRight");
   await page.keyboard.up("Space");
-  expect((await snapshot(page)).score).toBeGreaterThan(0);
-  for (
-    let elapsed = 0;
-    elapsed < 240000 && (await snapshot(page)).screen !== "game_over";
-    elapsed += 3000
-  ) {
-    const direction = elapsed % 6000 === 0 ? "ArrowLeft" : "ArrowRight";
-    await page.keyboard.down(direction);
-    await page.clock.runFor(3000);
-    await page.keyboard.up(direction);
-  }
   const failed = await snapshot(page);
+  expect(failed.score).toBeGreaterThan(0);
   expect(failed.screen).toBe("game_over");
   expect(await savedRecords(page)).toEqual([]);
   await page.locator("#result_menu").click();

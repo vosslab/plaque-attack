@@ -61,9 +61,14 @@ export function createRemixRendering(
   };
 
   function consumeEvents(events: readonly SimulationEvent[]): void {
+    // Burst hits precede their summary event; classify the whole batch before counting pierces.
+    const burstVictimIds = new Set(
+      events.flatMap((event) => (event.type === "aspirin_burst" ? event.removedTargetIds : [])),
+    );
     for (const event of events) {
       switch (event.type) {
         case "target_hit": {
+          if (burstVictimIds.has(event.targetId)) break;
           consecutiveHits = event.projectileId === lastHitProjectile ? consecutiveHits + 1 : 1;
           lastHitProjectile = event.projectileId;
           if (consecutiveHits > 1)

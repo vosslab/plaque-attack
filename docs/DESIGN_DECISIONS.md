@@ -516,21 +516,21 @@ in `output/early_weapons/play/final.json`, `output/early_weapons/play/final.mjs`
 rounded profile (`k=0.90`) that shortens lower turns; platelets retain their original cosine
 profile. Size-based lateral speeds and a shared vertical angular rate scale per stage. A shared
 24-unit wall inset preserves suspended turns and access to the short-range firing/contact region.
-Select the six lipid appearances from stable target IDs in the renderer; visual form does not
-alter medical target identity or physics.
+Select the six lipid appearances from stable target IDs; appearance does not alter identity or physics.
 
 **Why.** The requested setting is a fluid, gravityless interior-body environment where lipid and
 bubble motion should feel smooth and buoyant. Ballistic bounces suggest gravity and floor contact.
 
 **Consequence.** Keep opening ease as the challenge priority. Use the kind-selected orbit for
-ordinary motion, creation and exposure reporting. A physical impulse enters persistent free-fluid
-motion with fixed-boundary reflections; see [CORE_INTERACTIONS_DESIGN.md](CORE_INTERACTIONS_DESIGN.md)
-for the collision transition. The accepted plaque-only profile reduces
-floor-band dwell and travel by 17.4% on flat floors and 14.4% on wavy floors in controlled no-fire
-observations; adaptive-route effects are mixed. Platelet motion is unchanged. This is not a human
-enjoyment or universal-improvement claim.
+ordinary motion until first physical impulse, then the shared bounded restoring field for every
+plaque and platelet. Exact parabolic free flight and speed-preserving reflections return targets
+to the lower firing/play region in seconds. Floor normal-offset tolerance and loss-only settling
+of an entire sub-resolution vertical orbit qualify conservation; the existing chord error supplies
+the settling threshold without another tuning knob. Collision chords approximate instantaneous
+velocity. [CORE_INTERACTIONS_DESIGN.md](CORE_INTERACTIONS_DESIGN.md) owns these bounds and the global
+motion contract. Representative encounters verify useful cleanup.
 
-**Owner.** `src/motion.ts`, [EXPANSION_PLAN.md](EXPANSION_PLAN.md),
+**Owner.** `src/motion.ts`, `src/impulse_motion.ts`, [EXPANSION_PLAN.md](EXPANSION_PLAN.md),
 [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md), and the renderer asset-loading contract.
 
 ### Fixed-tick tissue collision geometry

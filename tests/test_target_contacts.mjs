@@ -6,9 +6,10 @@ import {
   sweptTargetPlayerContact,
   targetPairContact,
 } from "../src/collision.ts";
-import { FIXED_STEP, getLevel } from "../src/constants.ts";
+import { ARENA_HEIGHT, FIXED_STEP, getLevel } from "../src/constants.ts";
 import { createSimulation } from "../src/game_state.ts";
 import { advanceTarget, synchronizeTargetMotion } from "../src/motion.ts";
+import { FLUID_RESTORING_ACCELERATION } from "../src/impulse_motion.ts";
 import { targetVerticalBounds } from "../src/arena_geometry.ts";
 import { resolveTargetContacts } from "../src/target_contacts.ts";
 import { freezeTissue, targetOverlapsTissue } from "../src/tissue.ts";
@@ -49,6 +50,13 @@ function move(state, dt = FIXED_STEP) {
   const events = [];
   resolveTargetContacts(state, events, dt);
   return events;
+}
+
+function fluidEnergy(target) {
+  return (
+    (target.velocity.x ** 2 + target.velocity.y ** 2) / 2 +
+    FLUID_RESTORING_ACCELERATION * Math.abs(target.position.y - ARENA_HEIGHT / 2)
+  );
 }
 
 test("tiny, mixed-size, platelet and mixed-kind bodies bounce without a merge budget", () => {
@@ -117,10 +125,10 @@ test("an impulse near an orbit turn retains finite energy through repeated wall 
     const [top] = targetVerticalBounds(state.level.arena.floor, 300, target.radius);
     target.position.y = top + 0.00001;
     synchronizeTargetMotion(target, state.level.arena.floor, { x: 73, y: 120 }, true);
-    const energy = 73 ** 2 + 120 ** 2;
+    const energy = fluidEnergy(target);
     for (let tick = 0; tick < 2400; tick++) {
       advanceTarget(target, FIXED_STEP, state.level.arena.floor);
-      assert.ok(Math.abs(target.velocity.x ** 2 + target.velocity.y ** 2 - energy) < 1e-6);
+      assert.ok(Math.abs(fluidEnergy(target) - energy) < 1e-3);
       assert.ok(target.motionSegments.length <= 4, "ordinary motion has bounded sweep work");
       const [ceiling, floor] = targetVerticalBounds(
         state.level.arena.floor,
@@ -129,6 +137,42 @@ test("an impulse near an orbit turn retains finite energy through repeated wall 
       );
       assert.ok(target.position.y >= ceiling - 1e-7 && target.position.y <= floor + 1e-7);
     }
+  }
+});
+
+test("near-horizontal redirected fluid bodies leave ceiling and floor bands within seconds", () => {
+  for (const kind of ["plaque", "platelet"]) {
+    for (const edge of ["ceiling", "floor"]) {
+      const state = scene();
+      const target = body(state, 300, 240, "tiny", kind, 73);
+      const [top, bottom] = targetVerticalBounds(state.level.arena.floor, 300, target.radius);
+      target.position.y = edge === "ceiling" ? top + 10.9 : bottom - 10.9;
+      target.velocity.y = edge === "ceiling" ? -4.29 : 4.29;
+      let enteredMiddle = false;
+      for (let elapsed = 0; elapsed < 3; elapsed += FIXED_STEP) {
+        advanceTarget(target, FIXED_STEP, state.level.arena.floor);
+        if (target.position.y >= ARENA_HEIGHT / 3 && target.position.y <= (2 * ARENA_HEIGHT) / 3) {
+          enteredMiddle = true;
+          break;
+        }
+      }
+      assert.ok(enteredMiddle, `${kind} must naturally leave the ${edge} band`);
+      assert.equal(target.velocity.x, 73, "vertical float does not override lateral steering");
+    }
+  }
+});
+
+test("sub-resolution midpoint oscillations settle with bounded work and no energy gain", () => {
+  for (const kind of ["plaque", "platelet"]) {
+    const state = scene();
+    const target = body(state, 300, ARENA_HEIGHT / 2 + 1e-9, "tiny", kind, 73, 1e-6);
+    const energy = fluidEnergy(target);
+    advanceTarget(target, FIXED_STEP, state.level.arena.floor);
+    assert.ok(target.motionSegments.length <= 4, "tiny oscillations cannot create unbounded legs");
+    assert.equal(target.velocity.x, 73);
+    assert.ok(fluidEnergy(target) <= energy);
+    assert.ok(Number.isFinite(target.position.x + target.position.y + target.velocity.y));
+    assert.ok(Math.abs(target.position.y - ARENA_HEIGHT / 2) < 1e-8);
   }
 });
 
@@ -144,13 +188,13 @@ test("physical drift reflects from a curved floor without gaining energy or cros
   };
   state.level.arena.floor = floor;
   const target = body(state, 300, 240, "tiny", "plaque", 260, 170);
-  const energy = 260 ** 2 + 170 ** 2;
+  const energy = fluidEnergy(target);
   let floorReflections = 0;
   for (let tick = 0; tick < 2400; tick++) {
     const incoming = { ...target.velocity };
     advanceTarget(target, FIXED_STEP, floor);
     if (incoming.x !== target.velocity.x && incoming.y !== target.velocity.y) floorReflections++;
-    assert.ok(Math.abs(target.velocity.x ** 2 + target.velocity.y ** 2 - energy) < 1e-6);
+    assert.ok(Math.abs(fluidEnergy(target) - energy) < 1e-3);
     const [ceiling, bottom] = targetVerticalBounds(floor, target.position.x, target.radius);
     assert.ok(target.position.y >= ceiling - 1e-7 && target.position.y <= bottom + 1e-7);
     assert.ok(target.motionSegments.length <= 4);
@@ -171,9 +215,10 @@ test("physical drift catches a floor rise even when both sweep endpoints are cle
   };
   state.level.arena.floor = floor;
   const target = body(state, 299, 300, "tiny", "plaque", 600, 0);
+  const energy = fluidEnergy(target);
   advanceTarget(target, 1 / 120, floor);
   assert.ok(target.velocity.x < 0, "the interior rise reflects the body before its far endpoint");
-  assert.ok(Math.abs(target.velocity.x ** 2 + target.velocity.y ** 2 - 600 ** 2) < 1e-6);
+  assert.ok(Math.abs(fluidEnergy(target) - energy) < 1e-3);
 });
 
 test("a sticky impulse holds the whole body and restores both velocity components", () => {
@@ -185,8 +230,13 @@ test("a sticky impulse holds the whole body and restores both velocity component
   const heldAt = { ...target.position };
   advanceTarget(target, 0.1, state.level.arena.floor);
   assert.deepEqual(target.position, heldAt);
+  const resumedEnergy =
+    (target.behavior.resumeVelocityX ** 2 + target.behavior.resumeVelocityY ** 2) / 2 +
+    FLUID_RESTORING_ACCELERATION * Math.abs(heldAt.y - ARENA_HEIGHT / 2);
   advanceTarget(target, 0.7, state.level.arena.floor);
-  assert.deepEqual(target.velocity, { x: -200, y: 80 });
+  assert.equal(target.velocity.x, -200);
+  assert.ok(target.velocity.y > 0);
+  assert.ok(Math.abs(fluidEnergy(target) - resumedEnergy) < 1e-6);
   assert.ok(target.position.x < heldAt.x && target.position.y > heldAt.y);
 });
 
@@ -211,14 +261,16 @@ test("overlapping newborns separate without merging and later natural contact be
 
 test("a shot at time 0.1 removes its parent before a proposed time 0.8 merge", () => {
   const state = scene({ probability: 1, budget: 1, cooldown: 0 });
-  const a = body(state, 300, 200);
-  const b = body(state, 348, 200, "tiny", "plaque", -200);
+  // At the restoring midpoint these zero-vertical-speed fixtures stay linear.
+  const y = ARENA_HEIGHT / 2;
+  const a = body(state, 300, y);
+  const b = body(state, 348, y, "tiny", "plaque", -200);
   const shot = {
     id: 1,
     kind: "stent",
-    position: { x: 300, y: 225 },
-    previousPosition: { x: 300, y: 225 },
-    origin: { x: 300, y: 225 },
+    position: { x: 300, y: y + 25 },
+    previousPosition: { x: 300, y: y + 25 },
+    origin: { x: 300, y: y + 25 },
     age: 0,
     ceilingTime: 0,
   };
@@ -243,15 +295,16 @@ test("a shot at time 0.1 removes its parent before a proposed time 0.8 merge", (
 
 test("a mathematically simultaneous shot wins a pair merge despite rounded contact roots", () => {
   const state = scene({ probability: 1, budget: 1, cooldown: 0 });
-  const a = body(state, 300, 200);
-  const b = body(state, 334, 200, "tiny", "plaque", -200);
+  const y = ARENA_HEIGHT / 2;
+  const a = body(state, 300, y);
+  const b = body(state, 334, y, "tiny", "plaque", -200);
   state.projectiles = [
     {
       id: 1,
       kind: "stent",
-      position: { x: 300, y: 225 },
-      previousPosition: { x: 300, y: 225 },
-      origin: { x: 300, y: 225 },
+      position: { x: 300, y: y + 25 },
+      previousPosition: { x: 300, y: y + 25 },
+      origin: { x: 300, y: y + 25 },
       age: 0,
       ceilingTime: 0,
     },
