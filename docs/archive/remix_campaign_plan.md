@@ -6,7 +6,7 @@ Status: completed and archived, 2026-10-22. M0-M4 are accepted on the combined e
 This is the implementation contract for the approved campaign remix. The manager resolves routine
 choices and supported defects without human approval or playtesting dependencies. Optional human
 feedback remains welcome. This plan preserves the accepted cast, controls, opening balance, and
-existing fluid-motion strengths documented in [organic_expansion.md](../active_plans/active/organic_expansion.md).
+existing fluid-motion strengths documented in [organic_expansion.md](organic_expansion.md).
 
 ## Shared experience brief
 

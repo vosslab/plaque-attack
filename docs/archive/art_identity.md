@@ -5,8 +5,8 @@ with the intended **Plaque Attack** title and verified integrated presentation.
 
 **Status:** Complete, 2026-10-22. Corrected artwork, integrated verification, fresh specification,
 independent quality and final integration reviews are accepted. No remote deployment is claimed.
-[ART_DIRECTION.md](../../ART_DIRECTION.md) owns the lean art brief;
-[GAME_SPEC.md](../../GAME_SPEC.md) owns unchanged gameplay and persistence contracts.
+[ART_DIRECTION.md](../ART_DIRECTION.md) owns the lean art brief;
+[GAME_SPEC.md](../GAME_SPEC.md) owns unchanged gameplay and persistence contracts.
 
 ## Tasks and acceptance
 

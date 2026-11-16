@@ -76,8 +76,11 @@ origin belongs there too. Rules: [REPO_STYLE.md](REPO_STYLE.md).
   plus pockets are optional, shooters can vary, and larger heads can use an NBA Jam style.
 - Treat preproduction decisions as revisable. Explore creative gameplay without first requiring
   evidence that players struggle; complexity earns its place through enjoyment. Prioritize fun,
-  distinctive and memorable play, medical actions, and visual appeal. Keep warnings, HUD, and
-  tutorial decisions conservative without applying that caution to creative gameplay experiments.
+  distinctive and memorable play, medical actions, and visual appeal.
+- Keep warnings, HUD, and tutorial decisions conservative without applying that caution to
+  creative gameplay experiments.
 - "I have all of these small balls going, but no collisions, and when the balls meet they just pass
   over one another, physics boring."
 - "aspirin levels lame no smaller pieces just one shot over not much gameplay."
+- Make the game fully playable on phones while preserving laptop play. Finish the implementation,
+  browser verification, and documentation independently, with no human approval or playtest gates.

@@ -18,6 +18,10 @@ for (const viewport of [
   { width: 1280, height: 800 },
   { width: 844, height: 390 },
   { width: 320, height: 568 },
+  { width: 568, height: 320 },
+  { width: 390, height: 844 },
+  { width: 480, height: 800 },
+  { width: 768, height: 1024 },
 ]) {
   test(`dialog actions stay visible and gameplay stays 16:9 at ${viewport.width}x${viewport.height}`, async ({
     page,
@@ -31,6 +35,18 @@ for (const viewport of [
     const dialog = page.locator("#game_dialog");
     const checkPinned = async (label: string): Promise<void> => {
       const action = dialog.getByRole("button", { name: label, exact: true });
+      const targets = await dialog.locator("button, label").evaluateAll((nodes) =>
+        nodes
+          .filter((node) => node.getClientRects().length > 0)
+          .map((node) => {
+            const box = node.getBoundingClientRect();
+            return { label: node.textContent, width: box.width, height: box.height };
+          }),
+      );
+      for (const target of targets) {
+        expect(target.width, target.label ?? "dialog target").toBeGreaterThanOrEqual(44);
+        expect(target.height, target.label ?? "dialog target").toBeGreaterThanOrEqual(44);
+      }
       await expectInViewport(page, dialog.getByRole("heading", { level: 2 }).first());
       await expectInViewport(page, action);
       const before = await action.boundingBox();
@@ -76,6 +92,13 @@ for (const viewport of [
     if (arena === null) throw new Error("Missing arena");
     expect(arena.width / arena.height).toBeCloseTo(16 / 9, 2);
     await expectInViewport(page, page.locator("#arena"));
+    for (const name of ["Move left", "Move right", "Fire", "Pause game"]) {
+      const control = page.getByRole("button", { name, exact: true });
+      await expectInViewport(page, control);
+      const box = await control.boundingBox();
+      expect(box?.width).toBeGreaterThanOrEqual(44);
+      expect(box?.height).toBeGreaterThanOrEqual(44);
+    }
     await page.keyboard.press("p");
     await checkPinned("Resume game");
     await dialog.getByRole("button", { name: "Resume game", exact: true }).click();

@@ -5,8 +5,8 @@ implemented game, tests and delivered artifacts. It closes real omissions within
 scope; optional player feedback and remote publication do not gate local completion.
 
 The request inventory comes from [HUMAN_GUIDANCE.md](HUMAN_GUIDANCE.md) and the completed
-[RECOVERY_ROSTER_PLAN.md](RECOVERY_ROSTER_PLAN.md), [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md)
-and [EXPANSION_PLAN.md](EXPANSION_PLAN.md). Earlier template/Graphify guidance remains repository
+[RECOVERY_ROSTER_PLAN.md](archive/RECOVERY_ROSTER_PLAN.md), [STAGE_MECHANICS_PLAN.md](archive/STAGE_MECHANICS_PLAN.md)
+and [EXPANSION_PLAN.md](archive/EXPANSION_PLAN.md). Earlier template/Graphify guidance remains repository
 history, rather than a new game feature request.
 
 ## Review plan
@@ -33,23 +33,23 @@ reports below remain dated evidence until this review records its fresh verifica
 | Erodible tissue blocks every shot and trades shelter for a firing lane | [tissue.ts](../src/tissue.ts), [simulation.ts](../src/simulation.ts) | [test_arena.mjs](../tests/test_arena.mjs), current [tissue_carving.webp](screenshots/tissue_carving.webp) | Implemented; screenshot uses actual practice controls. |
 | Wavy/sloped floor follows horizontal movement without jumping | [arena_geometry.ts](../src/arena_geometry.ts), [characters.ts](../src/characters.ts) | [test_arena.mjs](../tests/test_arena.mjs), [MECHANICS_ACCEPTANCE.md](MECHANICS_ACCEPTANCE.md) | Implemented; left/right/fire remains the control set. |
 | Same-size lipid merging with level-dependent probability | [coalescence.ts](../src/coalescence.ts), [constants.ts](../src/constants.ts) | [test_arena.mjs](../tests/test_arena.mjs), [MECHANICS_ACCEPTANCE.md](MECHANICS_ACCEPTANCE.md) | Enabled in all six lipid stages after the subsequent user correction; platelet chapters retain their own target rules. |
-| Six diverse cosmetic surgeons with identical abilities | [surgeons.ts](../src/surgeons.ts), [surgeon.ts](../src/types/surgeon.ts), [dialogs.ts](../src/dialogs.ts) | [test_surgeons.mjs](../tests/test_surgeons.mjs), [recovery_roster.spec.ts](../tests/playwright/recovery_roster.spec.ts), [surgeon_roster.webp](screenshots/surgeon_roster.webp) | Implemented; appearance selection persists. Representation for every player is not an automated claim. |
+| Six diverse cosmetic surgeons with identical abilities | [surgeons.ts](../src/surgeons.ts), [surgeon.ts](../src/types/surgeon.ts), [dialogs.ts](../src/dialogs.ts) | Former roster test `tests/test_surgeons.mjs` (retired after the 2026-11-15 test prune), [recovery_roster.spec.ts](../tests/playwright/recovery_roster.spec.ts), [surgeon_roster.webp](screenshots/surgeon_roster.webp) | Implemented; appearance selection persists. Representation for every player is not an automated claim. |
 | Victories visibly restore a distinct patient cardiovascular map | [recovery.ts](../src/recovery.ts), [save_load.ts](../src/save_load.ts), [cardiac_recovery.svg](../src/assets/cardiac_recovery.svg) | [test_recovery.mjs](../tests/test_recovery.mjs), [test_save_load.mjs](../tests/test_save_load.mjs), [patient_recovery.webp](screenshots/patient_recovery.webp) | Implemented with 24 stable territories and five patient tiers; screenshot labels demonstration progress. |
 | 16:10 play view and compact viewport-fitting popups | [style.css](../src/style.css), [dialogs.ts](../src/dialogs.ts), [renderer.ts](../src/renderer.ts) | Refreshed roster/recovery/tissue captures and four-viewport production receipt | 16:10 canvas view implemented; original 960x540 simulation is uniformly scaled inside organic margins. Chooser geometry and keyboard checks pass. |
 | Refresh README for gamers/biology enthusiasts and link the live game | [README.md](../README.md) | Visible opening hook, browser-first start and published-game link | Implemented; current local source is not claimed deployed. |
 | Prepare GitHub setup and account for unignored root test-results | [GITHUB_SETUP.md](GITHUB_SETUP.md), [playwright.config.ts](../playwright.config.ts), [.gitignore](../.gitignore) | Playwright writes output/playwright under the ignored root output directory | Configuration and corrected documentation agree. |
-| Finish milestones autonomously through manager/subagents; remove human approval/playtest gates | [RECOVERY_ROSTER_PLAN.md](RECOVERY_ROSTER_PLAN.md), [organic_expansion.md](active_plans/active/organic_expansion.md) | Completed R1-R9 and S1-S7 ledgers; fresh audit, repairs and final independent review | Complete; no hidden human dependency found. |
+| Finish milestones autonomously through manager/subagents; remove human approval/playtest gates | [RECOVERY_ROSTER_PLAN.md](archive/RECOVERY_ROSTER_PLAN.md), [organic_expansion.md](archive/organic_expansion.md) | Completed R1-R9 and S1-S7 ledgers; fresh audit, repairs and final independent review | Complete; no hidden human dependency found. |
 
 ## Corrections and disposition
 
 - Corrected [GITHUB_SETUP.md](GITHUB_SETUP.md) distinguishes accepted local delivery from the
   published-game link and its unverified deployed revision; workflow instructions match the repo.
-- Corrected [EXPANSION_PLAN.md](EXPANSION_PLAN.md) and [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md)
+- Corrected [EXPANSION_PLAN.md](archive/EXPANSION_PLAN.md) and [STAGE_MECHANICS_PLAN.md](archive/STAGE_MECHANICS_PLAN.md)
   match final stage-4/5 composition, work and speed. [ART_DIRECTION.md](ART_DIRECTION.md) routes
   current and historical evidence separately.
 - [PLAYWRIGHT_USAGE.md](PLAYWRIGHT_USAGE.md) now documents configured output/playwright under
   ignored root output. No active producer of root test-results was found; no extra ignore is needed.
-- Historical [game_implementation.md](active_plans/active/game_implementation.md) pending probe and
+- Historical [game_implementation.md](archive/game_implementation.md) pending probe and
   integration sentences now match its already accepted evidence.
 - The earlier 11-plus-1 browser disposition is superseded for this build by a fresh post-correction
   12/12 full run. Historical [RECOVERY_ROSTER_ACCEPTANCE.md](RECOVERY_ROSTER_ACCEPTANCE.md) stays intact.

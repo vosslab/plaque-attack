@@ -3,7 +3,7 @@
 This document gives the event-level contract for the accepted core interaction revision. The
 current gameplay specification remains [GAME_SPEC.md](GAME_SPEC.md); the decision rationale is in
 [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md). Implementation and evidence status is tracked by the
-[active plan](active_plans/active/core_interactions_revision.md) and its
+[completed plan](archive/core_interactions_revision.md) and its
 [ledger](active_plans/reports/core_interactions_revision_ledger.md).
 
 ## Target contact

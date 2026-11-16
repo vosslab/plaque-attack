@@ -4,9 +4,9 @@ Status: source-derived measurement contract for the 24-stage remix. `src/difficu
 exposed `LEVELS`, ordered `LEVEL_IDS`, target presets and weapon constants. This document is not a
 second hardcoded balance table. Content is authored across `src/constants.ts` and
 `src/remix_levels.ts`. The current opening is defined in
-[active_plans/active/early_weapon_discovery.md](active_plans/active/early_weapon_discovery.md);
+[archive/early_weapon_discovery.md](archive/early_weapon_discovery.md);
 the broader remix contract remains in [archive/remix_campaign_plan.md](archive/remix_campaign_plan.md).
-[EXPANSION_PLAN.md](EXPANSION_PLAN.md) retains the historical expansion matrix.
+[EXPANSION_PLAN.md](archive/EXPANSION_PLAN.md) retains the historical expansion matrix.
 
 ## What the rubric measures
 

@@ -2,7 +2,7 @@
 
 Status: accepted, 2026-10-22. R1-R9 are complete. This report covers the six cosmetic surgeons,
 persistent recovery map, gentler stages 4/5, 16:10 presentation and compact dialogs defined in
-[RECOVERY_ROSTER_PLAN.md](RECOVERY_ROSTER_PLAN.md). Fresh specification, quality and final
+[RECOVERY_ROSTER_PLAN.md](archive/RECOVERY_ROSTER_PLAN.md). Fresh specification, quality and final
 integration reviews accept the delivery with no blockers. A local build does not publish changes.
 
 Review update, 2026-10-22: [REQUEST_REVIEW.md](REQUEST_REVIEW.md) records the subsequent

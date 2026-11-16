@@ -7,7 +7,7 @@ its first three displays, then builds skill with their platelet hazards and sust
 
 Status: gameplay contract, 2026-10-23. The core interaction revision is implemented and candidate 3
 is accepted within its documented source, browser, and independent-review scope. Evidence and limits:
-[core_interactions_revision.md](active_plans/active/core_interactions_revision.md).
+[core_interactions_revision.md](archive/core_interactions_revision.md).
 All 24 stages are authored in four chapters.
 The approved early-weapon progression keeps the stable display order and stage 1 configuration,
 introduces aspirin at display 2 and clopidogrel at display 3, then builds mastery and combinations.
@@ -15,17 +15,17 @@ The remix also adds shootable flow switches, optional contact shields, finite ph
 stage retries and distinct earned restoration.
 The settled clearance-seam contract is player-owned: only a projectile hit activates its pulse;
 target contact reflects and preserves the shootable seam. Integrated verification is recorded in
-[GAMEWIDE_PLAYFUL_PAYOFF.md](active_plans/active/GAMEWIDE_PLAYFUL_PAYOFF.md) and remains in
+[GAMEWIDE_PLAYFUL_PAYOFF.md](archive/GAMEWIDE_PLAYFUL_PAYOFF.md) and remains in
 progress.
 [archive/remix_campaign_plan.md](archive/remix_campaign_plan.md) owns the existing remix contract;
-[active_plans/active/early_weapon_discovery.md](active_plans/active/early_weapon_discovery.md)
+[archive/early_weapon_discovery.md](archive/early_weapon_discovery.md)
 owns the approved opening and mastery update. `src/constants.ts` and `src/remix_levels.ts` own
 authored level content. Numerical balance remains tunable.
 [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md) owns descriptive measurements.
 
 Current source/build checks, actual-input completion and rendered acceptance are tracked in
 [active_plans/reports/remix_execution_ledger.md](active_plans/reports/remix_execution_ledger.md).
-[EXPANSION_PLAN.md](EXPANSION_PLAN.md), [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md),
+[EXPANSION_PLAN.md](archive/EXPANSION_PLAN.md), [STAGE_MECHANICS_PLAN.md](archive/STAGE_MECHANICS_PLAN.md),
 and [RECOVERY_ROSTER_ACCEPTANCE.md](RECOVERY_ROSTER_ACCEPTANCE.md) retain earlier contracts and
 evidence; their old content placements and acceptance runs do not establish remix acceptance.
 
@@ -153,7 +153,7 @@ keeps its immediate result path. These durations are tunable presentation defaul
 and acceptance evidence belong to [CLEAR_FLOW.md](CLEAR_FLOW.md).
 
 Use a 960 by 540 logical arena, separate from the HTML HUD and touch bar. Present it inside a
-16:10 canvas with uniform scale and centered organic wall margins; circular targets retain their
+16:9 canvas with uniform scale and centered organic wall margins; circular targets retain their
 shape and the simulation bounds stay fixed. The surgeon's feet sit at
 the sampled floor, following slopes automatically without jumping. One geometry owner samples
 the highest support across the 44-unit footprint, and the muzzle and hitbox follow the feet.
@@ -164,7 +164,11 @@ Initial movement speed is 300 units per second.
 Fit the entire arena without cropping or changing world geometry. Resizing changes presentation,
 not velocities, positions, or difficulty. At narrow portrait sizes the arena scales down, with a
 nonblocking landscape suggestion. Menus remain usable in portrait; landscape is the preferred
-touch-play orientation. Keep touch controls outside the arena with at least 56 CSS-pixel targets.
+touch-play orientation. Keep touch controls outside the arena with at least 44 CSS-pixel targets
+in short landscape and 64 CSS-pixel targets in narrow portrait. Independent pointers and keyboard
+holds compose; releasing one input never releases another. Hold a direction and Fire together
+on a phone, and turn sideways for a larger arena. Short landscape uses a compact HUD
+sidebar down to 568 CSS pixels wide, with separate life and timer rows below 621 pixels.
 
 Leaving the tab or losing window focus pauses the simulation and clears held inputs. Resuming
 requires an explicit action. Ordinary stage entry uses a three-second ready countdown; same-stage retry uses one second. Ordinary

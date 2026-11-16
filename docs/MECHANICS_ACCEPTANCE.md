@@ -129,7 +129,7 @@ S1-S5 specification and quality reviews pass. Fresh final integration review acc
 runtime, final hashes/replays, refreshed layouts, production identity, browser journeys,
 rendered evidence and the explicit accessibility limitation. S6 acceptance and S7 records are
 complete. Current status is tracked in
-[organic_expansion.md](active_plans/active/organic_expansion.md).
+[organic_expansion.md](archive/organic_expansion.md).
 
 Automated completion establishes mechanical reachability. Agent inspection and sampled frame
 timings establish the observed browser behavior on the tested setup. They do not establish

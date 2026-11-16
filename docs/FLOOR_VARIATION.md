@@ -51,5 +51,5 @@ surgeon's feet supported at the edge of the slope. Background and floor remain v
   `output/floor_variation/`.
 
 Canonical definitions remain in [arena_layouts.ts](../src/arena_layouts.ts); all consumers use
-[arena_geometry.ts](../src/arena_geometry.ts). See [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md)
+[arena_geometry.ts](../src/arena_geometry.ts). See [STAGE_MECHANICS_PLAN.md](archive/STAGE_MECHANICS_PLAN.md)
 for stage placement and [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md) for measurement limits.

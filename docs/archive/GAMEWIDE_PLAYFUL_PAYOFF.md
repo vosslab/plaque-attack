@@ -11,7 +11,7 @@ reachability and rendered state; it is not a human fun, learning, accessibility,
 Make one existing finale deliver a deliberate, player-owned current-to-seam payoff, and make
 existing device actions readable at phone scale. Preserve the left/right/fire loop, surgeon and
 campaign identity, authored 24-stage order, existing mechanics, and recovery rules. Keep source
-content and controls authoritative as specified in [GAME_SPEC.md](../../GAME_SPEC.md).
+content and controls authoritative as specified in [GAME_SPEC.md](../GAME_SPEC.md).
 
 The decisive defect is at the ownership boundary: target-only collision can spend a clearance
 seam before a player fires, and target contact can remove the remaining trigger cells. This

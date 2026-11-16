@@ -60,7 +60,7 @@ The settled direction draws on the user's art request and forwarded commentary f
 project. That commentary is an inspiration source, not a new set of verbatim human rules.
 [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#art-identity-and-recovery) records that provenance.
 
-[active_plans/active/art_identity.md](active_plans/active/art_identity.md) records the previous
+[archive/art_identity.md](archive/art_identity.md) records the previous
 completed identity pass. Its evidence remains historical; the scientist-inspired revision has
 separate verification recorded below.
 
@@ -276,7 +276,7 @@ accepts the corrected native-size recognition, crop and stride evidence. These r
 supersede the initial `roster/` delivery for the current cast.
 `runtime/REPORT.md` records source-renderer checks, motion fixtures and geometry boundaries.
 The final combined build, independent visual quality and final integration are accepted in
-[active_plans/active/art_identity.md](active_plans/active/art_identity.md). The complete review
+[archive/art_identity.md](archive/art_identity.md). The complete review
 chain and evidence limits are recorded in `output/art_identity/INTEGRATION_REVIEW.md`.
 
 Recovery retains one person through seated rest, upright reaching, first steps, walking with

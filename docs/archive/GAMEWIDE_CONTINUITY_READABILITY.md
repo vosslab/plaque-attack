@@ -5,7 +5,7 @@ completed [GAMEWIDE_PLAYFUL_PAYOFF.md](GAMEWIDE_PLAYFUL_PAYOFF.md) and the six c
 reviews. All six implementation tracks have landed. Fresh specification, focused quality, and integration reviews accept all six contracts on the final
 build. The ledger records actual practice-result viewport evidence, the full opportunity reassessment,
 and the stop rationale.
-[GAMEWIDE_CONTINUATION_LEDGER.md](../reports/GAMEWIDE_CONTINUATION_LEDGER.md). That ledger is the evidence
+[GAMEWIDE_CONTINUATION_LEDGER.md](../active_plans/reports/GAMEWIDE_CONTINUATION_LEDGER.md). That ledger is the evidence
 record; this plan is the source of truth for scope, contracts, owners, and gates.
 
 ## Goal and decision

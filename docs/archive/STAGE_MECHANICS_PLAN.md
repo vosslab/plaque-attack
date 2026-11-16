@@ -1,7 +1,7 @@
 # Stage mechanics implementation plan
 
 **Status:** Implemented and locally accepted, 2026-10-22. S1-S7 are complete; fresh final
-integration review accepts the evidence in [MECHANICS_ACCEPTANCE.md](MECHANICS_ACCEPTANCE.md).
+integration review accepts the evidence in [MECHANICS_ACCEPTANCE.md](../MECHANICS_ACCEPTANCE.md).
 This retained design and execution contract extends
 [EXPANSION_PLAN.md](EXPANSION_PLAN.md) and preserves its stable-ID campaign order, tools, saves,
 first-three-stage ease, and fluid motion. Human feedback is optional and never a dependency.
@@ -31,11 +31,11 @@ The earlier expansion's accepted baseline evidence is 22 source tests, six brows
 a normal-input state-aware completion/replay of all 24 stages, responsive captures of all starts,
 15 zero-violation accessibility samples, and approximately 60 fps observations. Those results
 predate this work. Fresh integrated evidence is recorded in
-[MECHANICS_ACCEPTANCE.md](MECHANICS_ACCEPTANCE.md), including 39 Node tests, final six browser
+[MECHANICS_ACCEPTANCE.md](../MECHANICS_ACCEPTANCE.md), including 39 Node tests, final six browser
 journeys (49.0 seconds), 24-stage campaign/replay and separate optional-pocket practice/replay.
 
 `graphify-out/graph.json` maps the current game's simulation, weapon, wave, rendering, and type
-owners. [GRAPHIFY.md](GRAPHIFY.md) still describes starter-template communities and is not a
+owners. [GRAPHIFY.md](../GRAPHIFY.md) still describes starter-template communities and is not a
 reliable game architecture summary. Current source wins when the graph snapshot differs.
 
 The arena is 960x540 logical pixels, origin at upper left, increasing y downward. Currently
@@ -253,7 +253,7 @@ lipid merge chance gradually across stages 1-6. Stage 6 retains its original fou
 These introductions add one new mechanic at a time.
 The accepted gentler opening gives stage 4 one large, one medium and one small plaque family
 (25 mandatory hits) at speed 0.75. Stage 5 has two large and one medium family (37 mandatory
-hits) at speed 0.85. [DIFFICULTY_REVIEW.md](DIFFICULTY_REVIEW.md) records the correction and
+hits) at speed 0.85. [DIFFICULTY_REVIEW.md](../DIFFICULTY_REVIEW.md) records the correction and
 ordinary-input evidence. Tune cover opening/quantity before increasing shot rate if later play
 reveals a problem. Chapter/tool introductions 7/13/15/18 remain breathing spaces.
 

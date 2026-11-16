@@ -2,7 +2,7 @@
 
 **Status:** The 24-stage organic expansion and integrated tissue, floor, pocket and merge
 mechanics are locally accepted, 2026-10-22. All expansion milestones and S1-S7 are complete;
-fresh evidence and limits are recorded in [MECHANICS_ACCEPTANCE.md](MECHANICS_ACCEPTANCE.md).
+fresh evidence and limits are recorded in [MECHANICS_ACCEPTANCE.md](../MECHANICS_ACCEPTANCE.md).
 [STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md) owns their contracts and sole placement matrix.
 
 ## Context
@@ -24,14 +24,14 @@ and the acceptance evidence below. Local acceptance is complete; external deploy
 ## Design philosophy
 
 Apply **Dream big**, **Fix the design, not the symptom**, and **Use the scientific method** from
-[REPO_STYLE.md](REPO_STYLE.md). Author a stronger campaign on the existing arcade rules. Use
+[REPO_STYLE.md](../REPO_STYLE.md). Author a stronger campaign on the existing arcade rules. Use
 short rounds, target-size mixtures, crossing currents, and predictable entry motifs to create variety.
 Tune from config measurements and browser play; a formula alone cannot establish fun.
 
 ## Scope
 
 - Expand the campaign, chapter presentation, practice menu, and result progression together.
-- Add the computable rubric defined in [DIFFICULTY_RUBRIC.md](DIFFICULTY_RUBRIC.md).
+- Add the computable rubric defined in [DIFFICULTY_RUBRIC.md](../DIFFICULTY_RUBRIC.md).
 - Add organic SVG artwork and visual-only plaque variants selected by stable target ID.
 - Sequence maintenance entries so authored movement motifs actually occur.
 - Migrate old saves and label old records as the original 15-stage campaign.
@@ -45,10 +45,10 @@ Tune from config measurements and browser play; a formula alone cannot establish
 
 ## Historical baseline analysis
 
-The original expansion analysis inspected [../src/constants.ts](../src/constants.ts),
-[../src/types/level.ts](../src/types/level.ts), [../src/waves.ts](../src/waves.ts),
-[../src/save_load.ts](../src/save_load.ts), and [../src/main.ts](../src/main.ts).
-[GRAPHIFY.md](GRAPHIFY.md) describes a different repository template; it is unsuitable as a game
+The original expansion analysis inspected [../../src/constants.ts](../../src/constants.ts),
+[../../src/types/level.ts](../../src/types/level.ts), [../../src/waves.ts](../../src/waves.ts),
+[../../src/save_load.ts](../../src/save_load.ts), and [../../src/main.ts](../../src/main.ts).
+[GRAPHIFY.md](../GRAPHIFY.md) describes a different repository template; it is unsuitable as a game
 dependency map. The actual game uses a small fixed-step simulation and separate Canvas renderer.
 
 Before the 24-stage expansion, the 15-stage campaign had these contracts and hazards:
@@ -179,7 +179,7 @@ cover, floor and optional-pocket decisions; browser tuning must inspect their co
 The accepted gentler opening requires 7, 10, 15, 25, 37 and 60 mandatory plaque hits across
 stages 1-6, at speeds 0.55, 0.60, 0.65, 0.75, 0.85 and 1.00. Stage 4 uses one large, one medium
 and one small family; stage 5 uses two large and one medium. See
-[DIFFICULTY_REVIEW.md](DIFFICULTY_REVIEW.md) for the correction and evidence.
+[DIFFICULTY_REVIEW.md](../DIFFICULTY_REVIEW.md) for the correction and evidence.
 Chapter introductions explicitly reset difficulty to teach the tool. Stage 15 introduces dual
 rhythm; stage 18 introduces maintenance. The rubric labels these transitions rather than claiming
 a single globally increasing difficulty score.
@@ -195,7 +195,7 @@ a single globally increasing difficulty score.
 
 The following milestones describe the accepted earlier expansion, not completion of the new
 mechanics. Current S1-S7 status lives in
-[organic_expansion.md](active_plans/active/organic_expansion.md).
+[organic_expansion.md](organic_expansion.md).
 
 M1 depends on this reviewed matrix. Deliverables are compiling contracts plus an explicit asset
 manifest. Exit when every consumer owner can restate ordinal-versus-ID and appearance semantics.
@@ -275,8 +275,8 @@ or longer timers; do not paper over a migration failure by resetting player prog
 
 ## Documentation close-out requirements
 
-Update [GAME_SPEC.md](GAME_SPEC.md), [CHANGELOG.md](CHANGELOG.md),
-[DESIGN_DECISIONS.md](DESIGN_DECISIONS.md), and [HUMAN_GUIDANCE.md](HUMAN_GUIDANCE.md) through their
+Update [GAME_SPEC.md](../GAME_SPEC.md), [CHANGELOG.md](../CHANGELOG.md),
+[DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md), and [HUMAN_GUIDANCE.md](../HUMAN_GUIDANCE.md) through their
 assigned integration owner. Distinguish user guidance from agent design decisions. Update this
 plan's status and the rubric with actual implementation/report locations. Verify medical source
 links before changing facts; retain source attribution in the optional medicine panel. The existing

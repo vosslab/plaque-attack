@@ -288,7 +288,7 @@ h2 { margin: 0 0 24px; max-width: 750px; font-size: clamp(2rem, 4.5vw, 3.7rem); 
   .game_shell:has(.gameplay:not([hidden])) > .game_header,
   .game_shell:has(.gameplay:not([hidden])) > .game_footer { display: none; }
 }
-@media (min-width: 621px) and (max-height: 500px) {
+@media (orientation: landscape) and (max-height: 500px) {
   .game_header { padding-block: 12px; }
   /* Keep the stage goal, keyboard hint, and primary action together above optional facts. */
   .briefing_panel, .result_panel { padding: 16px; }
@@ -313,7 +313,7 @@ h2 { margin: 0 0 24px; max-width: 750px; font-size: clamp(2rem, 4.5vw, 3.7rem); 
   .game_shell:has(.gameplay:not([hidden])) { width: calc(100% - 16px); padding-block: 6px; }
   .game_shell:has(.gameplay:not([hidden])) > .game_header,
   .game_shell:has(.gameplay:not([hidden])) > .game_footer { display: none; }
-  .gameplay { width: 100%; grid-template-columns: 260px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 44px; gap: 6px 8px; }
+  .gameplay { --hud-width: min(260px, 31vw); width: 100%; grid-template-columns: var(--hud-width) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 44px; gap: 6px 8px; }
   .game_hud { grid-column: 1; grid-row: 1 / -1; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; }
   /* Status scrolls independently so Pause always owns a visible, unobstructed row. */
   .hud_content { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-self: stretch; align-content: start; align-items: center; gap: 3px; min-height: 0; overflow-y: auto; }
@@ -331,14 +331,24 @@ h2 { margin: 0 0 24px; max-width: 750px; font-size: clamp(2rem, 4.5vw, 3.7rem); 
   .hud_tactics { grid-column: 1 / -1; grid-row: 6; gap: 4px; }
   .tactic_badge { font-size: .75rem; }
   .game_hud > #pause_button { grid-column: 1; grid-row: 2; min-height: 44px; padding: 8px; }
-  .arena_frame { grid-column: 2; grid-row: 1; max-height: calc((100cqw - 272px) * 9 / 16); border-radius: 8px; }
+  .arena_frame { grid-column: 2; grid-row: 1; max-height: calc((100cqw - var(--hud-width) - 12px) * 9 / 16); border-radius: 8px; }
   .play_controls { grid-column: 2; grid-row: 2; justify-content: center; padding: 0; }
   .desktop_hint { display: none; }
+  .orientation_hint { display: none; }
   .touch_controls { width: 100%; max-width: 530px; gap: 8px; }
   .touch_button { flex: 1; min-height: 44px; padding: 6px 16px; }
   .fire_button { flex: 1.5; justify-content: center; }
   #celebration_status { grid-column: 2; margin: 0; }
   .game_footer { padding-block: 10px; font-size: .57rem; }
+}
+@media (max-width: 620px) and (orientation: landscape) and (max-height: 500px) {
+  /* Keep the life and timer readouts apart in the narrow sidebar. */
+  .hud_lives, .hud_time { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; }
+  .hud_time { grid-row: 3; }
+  .hud_score { grid-row: 4; }
+  .hud_objective { grid-row: 5; }
+  .hud_weapon { grid-row: 6; }
+  .hud_tactics { grid-row: 7; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
@@ -689,7 +699,7 @@ h2 { margin: 0 0 24px; max-width: 750px; font-size: clamp(2rem, 4.5vw, 3.7rem); 
 .game_dialog .recovery_stage_list { max-height: 240px; overflow-y: auto; overscroll-behavior: contain; align-content: start; }
 .recovery_stage_list_button {
   min-width: 0;
-  min-height: 42px;
+  min-height: 44px;
   padding: 7px 8px;
   border: 1px solid #665476;
   border-radius: 9px;

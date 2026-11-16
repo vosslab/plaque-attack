@@ -5,7 +5,7 @@ visual, and fresh specification/quality/integration evidence. Candidate 1 remain
 runaway motion and aspirin over-clear; candidate 2 remains rejected for its mathematically
 inaccessible stage-12 target. Final integration ACCEPT and manager GO authorize this closeout.
 
-See the [active plan](../active/core_interactions_revision.md),
+See the [completed plan](../../archive/core_interactions_revision.md),
 [CORE_INTERACTIONS_DESIGN.md](../../CORE_INTERACTIONS_DESIGN.md), and
 [GAME_SPEC.md](../../GAME_SPEC.md).
 

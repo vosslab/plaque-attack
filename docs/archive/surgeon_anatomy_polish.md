@@ -28,7 +28,7 @@ for the manager.
    two or three anatomy and proportion studies that emphasize expressive, larger individual heads,
    cleaner tapered arms and hands, plus clothing and equipment variation. Render each at native
    44 by 60 and at larger grayscale and silhouette sizes. The manager selects the study direction
-   from this evidence and records the settled decision in [DESIGN_DECISIONS.md](../../DESIGN_DECISIONS.md).
+   from this evidence and records the settled decision in [DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md).
 2. **Implement the cast.** Apply the selected direction to all six idle and six victory assets.
    Preserve identity, pose continuity, anchors, dimensions, editable SVG source, and equal abilities.
    Keep the existing legacy asset only if a current consumer needs it. Update asset bindings only
@@ -49,7 +49,7 @@ for the manager.
 - `docs/HUMAN_GUIDANCE.md`: preserve only human-stated cast preferences relevant to this work.
 - `docs/DESIGN_DECISIONS.md`: add the settled visual direction after study selection.
 - `docs/CHANGELOG.md`: record the delivered art changes and evidence.
-- `docs/active_plans/active/surgeon_anatomy_polish.md`: maintain the status and evidence ledger.
+- `docs/archive/surgeon_anatomy_polish.md`: maintain the status and evidence ledger.
 - Existing documentation screenshots and their canonical capture sources: refresh screenshots
   affected by the final character art.
 

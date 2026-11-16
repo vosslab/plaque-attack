@@ -112,6 +112,6 @@ caused incidental seam erosion; the pulse cleared one tiny target for 250 points
 hazards and all three lives remaining. It activated before the later fire input, so deliberate
 shot activation was not observed. Fresh integration accepts within the sampled scope. Stage-6
 fuse expiry, stage 18, a full stage/campaign replay, and human enjoyment remain unobserved. The
-active [gameplay variety plan](active_plans/active/gameplay_variety_plan.md) is complete with
+active [gameplay variety plan](archive/gameplay_variety_plan.md) is complete with
 these limits recorded in `output/gameplay_variety/closeout.md`, `finale_fix/report.md`, and
 `integration.md`.

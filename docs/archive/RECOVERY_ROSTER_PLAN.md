@@ -36,7 +36,7 @@ The persistence rule is deliberately narrow:
 ## Implementation ledger
 
 Each row closes against current evidence in
-[RECOVERY_ROSTER_ACCEPTANCE.md](RECOVERY_ROSTER_ACCEPTANCE.md), with fresh independent reviews.
+[RECOVERY_ROSTER_ACCEPTANCE.md](../RECOVERY_ROSTER_ACCEPTANCE.md), with fresh independent reviews.
 
 | Milestone | Concrete result and owner boundary | Verification | Status |
 | --- | --- | --- | --- |
@@ -80,7 +80,7 @@ separate from the earlier 24-stage completion/replay, which predates stage-4/5 t
 ## Delivery closeout
 
 R1-R9 are complete. Fresh specification, quality and final integration reviews accept the final
-source/build and bounded evidence. [RECOVERY_ROSTER_ACCEPTANCE.md](RECOVERY_ROSTER_ACCEPTANCE.md)
+source/build and bounded evidence. [RECOVERY_ROSTER_ACCEPTANCE.md](../RECOVERY_ROSTER_ACCEPTANCE.md)
 records 47 passing Node checks, the 11-plus-1 browser result, final build hashes, matching compact
 captures, opening-six assisted simulation and explicit proof limits. This completes local delivery;
 remote publication remains separate.

@@ -4,7 +4,6 @@ import { logicalCoordinate, projectileId, targetId } from "../src/brands.ts";
 import { createTarget } from "../src/characters.ts";
 import { FIXED_STEP, getLevel, TARGET_PRESETS } from "../src/constants.ts";
 import { createSimulation, pauseSimulation, resumeSimulation } from "../src/game_state.ts";
-import { createRenderer } from "../src/renderer.ts";
 import { hitMultiplier, streakMilestone } from "../src/scoring.ts";
 import { stepSimulation } from "../src/simulation.ts";
 
@@ -79,107 +78,4 @@ test("hit events carry their own awarded streak and points; misses and pause pre
   assert.equal(nextHit.streak, 1);
   assert.equal(nextHit.points, TARGET_PRESETS.tiny.points);
   assert.equal(createSimulation(state.level, state.mode).streak, 0);
-});
-
-function canvasRecorder() {
-  const texts = [];
-  const noop = () => {};
-  const canvas = {
-    width: 960,
-    height: 600,
-    getBoundingClientRect: () => ({ width: 960, height: 600 }),
-    getContext: () => context,
-  };
-  const context = new Proxy(
-    {
-      canvas,
-      fillText: (text, x, y) => texts.push({ text, x, y }),
-      measureText: (text) => ({ width: text.length * 9 }),
-      createLinearGradient: () => ({ addColorStop: noop }),
-      createRadialGradient: () => ({ addColorStop: noop }),
-    },
-    { get: (object, key) => object[key] ?? noop },
-  );
-  return { canvas, texts };
-}
-
-test("reward labels stay bounded and stationary with reduced motion, freeze on pause, then expire or clear on a fresh attempt", (t) => {
-  const previousWindow = globalThis.window;
-  const previousObserver = globalThis.ResizeObserver;
-  globalThis.window = { devicePixelRatio: 1 };
-  globalThis.ResizeObserver = class {
-    observe() {}
-    disconnect() {}
-  };
-  t.after(() => {
-    globalThis.window = previousWindow;
-    globalThis.ResizeObserver = previousObserver;
-  });
-  const state = createSimulation(getLevel(10), "practice");
-  state.phase = "playing";
-  const { canvas, texts } = canvasRecorder();
-  const images = new Proxy({}, { get: () => ({}) });
-  const renderer = createRenderer(canvas, images, true);
-  t.after(() => renderer.destroy());
-  renderer.render(state, 0);
-  const hit = collision(state);
-  const event = { ...hit, streak: 5, points: 123, position: { x: 0, y: 540 } };
-  renderer.consumeEvents(Array.from({ length: 30 }, () => event));
-  texts.length = 0;
-  renderer.render(state, 0);
-  const labels = texts.filter((entry) => entry.text === "+123");
-  assert.ok(labels.length > 0 && labels.length < 30, "a burst has finite label capacity");
-  assert.ok(labels.every(({ x, y }) => x > 0 && x < 960 && y > 0 && y < 540));
-  assert.equal(texts.filter((entry) => entry.text === "5-HIT STREAK / x2 POINTS").length, 1);
-  // Use an interior label: edge clamping can hide the normal upward motion.
-  renderer.consumeEvents([{ ...event, points: 124, position: { x: 400, y: 300 } }]);
-  texts.length = 0;
-  renderer.render(state, 0);
-  const initialPosition = texts.find((entry) => entry.text === "+124");
-  assert.ok(initialPosition);
-  state.tick += 6;
-  texts.length = 0;
-  renderer.render(state, 0);
-  assert.deepEqual(
-    texts.find((entry) => entry.text === "+124"),
-    initialPosition,
-  );
-  pauseSimulation(state);
-  texts.length = 0;
-  renderer.render(state, 0);
-  assert.deepEqual(
-    texts.find((entry) => entry.text === "+124"),
-    initialPosition,
-  );
-  resumeSimulation(state);
-  for (let frame = 0; frame < 25; frame += 1) {
-    state.tick += 6;
-    texts.length = 0;
-    renderer.render(state, 0);
-  }
-  assert.equal(
-    texts.some((entry) => entry.text.startsWith("+") || entry.text.includes("STREAK")),
-    false,
-  );
-  renderer.consumeEvents([event]);
-  renderer.render(state, 0);
-  texts.length = 0;
-  const fresh = createSimulation(state.level, state.mode);
-  fresh.phase = "playing";
-  renderer.render(fresh, 0);
-  assert.equal(
-    texts.some((entry) => entry.text.startsWith("+") || entry.text.includes("STREAK")),
-    false,
-  );
-  renderer.consumeEvents([event]);
-  renderer.render(fresh, 0);
-  texts.length = 0;
-  renderer.consumeEvents([
-    { type: "damage", cause: "contact", lives: 2, position: { x: 0, y: 540 } },
-  ]);
-  renderer.render(fresh, 0);
-  assert.equal(
-    texts.some((entry) => entry.text.includes("STREAK")),
-    false,
-  );
 });

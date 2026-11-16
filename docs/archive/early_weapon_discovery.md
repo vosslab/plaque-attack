@@ -68,7 +68,7 @@ Reuse current encounter mechanics; do not add broad infrastructure to support th
   and finale completion.
 - `docs/GAME_SPEC.md`, `docs/HUMAN_GUIDANCE.md`, `docs/DESIGN_DECISIONS.md`, and
   `docs/CHANGELOG.md`: update through their documentation owners after the implementation settles.
-- This plan and its ledger: `docs/active_plans/active/early_weapon_discovery.md`.
+- This plan and its ledger: `docs/archive/early_weapon_discovery.md`.
 - Temporary checks and captured play evidence: repository `tests/_temp/` and the existing
   `output/` convention; retain only evidence needed to support closeout.
 

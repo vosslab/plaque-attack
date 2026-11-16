@@ -4,7 +4,7 @@
 refinement are implemented. Actual-control, configuration, refreshed source/build, visual, and
 integration evidence is recorded below; sampled play does not establish human enjoyment.
 
-See [gameplay_creative_evolution.md](../active/gameplay_creative_evolution.md) for the working
+See [gameplay_creative_evolution.md](../../archive/gameplay_creative_evolution.md) for the working
 brief.
 
 ## Selected encounter arc

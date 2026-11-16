@@ -7,10 +7,10 @@ erodible shelter, automatic floor following, optional pockets and bounded plaque
 
 **Status:** Complete and locally accepted, 2026-10-22. S1-S7 pass, including fresh final
 integration review, 24-stage completion/replay, browser and rendered acceptance, and records.
-Evidence and limitations are preserved in [MECHANICS_ACCEPTANCE.md](../../MECHANICS_ACCEPTANCE.md).
+Evidence and limitations are preserved in [MECHANICS_ACCEPTANCE.md](../MECHANICS_ACCEPTANCE.md).
 
-[STAGE_MECHANICS_PLAN.md](../../STAGE_MECHANICS_PLAN.md) owns executable mechanics and the single
-placement matrix. [EXPANSION_PLAN.md](../../EXPANSION_PLAN.md) owns target/wave composition and
+[STAGE_MECHANICS_PLAN.md](STAGE_MECHANICS_PLAN.md) owns executable mechanics and the single
+placement matrix. [EXPANSION_PLAN.md](EXPANSION_PLAN.md) owns target/wave composition and
 stable identities. The manager completes review, repair and acceptance autonomously. Optional
 human feedback never blocks completion.
 
@@ -73,8 +73,8 @@ not acceptance of tissue, floor, pocket or merge mechanics.
 Keep one source owner per mutation boundary. Resolve contract questions from actual source and
 focused evidence; fresh reviewers check the implemented behavior. The difficulty report reads real
 configs through `src/difficulty.ts` and `devel/report_difficulty.mjs`, with bounds separated from
-observed play. Record settled choices in [DESIGN_DECISIONS.md](../../DESIGN_DECISIONS.md) and human
-preferences in [HUMAN_GUIDANCE.md](../../HUMAN_GUIDANCE.md).
+observed play. Record settled choices in [DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md) and human
+preferences in [HUMAN_GUIDANCE.md](../HUMAN_GUIDANCE.md).
 
 S1-S7 are complete against the integrated result, including ordinary-input 24-stage completion,
 independent replay, responsive rendered inspection and documented limitations. Automated completion

@@ -37,8 +37,8 @@ Keep projectile fragmentation, clopidogrel, and stent behavior meaningfully dist
   maintenance workloads around the fan; avoid mechanically tripling authored target counts.
   Retain adjustable tuning under the accepted actual-control evidence.
 
-The canonical details are in [CORE_INTERACTIONS_DESIGN.md](../../CORE_INTERACTIONS_DESIGN.md) and
-[GAME_SPEC.md](../../GAME_SPEC.md).
+The canonical details are in [CORE_INTERACTIONS_DESIGN.md](../CORE_INTERACTIONS_DESIGN.md) and
+[GAME_SPEC.md](../GAME_SPEC.md).
 
 ## Execution and gates
 
@@ -47,7 +47,7 @@ The canonical details are in [CORE_INTERACTIONS_DESIGN.md](../../CORE_INTERACTIO
    reflections. The inverse-slope runaway and constant-velocity access failure are corrected at
    the motion owner. Exact resolved parabolas are qualified by floor normal-offset tolerance,
    loss-only settling of an entire sub-resolution vertical orbit, and bounded collision chords.
-   [CORE_INTERACTIONS_DESIGN.md](../../CORE_INTERACTIONS_DESIGN.md) owns those numerical limits.
+   [CORE_INTERACTIONS_DESIGN.md](../CORE_INTERACTIONS_DESIGN.md) owns those numerical limits.
    Final-source long probes, focused independent review, and actual-control integration pass. Historical reach and timeout values are reproduction evidence only.
 2. **Revise aspirin fan. Complete and accepted.** One capsule converts a
    small aggregate into three contained upward children with no score/streak credit. Subsequent
@@ -95,4 +95,4 @@ level source and actual-control workload before treating them as accepted tuning
 - No deployment or commit is in scope.
 
 Live assignments and evidence are recorded in
-[core_interactions_revision_ledger.md](../reports/core_interactions_revision_ledger.md).
+[core_interactions_revision_ledger.md](../active_plans/reports/core_interactions_revision_ledger.md).

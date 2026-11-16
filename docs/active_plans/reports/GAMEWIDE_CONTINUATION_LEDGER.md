@@ -4,7 +4,7 @@
 integration review. The first five contracts retain their accepted full baseline checks; the sixth
 contract passed its focused source, fixture, and actual-result checks. The final integration reviewer
 accepted the integrated build, all six report reassessments, and the stop rationale. This file records
-evidence for [GAMEWIDE_CONTINUITY_READABILITY.md](../active/GAMEWIDE_CONTINUITY_READABILITY.md),
+evidence for [GAMEWIDE_CONTINUITY_READABILITY.md](../../archive/GAMEWIDE_CONTINUITY_READABILITY.md),
 including exact source/build fingerprints, evidence paths, and remaining limitations.
 
 ## Requirement map

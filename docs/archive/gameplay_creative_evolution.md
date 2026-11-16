@@ -52,4 +52,4 @@ identity and existing patient-recovery meaning. Keep experiments narrow enough t
 replace; update the game specification and design decisions when a direction is selected.
 
 Completion evidence is recorded in
-[gameplay_creative_evolution_ledger.md](../reports/gameplay_creative_evolution_ledger.md).
+[gameplay_creative_evolution_ledger.md](../active_plans/reports/gameplay_creative_evolution_ledger.md).

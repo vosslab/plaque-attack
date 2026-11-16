@@ -66,7 +66,8 @@ do not remove cholesterol plaque. Tissue carving and plaque merging are arcade a
 
 Open [the live game](https://vosslab.github.io/plaque-attack/), choose **Play campaign**, then
 **Start stage**. Move with the arrow keys or A/D and hold Space to fire; touch controls are also
-available. Split the floating plaque and clear its fragments to finish the first stage.
+available. On a phone, hold a direction and Fire together; turn sideways for a larger arena.
+Split the floating plaque and clear its fragments to finish the first stage.
 
 ### Run locally
 
@@ -124,10 +125,10 @@ limit. An overload warning gives you time to bring the count back down before lo
 - [docs/PLAYWRIGHT_USAGE.md](docs/PLAYWRIGHT_USAGE.md) explains browser-test setup and execution.
 - [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md) explains the repeatable WebP screenshot refresh and demonstration states.
 - [docs/archive/remix_campaign_plan.md](docs/archive/remix_campaign_plan.md) defines the current campaign, retry and record contracts.
-- [docs/EXPANSION_PLAN.md](docs/EXPANSION_PLAN.md) preserves the historical expansion matrix.
-- [docs/RECOVERY_ROSTER_PLAN.md](docs/RECOVERY_ROSTER_PLAN.md) records the roster and recovery contract.
+- [docs/archive/EXPANSION_PLAN.md](docs/archive/EXPANSION_PLAN.md) preserves the historical expansion matrix.
+- [docs/archive/RECOVERY_ROSTER_PLAN.md](docs/archive/RECOVERY_ROSTER_PLAN.md) records the roster and recovery contract.
 - [docs/DIFFICULTY_RUBRIC.md](docs/DIFFICULTY_RUBRIC.md) explains the challenge curve and tool-introduction resets.
-- [docs/active_plans/active/organic_expansion.md](docs/active_plans/active/organic_expansion.md) records the completed expansion and acceptance status.
+- [docs/archive/organic_expansion.md](docs/archive/organic_expansion.md) records the completed expansion and acceptance status.
 
 ## License
 
